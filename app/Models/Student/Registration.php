@@ -28,10 +28,10 @@ class Registration extends Model
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
-    #[Override]
-    protected function casts()
+    protected function casts(): array
     {
         return [
             'dob' => 'date',

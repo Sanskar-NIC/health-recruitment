@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { HeartPulse, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -32,16 +32,38 @@ export function SiteHeader() {
                             {portal.helpdesk.phone}
                         </span>
                     </a>
-                    <Button
-                        asChild
-                        variant="outline"
-                        className="h-11 rounded-full border-primary px-6 text-primary hover:bg-primary-tint hover:text-primary-hover"
-                    >
-                        <Link href="/login">Login</Link>
-                    </Button>
-                    <Button asChild className="h-11 rounded-full px-6 hover:bg-primary-hover">
-                        <Link href="/register">Register</Link>
-                    </Button>
+                    {usePage().props.auth?.student ? (
+                        <>
+                            <Button
+                                asChild
+                                variant="outline"
+                                className="h-11 rounded-full border-primary px-6 text-primary hover:bg-primary-tint"
+                            >
+                                <Link href="/student/dashboard">Dashboard</Link>
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                onClick={() => router.post('/logout')}
+                                className="h-11 rounded-full px-6 text-destructive hover:bg-destructive/10"
+                            >
+                                Logout
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                asChild
+                                variant="outline"
+                                className="h-11 rounded-full border-primary px-6 text-primary hover:bg-primary-tint hover:text-primary-hover"
+                            >
+                                <Link href="/login">Login</Link>
+                            </Button>
+                            <Button asChild className="h-11 rounded-full px-6 hover:bg-primary-hover">
+                                <Link href="/register">Register</Link>
+                            </Button>
+                        </>
+                    )}
+
                 </div>
             </div>
         </header>

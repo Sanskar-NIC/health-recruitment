@@ -41,13 +41,15 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => config('app.name'),
-            'portal' => fn () => MockData::shared(),
+            'portal' => fn() => MockData::shared(),
             'auth' => [
                 'user' => $user,
+                'student' => $request->user('student'),
             ],
+
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'currentTeam' => fn () => $user?->currentTeam ? $user->toUserTeam($user->currentTeam) : null,
-            'teams' => fn () => $user?->toUserTeams(includeCurrent: true) ?? [],
+            'currentTeam' => fn() => $user?->currentTeam ? $user->toUserTeam($user->currentTeam) : null,
+            'teams' => fn() => $user?->toUserTeams(includeCurrent: true) ?? [],
         ];
     }
 }

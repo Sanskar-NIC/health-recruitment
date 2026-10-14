@@ -25,8 +25,8 @@ class RegisterController extends Controller
             'gender' => ['required', 'string', Rule::in(['Male', 'Female', 'Transgender'])],
             'category' => ['required', 'string', Rule::in(['UR', 'SC', 'ST', 'OBC', 'EWS'])],
             'pwbd' => ['required', 'string', Rule::in(['yes', 'no'])],
-            'mobile' => ['required', 'string', 'regex:/^[6-9]\d{9}$/', 'unique:student.registrations,mobile'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:student.registrations,email'],
+            'mobile' => ['required', 'string', 'regex:/^[6-9]\d{9}$/', Rule::unique(Registration::class, 'mobile')],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique(Registration::class, 'email')],
             'password' => ['required', 'string', 'min:8'],
             'declaration' => ['required', 'boolean', 'accepted'],
         ]);

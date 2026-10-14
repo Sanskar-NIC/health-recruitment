@@ -52,11 +52,18 @@ export function LoginForm({ idPrefix, showRemember = false }: LoginFormProps) {
         }
 
         // UI-only: replace with form.post(...) when login is wired to the backend.
-        setLoading(true);
-        window.setTimeout(() => {
-            setLoading(false);
-            toast.info('Login will be enabled soon');
-        }, 1000);
+        form.post('/login', {
+            onError: (errs) => {
+                if (errs.identifier) {
+                    setErrors((prev) => ({ ...prev, identifier: errs.identifier }));
+                }
+                if (errs.password) {
+                    setErrors((prev) => ({ ...prev, password: errs.password }));
+                }
+                toast.error(errs.identifier || errs.password || 'Login failed. Please check your credentials.');
+            },
+        });
+
     };
 
     const idId = `${idPrefix}-identifier`;
@@ -133,10 +140,11 @@ export function LoginForm({ idPrefix, showRemember = false }: LoginFormProps) {
                 </div>
             )}
 
-            <Button type="submit" disabled={loading} className="h-12 w-full rounded-xl text-base font-medium shadow-md hover:bg-primary-hover">
-                {loading && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
+            <Button type="submit" disabled={form.processing} className="h-12 w-full rounded-xl text-base font-medium shadow-md hover:bg-primary-hover">
+                {form.processing && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
                 Sign In
             </Button>
+
 
             <p className="text-center text-sm text-muted-foreground">
                 New user?{' '}

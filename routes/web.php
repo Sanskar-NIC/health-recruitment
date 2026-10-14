@@ -8,6 +8,9 @@ use App\Http\Controllers\Student\RecruitmentController;
 use App\Http\Controllers\Teams\TeamInvitationController;
 use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Student\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('recruitments', [RecruitmentController::class, 'index'])->name('recruitments.index');
@@ -33,4 +36,16 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('invitations/{invitation}', [TeamInvitationController::class, 'decline'])->name('invitations.decline');
 });
 
-require __DIR__.'/settings.php';
+// Student Guest Routes
+Route::middleware('guest:student')->group(function () {
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('student.login');
+});
+
+// Student Protected Routes (Login Only)
+Route::middleware('auth:student')->group(function () {
+    Route::get('student/dashboard', StudentDashboardController::class)->name('student.dashboard');
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('student.logout');
+});
+
+
+require __DIR__ . '/settings.php';
