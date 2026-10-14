@@ -29,7 +29,7 @@ test('login screen includes team invitation context', function () {
 
     $response->assertOk();
     $response->assertInertia(fn (Assert $page) => $page
-        ->component('auth/login')
+        ->component('student/auth/login')
         ->where('teamInvitation.code', $invitation->code)
         ->where('teamInvitation.teamName', 'Laravel Team'),
     );

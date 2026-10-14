@@ -9,7 +9,7 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Noto Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
@@ -45,6 +45,13 @@
     --color-input: var(--input);
     --color-ring: var(--ring);
 
+    --color-primary-hover: var(--primary-hover);
+    --color-primary-tint: var(--primary-tint);
+    --color-primary-deep: var(--primary-deep);
+    --color-link: var(--link);
+    --color-success: var(--success);
+    --color-warning: var(--warning);
+
     --color-chart-1: var(--chart-1);
     --color-chart-2: var(--chart-2);
     --color-chart-3: var(--chart-3);
@@ -62,39 +69,45 @@
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
+    --background: #f4f6f8;
+    --foreground: #1f2937;
+    --card: #ffffff;
+    --card-foreground: #1f2937;
+    --popover: #ffffff;
+    --popover-foreground: #1f2937;
+    --primary: #0e7490;
+    --primary-foreground: #ffffff;
+    --primary-hover: #155e75;
+    --primary-deep: #164e63;
+    --primary-tint: #e0f2f5;
+    --secondary: #e0f2f5;
+    --secondary-foreground: #155e75;
+    --muted: #f4f6f8;
+    --muted-foreground: #4b5563;
+    --accent: #e0f2f5;
+    --accent-foreground: #155e75;
+    --destructive: #dc2626;
+    --destructive-foreground: #ffffff;
+    --link: #2563eb;
+    --success: #16a34a;
+    --warning: #b45309;
+    --border: #e5e7eb;
+    --input: #d1d5db;
+    --ring: #0e7490;
     --chart-1: oklch(0.646 0.222 41.116);
     --chart-2: oklch(0.6 0.118 184.704);
     --chart-3: oklch(0.398 0.07 227.392);
     --chart-4: oklch(0.828 0.189 84.429);
     --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+    --radius: 0.5rem;
+    --sidebar: #ffffff;
+    --sidebar-foreground: #1f2937;
+    --sidebar-primary: #0e7490;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #e0f2f5;
+    --sidebar-accent-foreground: #155e75;
+    --sidebar-border: #e5e7eb;
+    --sidebar-ring: #0e7490;
 }
 
 .dark {
@@ -139,5 +152,58 @@
 
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+@layer utilities {
+    @keyframes marquee {
+        from {
+            transform: translateX(0);
+        }
+        to {
+            transform: translateX(-50%);
+        }
+    }
+
+    .animate-marquee {
+        animation: marquee 45s linear infinite;
+    }
+
+    @keyframes marquee-y {
+        from {
+            transform: translateY(0);
+        }
+        to {
+            transform: translateY(-50%);
+        }
+    }
+
+    .animate-marquee-y {
+        animation: marquee-y 40s linear infinite;
+    }
+
+    .ticker:hover .animate-marquee-y,
+    .ticker:focus-within .animate-marquee-y,
+    .ticker[data-paused='true'] .animate-marquee-y,
+    .ticker:hover .animate-marquee,
+    .ticker:focus-within .animate-marquee,
+    .ticker[data-paused='true'] .animate-marquee {
+        animation-play-state: paused;
+    }
+
+    .bg-pattern-dots {
+        background-image: radial-gradient(
+            rgb(14 116 144 / 0.12) 1px,
+            transparent 1px
+        );
+        background-size: 18px 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-marquee,
+    .animate-marquee-y,
+    .animate-pulse {
+        animation: none;
     }
 }

@@ -1,0 +1,49 @@
+import { Link, usePage } from '@inertiajs/react';
+import { HeartPulse, Phone } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+export function SiteHeader() {
+    const { portal } = usePage().props;
+
+    return (
+        <header className="border-b bg-card shadow-sm">
+            <div className="mx-auto flex max-w-none sm:px-8 lg:px-16 xl:px-24 items-center justify-between gap-4 px-4 py-3">
+                <Link href="/" className="flex items-center gap-3 rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-xl sm:size-14 sm:rounded-2xl bg-primary text-white shadow-md sm:size-14">
+                        <HeartPulse className="size-6 sm:size-8" aria-hidden="true" />
+                    </span>
+                    <span className="flex flex-col">
+                        <span className="text-base leading-tight font-semibold text-primary sm:text-2xl">
+                            Health Recruitment Portal
+                        </span>
+                        <span className="text-[11px] leading-snug text-muted-foreground sm:text-sm">
+                            Health &amp; Family Welfare Department, Government of Tripura
+                        </span>
+                    </span>
+                </Link>
+                <div className="hidden items-center gap-4 lg:flex">
+                    <a
+                        href={`tel:${portal.helpdesk.phone.replace(/\s/g, '')}`}
+                        className="flex items-center gap-2 text-sm font-medium text-foreground"
+                    >
+                        <Phone className="size-4 text-primary" aria-hidden="true" />
+                        <span>
+                            <span className="sr-only">Helpdesk: </span>
+                            {portal.helpdesk.phone}
+                        </span>
+                    </a>
+                    <Button
+                        asChild
+                        variant="outline"
+                        className="h-11 rounded-full border-primary px-6 text-primary hover:bg-primary-tint hover:text-primary-hover"
+                    >
+                        <Link href="/login">Login</Link>
+                    </Button>
+                    <Button asChild className="h-11 rounded-full px-6 hover:bg-primary-hover">
+                        <Link href="/register">Register</Link>
+                    </Button>
+                </div>
+            </div>
+        </header>
+    );
+}
