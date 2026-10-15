@@ -22,7 +22,7 @@ export default function Home({
         <>
             <Head title="Home" />
             <HeroSection />
-            <div className="mx-auto grid max-w-none sm:px-8 lg:px-16 xl:px-24 gap-6 px-4 py-8 lg:grid-cols-3">
+            <div className="mx-auto grid max-w-none sm:px-8 lg:px-16 xl:px-24 gap-6 px-4 py-8 lg:grid-cols-3 lg:items-start">
                 {/* Mobile: login comes right after the hero. */}
                 <div className="lg:order-2">
                     <ApplicantLoginPanel />
