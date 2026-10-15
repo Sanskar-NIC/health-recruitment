@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { BrandLogo } from '@/components/brand-logo';
 import { HelpdeskDialog } from '@/components/student/helpdesk-dialog';
 import { ProfileIncompleteDialog } from '@/components/student/profile-incomplete-dialog';
+import { PageBreadcrumbs } from '@/components/student/page-breadcrumbs';
 import { SiteFooter } from '@/components/student/site-footer';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -59,11 +60,11 @@ export default function StudentPortalLayout({ children }: { children: ReactNode 
     return (
         <div className="flex min-h-screen flex-col bg-muted/30 text-foreground">
             <header className="sticky top-0 z-40 border-b bg-card shadow-sm">
-                <div className="flex items-center justify-between gap-4 px-4 py-2.5 sm:px-8 lg:px-16 xl:px-24">
+                <div className="relative flex items-center justify-between gap-4 px-4 py-2.5 sm:px-8 lg:px-16 xl:px-24">
                     <Link href="/student/dashboard" className="flex items-center gap-3 rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
                         <BrandLogo className="size-12 shrink-0" />
-                        <span className="hidden flex-col sm:flex">
-                            <span className="text-lg leading-tight font-semibold text-primary">Health Recruitment Portal</span>
+                        <span className="absolute left-1/2 flex -translate-x-1/2 flex-col items-center text-center whitespace-nowrap sm:static sm:translate-x-0 sm:items-start sm:text-left">
+                            <span className="text-sm leading-tight font-semibold text-primary min-[400px]:text-base sm:text-lg">Health Recruitment Portal</span>
                             <span className="text-xs text-muted-foreground">Applicant Panel</span>
                         </span>
                     </Link>
@@ -130,6 +131,7 @@ export default function StudentPortalLayout({ children }: { children: ReactNode 
                 </div>
             </header>
 
+            <PageBreadcrumbs portal />
             <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
                 {profile && profile.status !== 'completed' && path !== '/student/profile' && (
                     <div role="status" className="flex flex-wrap items-center gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 sm:px-8 lg:px-16 xl:px-24">

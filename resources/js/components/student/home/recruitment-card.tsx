@@ -52,31 +52,67 @@ export function RecruitmentCard({ item }: { item: Recruitment }) {
                 </InfoRow>
             </dl>
 
-            <div className="mt-auto flex flex-wrap gap-2 pt-5">
-                <Button asChild variant="outline" className="h-11 flex-1 rounded-xl border-primary/40 text-primary hover:bg-primary-tint hover:text-primary-hover">
-                    <a href={item.pdfUrl}>
-                        <Download className="size-4" aria-hidden="true" />
-                        View Advertisement
-                    </a>
-                </Button>
-                {item.status === 'upcoming' && (
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <span tabIndex={0} className="inline-flex flex-1 rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
-                                <Button disabled aria-label={`Apply Now for ${item.postName} (not open yet)`} className="h-11 w-full rounded-xl">
-                                    Apply Now
-                                </Button>
-                            </span>
-                        </TooltipTrigger>
-                        <TooltipContent>Applications not open yet</TooltipContent>
-                    </Tooltip>
-                )}
-                {(item.status === 'open' || item.status === 'closing_soon') && (
-                    <Button asChild className="h-11 flex-1 rounded-xl hover:bg-primary-hover">
-                        <Link href="/login">Apply Now</Link>
-                    </Button>
-                )}
-            </div>
+            <Actions item={item} className="mt-auto pt-5" />
         </article>
+    );
+}
+
+/** Compact horizontal variant used by the list view. */
+export function RecruitmentRow({ item }: { item: Recruitment }) {
+    return (
+        <article className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border/70 bg-card py-5 pr-5 pl-7 shadow-[0_2px_12px_-4px_rgb(15_23_42/0.12)] transition duration-200 hover:border-primary/40 hover:shadow-[0_8px_20px_-8px_rgb(14_116_144/0.35)] lg:flex-row lg:items-center">
+            <span aria-hidden="true" className={cn('absolute inset-y-0 left-0 w-1.5', accent[item.status])} />
+            <div className="min-w-0 lg:w-72 lg:shrink-0">
+                <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">{item.advtNo}</span>
+                    <StatusBadge status={item.status} />
+                    {item.isNew && <NewBadge />}
+                </div>
+                <h3 className="mt-2 text-lg font-semibold leading-snug text-foreground">{item.postName}</h3>
+                <p className="text-sm text-muted-foreground">{item.department}</p>
+            </div>
+
+            <dl className="grid flex-1 gap-x-6 gap-y-2 sm:grid-cols-2">
+                <InfoRow icon={Users} label="Vacancies">{item.vacancies} vacancies</InfoRow>
+                <InfoRow icon={CalendarClock} label="Age limit">{item.ageLimit}</InfoRow>
+                <InfoRow icon={GraduationCap} label="Qualification">{item.qualification}</InfoRow>
+                <InfoRow icon={IndianRupee} label="Pay scale">{item.payScale}</InfoRow>
+                <InfoRow icon={CalendarX} label="Last date" className={cn(item.status === 'closing_soon' && 'font-medium text-destructive')}>
+                    Last date: {formatDate(item.endDate)}
+                </InfoRow>
+            </dl>
+
+            <Actions item={item} className="lg:w-80 lg:shrink-0" />
+        </article>
+    );
+}
+
+function Actions({ item, className }: { item: Recruitment; className?: string }) {
+    return (
+        <div className={cn('flex flex-wrap gap-2', className)}>
+            <Button asChild variant="outline" className="h-11 flex-1 rounded-xl border-primary/40 text-primary hover:bg-primary-tint hover:text-primary-hover">
+                <a href={item.pdfUrl}>
+                    <Download className="size-4" aria-hidden="true" />
+                    View Advertisement
+                </a>
+            </Button>
+            {item.status === 'upcoming' && (
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <span tabIndex={0} className="inline-flex flex-1 rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+                            <Button disabled aria-label={`Apply Now for ${item.postName} (not open yet)`} className="h-11 w-full rounded-xl">
+                                Apply Now
+                            </Button>
+                        </span>
+                    </TooltipTrigger>
+                    <TooltipContent>Applications not open yet</TooltipContent>
+                </Tooltip>
+            )}
+            {(item.status === 'open' || item.status === 'closing_soon') && (
+                <Button asChild className="h-11 flex-1 rounded-xl hover:bg-primary-hover">
+                    <Link href="/login">Apply Now</Link>
+                </Button>
+            )}
+        </div>
     );
 }

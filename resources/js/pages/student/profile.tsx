@@ -1,5 +1,5 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, RotateCcw, Save, UserCog } from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, Pencil, RotateCcw, Save, UserCog } from 'lucide-react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { toast } from 'sonner';
@@ -9,6 +9,7 @@ import { AddressStep } from '@/components/student/profile/address-step';
 import { ExperienceStep } from '@/components/student/profile/experience-step';
 import { OtherStep } from '@/components/student/profile/other-step';
 import { PersonalStep } from '@/components/student/profile/personal-step';
+import { ProfilePreview } from '@/components/student/profile/profile-preview';
 import { QualificationsStep } from '@/components/student/profile/qualifications-step';
 import { UploadsStep } from '@/components/student/profile/uploads-step';
 import { StepSidebar } from '@/components/student/profile/step-sidebar';
@@ -101,16 +102,26 @@ export default function Profile({ profile, options, uploadRules }: Props) {
 
     if (completed) {
         return (
-            <div className="mx-auto max-w-3xl px-4 py-10">
+            <div className="mx-auto max-w-[84rem] px-4 py-8 sm:px-8">
                 <Head title="My Profile" />
-                <Panel title="Profile Completed" icon={CheckCircle2}>
-                    <p className="text-sm text-muted-foreground">Your profile has been submitted. You can now apply to active recruitments.</p>
-                    <div className="mt-4 flex gap-3">
-                        <Button asChild><Link href="/recruitments">Browse Recruitments</Link></Button>
-                        <Button variant="outline" onClick={() => setCompleted(false)}>Edit Profile</Button>
-                        <Button variant="ghost" onClick={() => router.visit('/student/dashboard')}>Dashboard</Button>
+                <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border bg-card p-5 shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <span className="flex size-11 items-center justify-center rounded-full bg-success/15 text-success">
+                            <CheckCircle2 className="size-6" aria-hidden="true" />
+                        </span>
+                        <div>
+                            <h1 className="text-xl font-bold tracking-tight text-primary-deep">Profile Completed</h1>
+                            <p className="text-sm text-muted-foreground">Your profile has been submitted. You can now apply to active recruitments.</p>
+                        </div>
                     </div>
-                </Panel>
+                    <div className="flex flex-wrap gap-3">
+                        <Button onClick={() => { setStep(0); setCompleted(false); window.scrollTo({ top: 0 }); }}>
+                            <Pencil className="mr-1.5 size-4" aria-hidden="true" /> Edit Profile
+                        </Button>
+                    </div>
+                </div>
+
+                <ProfilePreview draft={draft} />
             </div>
         );
     }
