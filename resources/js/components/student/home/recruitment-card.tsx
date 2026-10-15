@@ -19,17 +19,9 @@ function InfoRow({ icon: Icon, label, children, className }: { icon: LucideIcon;
     );
 }
 
-const accent = {
-    open: 'bg-success',
-    closing_soon: 'bg-warning',
-    upcoming: 'bg-primary',
-    closed: 'bg-gray-300',
-} as const;
-
 export function RecruitmentCard({ item }: { item: Recruitment }) {
     return (
         <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/70 bg-card p-6 shadow-[0_2px_12px_-4px_rgb(15_23_42/0.12)] transition duration-200 motion-safe:hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_12px_28px_-8px_rgb(14_116_144/0.35)]">
-            <span aria-hidden="true" className={cn('absolute inset-x-0 top-0 h-1', accent[item.status])} />
             <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">{item.advtNo}</span>
                 <StatusBadge status={item.status} />
@@ -60,8 +52,7 @@ export function RecruitmentCard({ item }: { item: Recruitment }) {
 /** Compact horizontal variant used by the list view. */
 export function RecruitmentRow({ item }: { item: Recruitment }) {
     return (
-        <article className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border/70 bg-card py-5 pr-5 pl-7 shadow-[0_2px_12px_-4px_rgb(15_23_42/0.12)] transition duration-200 hover:border-primary/40 hover:shadow-[0_8px_20px_-8px_rgb(14_116_144/0.35)] lg:flex-row lg:items-center">
-            <span aria-hidden="true" className={cn('absolute inset-y-0 left-0 w-1.5', accent[item.status])} />
+        <article className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border/70 bg-card p-5 shadow-[0_2px_12px_-4px_rgb(15_23_42/0.12)] transition duration-200 hover:border-primary/40 hover:shadow-[0_8px_20px_-8px_rgb(14_116_144/0.35)] lg:flex-row lg:items-center">
             <div className="min-w-0 lg:w-72 lg:shrink-0">
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">{item.advtNo}</span>

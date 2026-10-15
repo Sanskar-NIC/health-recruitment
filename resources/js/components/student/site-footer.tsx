@@ -38,22 +38,20 @@ export function SiteFooter() {
 
     return (
         <footer className="bg-slate-900 text-slate-200">
-            <div className="mx-auto grid max-w-none sm:px-8 lg:px-16 xl:px-24 gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mx-auto grid max-w-none sm:px-8 lg:px-16 xl:px-24 gap-5 px-4 py-6 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
                 <div>
-                    <div className="mb-3 flex items-center gap-3">
-                        <span className="rounded-full bg-white p-1.5"><BrandLogo className="size-12" /></span>
+                    <div className="mb-2 flex items-center gap-3">
+                        <span className="rounded-full bg-white p-1.5"><BrandLogo className="size-9" /></span>
                         <h2 className="text-base font-semibold text-white">About</h2>
                     </div>
-                    <p className="text-sm leading-relaxed text-slate-300">
-                        The Health Recruitment Portal is the official platform of the
-                        Health &amp; Family Welfare Department, Government of Tripura,
-                        for notifications, online applications, admit cards and
-                        results for health service posts.
+                    <p className="text-sm leading-snug text-slate-300">
+                        Official platform of the Health &amp; Family Welfare Department, Government of Tripura, for notifications, applications, admit cards and results.
                     </p>
                 </div>
+                <div className="grid grid-cols-2 gap-4 sm:contents">
                 <div>
-                    <h2 className="mb-3 text-base font-semibold text-white">Quick Links</h2>
-                    <ul className="grid gap-2">
+                    <h2 className="mb-2 text-base font-semibold text-white">Quick Links</h2>
+                    <ul className="grid gap-1.5">
                         {quickLinks.map(([label, href]) => (
                             <li key={href}>
                                 <Link href={href} className={linkClass}>{label}</Link>
@@ -62,8 +60,8 @@ export function SiteFooter() {
                     </ul>
                 </div>
                 <div>
-                    <h2 className="mb-3 text-base font-semibold text-white">Important Links</h2>
-                    <ul className="grid gap-2">
+                    <h2 className="mb-2 text-base font-semibold text-white">Important Links</h2>
+                    <ul className="grid gap-1.5">
                         {importantLinks.map((label) => (
                             <li key={label}>
                                 <a href="#" className={linkClass}>{label}</a>
@@ -71,9 +69,10 @@ export function SiteFooter() {
                         ))}
                     </ul>
                 </div>
+                </div>
                 <div>
-                    <h2 className="mb-3 text-base font-semibold text-white">Helpdesk</h2>
-                    <ul className="grid gap-2 text-sm text-slate-300">
+                    <h2 className="mb-2 text-base font-semibold text-white">Helpdesk</h2>
+                    <ul className="grid gap-1.5 text-sm text-slate-300">
                         <li className="flex gap-2"><MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" />{helpdesk.address}</li>
                         <li className="flex gap-2"><Phone className="mt-0.5 size-4 shrink-0" aria-hidden="true" />{helpdesk.phone}</li>
                         <li className="flex gap-2"><Mail className="mt-0.5 size-4 shrink-0" aria-hidden="true" /><span className="break-all">{helpdesk.email}</span></li>
@@ -82,7 +81,7 @@ export function SiteFooter() {
                 </div>
             </div>
             <div className="border-t border-slate-700">
-                <div className="mx-auto max-w-none sm:px-8 lg:px-16 xl:px-24 space-y-3 px-4 py-4 text-xs text-slate-300">
+                <div className="mx-auto max-w-none sm:px-8 lg:px-16 xl:px-24 space-y-2 px-4 py-3 text-xs text-slate-300">
                     <ul className="flex flex-wrap gap-x-4 gap-y-1">
                         {legal.map((label) => (
                             <li key={label}><a href="#" className={linkClass}>{label}</a></li>

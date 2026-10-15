@@ -6,6 +6,7 @@ import { Panel } from '@/components/student/panel';
 import { StatusBadge } from '@/components/student/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { formatDmy } from '@/lib/portal';
 import StudentPortalLayout from '@/layouts/student-portal-layout';
 import { cn } from '@/lib/utils';
 import type { Recruitment } from '@/types/student';
@@ -45,7 +46,7 @@ export default function Dashboard({ student, stats, recruitments }: Omit<Props, 
                         {student.registration_no}
                     </Badge>
                     <h1 className="mt-2 text-2xl font-bold tracking-tight text-primary-deep">Welcome, {student.full_name}</h1>
-                    <p className="text-sm text-muted-foreground">Registered on {new Date(student.created_at).toLocaleDateString()}</p>
+                    <p className="text-sm text-muted-foreground">Registered on {formatDmy(student.created_at.slice(0, 10))}</p>
                 </div>
                 <Button asChild>
                     <Link href="/student/profile"><UserCog className="mr-2 size-4" /> My Profile</Link>
