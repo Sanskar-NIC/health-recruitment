@@ -40,6 +40,8 @@ function Row({ item, hidden }: { item: NotificationItem; hidden?: boolean }) {
 export function WhatsNewPanel({ items }: { items: NotificationItem[] }) {
     const reduceMotion = useReducedMotion();
     const [paused, setPaused] = useState(false);
+    // The marquee repeats the list for a seamless loop, so only use it when the list overflows the panel.
+    const scrolls = !reduceMotion && items.length > 6;
 
     return (
         <Panel
@@ -48,7 +50,7 @@ export function WhatsNewPanel({ items }: { items: NotificationItem[] }) {
             bodyClassName="p-0"
             action={
                 <div className="flex items-center gap-3">
-                    {!reduceMotion && (
+                    {scrolls && (
                         <button
                             type="button"
                             onClick={() => setPaused((p) => !p)}
@@ -64,7 +66,9 @@ export function WhatsNewPanel({ items }: { items: NotificationItem[] }) {
                 </div>
             }
         >
-            {reduceMotion ? (
+            {items.length === 0 ? (
+                <p className="flex h-[32rem] items-center justify-center px-5 text-sm text-muted-foreground">No notifications yet.</p>
+            ) : !scrolls ? (
                 <ScrollArea className="h-[32rem]">
                     <ul>{items.map((item) => <Row key={item.id} item={item} />)}</ul>
                 </ScrollArea>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Support\MockData;
+use App\Support\PublicFeed;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -18,13 +19,14 @@ class HomeController extends Controller
             return redirect()->route('student.dashboard');
         }
 
-        $recruitments = MockData::recruitments();
+        $recruitments = PublicFeed::recruitments();
+        $featured = PublicFeed::featured();
 
         return Inertia::render('student/home', [
             'recruitments' => $recruitments,
             'notifications' => MockData::notifications(),
-            'importantDates' => MockData::importantDates(),
-            'featuredRecruitment' => $recruitments[0],
+            'importantDates' => PublicFeed::importantDates($featured),
+            'featuredRecruitment' => $featured,
             'stats' => MockData::stats(),
             'faqs' => MockData::faqs(),
         ]);

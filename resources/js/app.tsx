@@ -14,6 +14,8 @@ void createInertiaApp({
         switch (true) {
             case name.startsWith('student/'):
                 return null; // student pages render inside StudentLayout
+            case name.startsWith('admin/'):
+                return null; // admin pages set their own AdminLayout
             case name.startsWith('auth/'):
                 return AuthLayout;
             case name.startsWith('settings/'):

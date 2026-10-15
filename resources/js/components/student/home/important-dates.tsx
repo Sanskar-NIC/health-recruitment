@@ -1,10 +1,16 @@
 import { Check, Clock } from 'lucide-react';
 import { SectionHeading } from '@/components/student/section-heading';
-import { MOCK_TODAY, formatDate } from '@/lib/portal';
+import { formatDate } from '@/lib/portal';
 import { cn } from '@/lib/utils';
 import type { ImportantDate, Recruitment } from '@/types/student';
 
-export function ImportantDates({ dates, recruitment }: { dates: ImportantDate[]; recruitment: Recruitment }) {
+export function ImportantDates({ dates, recruitment }: { dates: ImportantDate[]; recruitment: Recruitment | null }) {
+    if (!recruitment || dates.length === 0) {
+        return null;
+    }
+
+    const today = new Date().toISOString().slice(0, 10);
+
     return (
         <section aria-labelledby="dates-heading" className="border-y bg-card/60">
             <div className="mx-auto max-w-none sm:px-8 lg:px-16 xl:px-24 px-4 py-10">
@@ -13,9 +19,9 @@ export function ImportantDates({ dates, recruitment }: { dates: ImportantDate[];
                     title="Important Dates"
                     description={`${recruitment.postName} (${recruitment.advtNo})`}
                 />
-                <ol className="grid gap-0 lg:grid-cols-6">
+                <ol className="grid gap-0 lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))]">
                     {dates.map((item, index) => {
-                        const done = item.date <= MOCK_TODAY;
+                        const done = item.date <= today;
                         const last = index === dates.length - 1;
 
                         return (

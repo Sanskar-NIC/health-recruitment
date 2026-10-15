@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { Phone } from 'lucide-react';
+import { Phone, ShieldCheck } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
 import { Button } from '@/components/ui/button';
 
@@ -59,6 +59,9 @@ export function SiteHeader() {
                             </Button>
                             <Button asChild className="h-11 rounded-full px-6 hover:bg-primary-hover">
                                 <Link href="/register">Register</Link>
+                            </Button>
+                            <Button asChild variant="ghost" className="h-11 rounded-full px-4 text-muted-foreground hover:text-primary">
+                                <Link href="/admin/login"><ShieldCheck className="size-4" aria-hidden="true" />Admin Login</Link>
                             </Button>
                         </>
                     )}

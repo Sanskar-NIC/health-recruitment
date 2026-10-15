@@ -46,6 +46,10 @@ return [
             'driver' => 'session',
             'provider' => 'students',
         ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
     ],
 
     'providers' => [
@@ -56,6 +60,10 @@ return [
         'students' => [
             'driver' => 'eloquent',
             'model' => App\Models\Student\Registration::class,
+        ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin\Admin::class,
         ],
     ],
 

@@ -26,7 +26,19 @@ export type StudentUser = {
     [key: string]: unknown;
 };
 
+export type AdminUser = {
+    id: number;
+    name: string;
+    username: string;
+    email: string;
+    mobile?: string | null;
+    designation?: string | null;
+    last_login_at?: string | null;
+    [key: string]: unknown;
+};
+
 export type Auth = {
     user: User;
     student?: StudentUser | null;
+    admin?: AdminUser | null;
 };

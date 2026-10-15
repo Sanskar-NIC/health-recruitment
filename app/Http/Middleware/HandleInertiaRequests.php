@@ -46,6 +46,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $user,
                 'student' => $request->user('student'),
+                'admin' => $request->user('admin'),
             ],
 
             'studentProfile' => fn () => ($student = $request->user('student')) ? ProfileOptions::summary($student->profile) : null,

@@ -65,6 +65,11 @@ export function MobileNav() {
                             <Link href="/register">Register</Link>
                         </Button>
                     </SheetClose>
+                    <SheetClose asChild>
+                        <Button asChild variant="ghost" className="h-11 text-muted-foreground">
+                            <Link href="/admin/login">Admin Login</Link>
+                        </Button>
+                    </SheetClose>
                 </div>
             </SheetContent>
         </Sheet>

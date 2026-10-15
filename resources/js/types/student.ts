@@ -93,7 +93,7 @@ export interface HomeProps {
     recruitments: Recruitment[];
     notifications: NotificationItem[];
     importantDates: ImportantDate[];
-    featuredRecruitment: Recruitment;
+    featuredRecruitment: Recruitment | null;
     stats: PortalStats;
     faqs: Faq[];
 }

@@ -14,6 +14,9 @@ use App\Http\Middleware\PreventBackHistory;
 use App\Support\Student\ProfileOptions;
 use Illuminate\Support\Facades\Route;
 
+// Admin routes first so /admin/dashboard is not captured by the {current_team} routes below.
+require __DIR__.'/admin.php';
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('recruitments', [RecruitmentController::class, 'index'])->name('recruitments.index');
 Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
