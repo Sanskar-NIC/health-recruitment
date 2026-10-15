@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { FieldError } from '@/components/student/field-error';
 import { RequiredMark } from '@/components/student/required-mark';
@@ -16,16 +17,18 @@ interface FormFieldProps {
     required?: boolean;
     error?: string;
     hint?: ReactNode;
+    icon?: LucideIcon;
     className?: string;
     children: (aria: FieldAria) => ReactNode;
 }
 
-export function FormField({ id, label, required, error, hint, className, children }: FormFieldProps) {
+export function FormField({ id, label, required, error, hint, icon: Icon, className, children }: FormFieldProps) {
     const describedBy = [error ? `${id}-error` : null, hint ? `${id}-hint` : null].filter(Boolean).join(' ');
 
     return (
         <div className={cn('grid content-start gap-2', className)}>
-            <Label htmlFor={id}>
+            <Label htmlFor={id} className="flex items-center gap-2">
+                {Icon && <Icon className="size-4 text-primary" aria-hidden="true" />}
                 {label}
                 {required && <RequiredMark />}
             </Label>

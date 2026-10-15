@@ -1,5 +1,6 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { HeartPulse, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
+import { BrandLogo } from '@/components/brand-logo';
 import { Button } from '@/components/ui/button';
 
 export function SiteHeader() {
@@ -9,9 +10,7 @@ export function SiteHeader() {
         <header className="border-b bg-card shadow-sm">
             <div className="mx-auto flex max-w-none sm:px-8 lg:px-16 xl:px-24 items-center justify-between gap-4 px-4 py-3">
                 <Link href="/" className="flex items-center gap-3 rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-xl sm:size-14 sm:rounded-2xl bg-primary text-white shadow-md sm:size-14">
-                        <HeartPulse className="size-6 sm:size-8" aria-hidden="true" />
-                    </span>
+                    <BrandLogo className="size-12 shrink-0 sm:size-16" />
                     <span className="flex flex-col">
                         <span className="text-base leading-tight font-semibold text-primary sm:text-2xl">
                             Health Recruitment Portal

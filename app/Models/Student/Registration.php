@@ -2,16 +2,18 @@
 
 namespace App\Models\Student;
 
-use Illuminate\Console\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Override;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Registration extends Model
+class Registration extends Authenticatable
 {
     use HasFactory;
+
     protected $table = 'student.registration';
+
     protected $fillable = [
+        'student_uuid',
         'registration_no',
         'full_name',
         'father_name',
@@ -38,5 +40,18 @@ class Registration extends Model
             'declaration' => 'boolean',
             'password' => 'hashed',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        // Every student gets a stable, non-guessable public identifier.
+        static::creating(function (self $student) {
+            $student->student_uuid ??= (string) \Illuminate\Support\Str::uuid();
+        });
+    }
+
+    public function profile(): HasOne
+    {
+        return $this->hasOne(Profile::class, 'student_id');
     }
 }

@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { NotificationItem } from '@/components/student/notification-item';
 import { SectionHeading } from '@/components/student/section-heading';
 import { Input } from '@/components/ui/input';
-import StudentLayout from '@/layouts/student-layout';
+import StudentAdaptiveLayout from '@/layouts/student-adaptive-layout';
 import type { NotificationEntry } from '@/types/student';
 
 export default function Notifications({ entries }: { entries: NotificationEntry[] }) {
@@ -51,4 +51,4 @@ export default function Notifications({ entries }: { entries: NotificationEntry[
     );
 }
 
-Notifications.layout = (page: ReactNode) => <StudentLayout>{page}</StudentLayout>;
+Notifications.layout = (page: ReactNode) => <StudentAdaptiveLayout>{page}</StudentAdaptiveLayout>;

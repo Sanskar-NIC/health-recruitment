@@ -4,7 +4,7 @@ import { Panel } from '@/components/student/panel';
 
 export function ApplicantLoginPanel() {
     return (
-        <Panel title="Applicant Login" icon={LogIn}>
+        <Panel title="Applicant Login" icon={LogIn} className="h-full">
             <LoginForm idPrefix="home-login" />
         </Panel>
     );

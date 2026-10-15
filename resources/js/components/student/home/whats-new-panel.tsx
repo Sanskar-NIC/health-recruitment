@@ -65,11 +65,11 @@ export function WhatsNewPanel({ items }: { items: NotificationItem[] }) {
             }
         >
             {reduceMotion ? (
-                <ScrollArea className="h-80">
+                <ScrollArea className="h-[32rem]">
                     <ul>{items.map((item) => <Row key={item.id} item={item} />)}</ul>
                 </ScrollArea>
             ) : (
-                <div className="ticker h-80 overflow-hidden" data-paused={paused}>
+                <div className="ticker h-[32rem] overflow-hidden" data-paused={paused}>
                     <ul className="animate-marquee-y">
                         {items.map((item) => <Row key={item.id} item={item} />)}
                         {items.map((item) => (

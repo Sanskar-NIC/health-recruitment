@@ -2,7 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { Construction } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import StudentLayout from '@/layouts/student-layout';
+import StudentAdaptiveLayout from '@/layouts/student-adaptive-layout';
 
 export default function ComingSoon({ title }: { title: string }) {
     return (
@@ -20,4 +20,4 @@ export default function ComingSoon({ title }: { title: string }) {
     );
 }
 
-ComingSoon.layout = (page: ReactNode) => <StudentLayout>{page}</StudentLayout>;
+ComingSoon.layout = (page: ReactNode) => <StudentAdaptiveLayout>{page}</StudentAdaptiveLayout>;

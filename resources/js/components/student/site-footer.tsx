@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { ArrowUp, Clock, Mail, MapPin, Phone } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { BrandLogo } from '@/components/brand-logo';
 
 const quickLinks = [
     ['Recruitments', '/recruitments'],
@@ -39,7 +40,10 @@ export function SiteFooter() {
         <footer className="bg-slate-900 text-slate-200">
             <div className="mx-auto grid max-w-none sm:px-8 lg:px-16 xl:px-24 gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
-                    <h2 className="mb-3 text-base font-semibold text-white">About</h2>
+                    <div className="mb-3 flex items-center gap-3">
+                        <span className="rounded-full bg-white p-1.5"><BrandLogo className="size-12" /></span>
+                        <h2 className="text-base font-semibold text-white">About</h2>
+                    </div>
                     <p className="text-sm leading-relaxed text-slate-300">
                         The Health Recruitment Portal is the official platform of the
                         Health &amp; Family Welfare Department, Government of Tripura,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Support\MockData;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -18,6 +19,16 @@ class DashboardController extends Controller
 
         return Inertia::render('student/dashboard', [
             'student' => $student,
+            // Applications/admit cards are not built yet, so they are reported as zero.
+            'stats' => [
+                'current' => count(array_filter(MockData::recruitments(), fn ($r) => in_array($r['status'], ['open', 'closing_soon'], true))),
+                'applied' => 0,
+                'admitCards' => 0,
+            ],
+            'recruitments' => array_values(array_filter(
+                MockData::recruitments(),
+                fn ($r) => in_array($r['status'], ['open', 'closing_soon'], true),
+            )),
         ]);
     }
 }

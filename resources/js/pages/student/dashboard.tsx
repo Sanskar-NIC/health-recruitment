@@ -1,146 +1,88 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { Calendar, CheckCircle, FileText, IdCard, LogOut, Mail, Phone, ShieldCheck, User } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { BriefcaseMedical, CalendarClock, CheckCircle2, ClipboardCheck, FileText, IdCard, TicketCheck, UserCog } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Panel } from '@/components/student/panel';
+import { StatusBadge } from '@/components/student/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import StudentLayout from '@/layouts/student-layout';
+import StudentPortalLayout from '@/layouts/student-portal-layout';
+import { cn } from '@/lib/utils';
+import type { Recruitment } from '@/types/student';
 
-interface StudentProps {
-    student: {
-        id: number;
-        registration_no: string;
-        full_name: string;
-        father_name: string;
-        mother_name: string;
-        dob: string;
-        gender: string;
-        category: string;
-        pwbd: string;
-        mobile: string;
-        email: string;
-        created_at: string;
-    };
+interface Props {
+    student: { registration_no: string; full_name: string; created_at: string };
+    stats: { current: number; applied: number; admitCards: number };
+    recruitments: Recruitment[];
+    studentProfile: { status: 'draft' | 'completed'; completed: number; total: number };
 }
 
-export default function Dashboard({ student }: StudentProps) {
-    const handleLogout = () => {
-        router.post('/logout');
-    };
-
+function StatCard({ title, value, hint, icon: Icon, href, tone }: { title: string; value: ReactNode; hint: string; icon: LucideIcon; href: string; tone: string }) {
     return (
-        <div className="mx-auto max-w-6xl px-4 py-8">
+        <Link href={href} className="group rounded-2xl border bg-card p-5 shadow-sm transition-shadow hover:shadow-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
+            <div className="flex items-start justify-between">
+                <div>
+                    <p className="text-sm font-medium text-muted-foreground">{title}</p>
+                    <p className="mt-2 text-3xl font-bold tracking-tight text-primary-deep">{value}</p>
+                </div>
+                <span className={cn('flex size-12 items-center justify-center rounded-xl', tone)}>
+                    <Icon className="size-6" aria-hidden="true" />
+                </span>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground group-hover:text-primary">{hint}</p>
+        </Link>
+    );
+}
+
+export default function Dashboard({ student, stats, recruitments }: Omit<Props, 'studentProfile'>) {
+    return (
+        <div className="grid gap-6 px-4 py-8 sm:px-8 lg:px-16 xl:px-24">
             <Head title="Applicant Dashboard" />
 
-            {/* Welcome Banner */}
-            <div className="mb-6 flex flex-col justify-between gap-4 rounded-xl border bg-card p-6 shadow-sm md:flex-row md:items-center">
+            <div className="flex flex-col justify-between gap-4 rounded-2xl border bg-card p-6 shadow-sm md:flex-row md:items-center">
                 <div>
-                    <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="border-primary bg-primary-tint text-primary font-mono font-semibold">
-                            {student.registration_no}
-                        </Badge>
-                        <span className="flex items-center gap-1 text-xs text-success font-medium">
-                            <CheckCircle className="size-3.5" /> Active Session
-                        </span>
-                    </div>
-                    <h1 className="mt-2 text-2xl font-bold tracking-tight text-primary-deep">
-                        Welcome, {student.full_name}
-                    </h1>
-                    <p className="text-sm text-muted-foreground">
-                        Registered on {new Date(student.created_at).toLocaleDateString()}
-                    </p>
+                    <Badge variant="outline" className="border-primary bg-primary-tint font-mono font-semibold text-primary">
+                        {student.registration_no}
+                    </Badge>
+                    <h1 className="mt-2 text-2xl font-bold tracking-tight text-primary-deep">Welcome, {student.full_name}</h1>
+                    <p className="text-sm text-muted-foreground">Registered on {new Date(student.created_at).toLocaleDateString()}</p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <Button asChild className="hover:bg-primary-hover">
-                        <Link href="/recruitments">
-                            <FileText className="mr-2 size-4" /> Browse Recruitments
-                        </Link>
-                    </Button>
-                    <Button variant="outline" onClick={handleLogout} className="border-destructive/30 text-destructive hover:bg-destructive/10">
-                        <LogOut className="mr-2 size-4" /> Logout
-                    </Button>
-                </div>
+                <Button asChild>
+                    <Link href="/student/profile"><UserCog className="mr-2 size-4" /> My Profile</Link>
+                </Button>
             </div>
 
-            {/* Profile Overview Panel */}
-            <Panel title="Applicant Profile Details" icon={IdCard}>
-                <div className="grid gap-6 md:grid-cols-2">
-                    <div className="space-y-4">
-                        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                            Personal Details
-                        </h3>
-                        <div className="space-y-2 rounded-lg border bg-muted/20 p-4 text-sm">
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Full Name:</span>
-                                <span className="font-medium">{student.full_name}</span>
-                            </div>
-                            <Separator />
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Father's Name:</span>
-                                <span className="font-medium">{student.father_name}</span>
-                            </div>
-                            <Separator />
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Mother's Name:</span>
-                                <span className="font-medium">{student.mother_name}</span>
-                            </div>
-                            <Separator />
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Date of Birth:</span>
-                                <span className="font-medium">{student.dob}</span>
-                            </div>
-                            <Separator />
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Gender / Category:</span>
-                                <span className="font-medium">{student.gender} ({student.category})</span>
-                            </div>
-                            <Separator />
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">PwBD Status:</span>
-                                <span className="font-medium uppercase">{student.pwbd}</span>
-                            </div>
-                        </div>
-                    </div>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <StatCard title="Current Recruitments" value={stats.current} hint="View open advertisements" icon={BriefcaseMedical} href="/recruitments" tone="bg-primary-tint text-primary" />
+                <StatCard title="Applied Recruitments" value={stats.applied} hint="Track your applications" icon={ClipboardCheck} href="/recruitments" tone="bg-emerald-100 text-emerald-700" />
+                <StatCard title="Admit Cards" value={stats.admitCards} hint="Download when released" icon={TicketCheck} href="/admit-card" tone="bg-amber-100 text-amber-700" />
+                <StatCard title="Application Status" value={stats.applied > 0 ? 'In progress' : 'No applications'} hint="Updates appear here after you apply" icon={CheckCircle2} href="/recruitments" tone="bg-sky-100 text-sky-700" />
+            </div>
 
-                    <div className="space-y-4">
-                        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                            Contact & Account Security
-                        </h3>
-                        <div className="space-y-2 rounded-lg border bg-muted/20 p-4 text-sm">
-                            <div className="flex items-center justify-between">
-                                <span className="flex items-center gap-2 text-muted-foreground">
-                                    <Phone className="size-4 text-primary" /> Mobile:
-                                </span>
-                                <span className="font-medium">{student.mobile}</span>
-                            </div>
-                            <Separator />
-                            <div className="flex items-center justify-between">
-                                <span className="flex items-center gap-2 text-muted-foreground">
-                                    <Mail className="size-4 text-primary" /> Email:
-                                </span>
-                                <span className="font-medium">{student.email}</span>
-                            </div>
-                            <Separator />
-                            <div className="flex items-center justify-between">
-                                <span className="flex items-center gap-2 text-muted-foreground">
-                                    <ShieldCheck className="size-4 text-success" /> Password:
-                                </span>
-                                <span className="font-medium text-success">Encrypted &amp; Protected</span>
-                            </div>
-                        </div>
-
-                        <div className="rounded-lg border border-primary/20 bg-primary-tint/30 p-4 text-sm">
-                            <h4 className="font-medium text-primary-deep">Application Status</h4>
-                            <p className="mt-1 text-xs text-muted-foreground">
-                                You can now select active recruitment notifications and submit your applications using your registration credentials.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <Panel title="Current Recruitments" icon={FileText} action={<Button asChild variant="secondary" size="sm"><Link href="/recruitments">View all</Link></Button>}>
+                {recruitments.length === 0 ? (
+                    <p className="py-6 text-center text-sm text-muted-foreground">No recruitments are open right now.</p>
+                ) : (
+                    <ul className="divide-y">
+                        {recruitments.slice(0, 5).map((r) => (
+                            <li key={r.id} className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex items-start gap-3">
+                                    <IdCard className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+                                    <div>
+                                        <p className="font-medium">{r.postName}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {r.advtNo} · {r.vacancies} posts · <CalendarClock className="inline size-3.5" aria-hidden="true" /> Last date {r.endDate}
+                                        </p>
+                                    </div>
+                                </div>
+                                <StatusBadge status={r.status} />
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </Panel>
         </div>
     );
 }
 
-Dashboard.layout = (page: ReactNode) => <StudentLayout>{page}</StudentLayout>;
+Dashboard.layout = (page: ReactNode) => <StudentPortalLayout>{page}</StudentPortalLayout>;

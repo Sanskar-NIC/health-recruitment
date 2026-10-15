@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Support\MockData;
+use App\Support\Student\ProfileOptions;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -36,20 +37,24 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $user = $request->user();
+        $user = $request->user('web');
 
         return [
             ...parent::share($request),
             'name' => config('app.name'),
-            'portal' => fn() => MockData::shared(),
+            'portal' => fn () => MockData::shared(),
             'auth' => [
                 'user' => $user,
                 'student' => $request->user('student'),
             ],
 
+            'studentProfile' => fn () => ($student = $request->user('student')) ? ProfileOptions::summary($student->profile) : null,
+
+            'profileNotice' => fn () => (bool) $request->session()->get('profile_notice', false),
+
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'currentTeam' => fn() => $user?->currentTeam ? $user->toUserTeam($user->currentTeam) : null,
-            'teams' => fn() => $user?->toUserTeams(includeCurrent: true) ?? [],
+            'currentTeam' => fn () => $user?->currentTeam ? $user->toUserTeam($user->currentTeam) : null,
+            'teams' => fn () => $user?->toUserTeams(includeCurrent: true) ?? [],
         ];
     }
 }
