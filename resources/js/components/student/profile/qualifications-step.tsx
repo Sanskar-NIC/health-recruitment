@@ -6,6 +6,12 @@ import { emptyQualification } from '@/lib/profile';
 import type { Qualification } from '@/lib/profile';
 
 const MAX_ROWS = 10;
+const SSC_TYPE = 'SSC/Madhyamik';
+const HSC_TYPE = 'HSC/Higher Secondary';
+const GENERAL_STREAM = 'General / All Subjects';
+
+/** SSC has one fixed stream, HSC picks from a list, every other type is typed in. */
+const streamMode = (type: string) => (type === SSC_TYPE ? 'fixed' : type === HSC_TYPE ? 'list' : 'text');
 
 export function QualificationsStep({ data, set, err, options, rules }: StepProps<Qualification[]>) {
     const update = (index: number, patch: Partial<Qualification>) =>
@@ -16,6 +22,11 @@ export function QualificationsStep({ data, set, err, options, rules }: StepProps
                 }
 
                 const next = { ...row, ...patch };
+
+                // The stream input changes shape with the type, so a value from another mode is dropped.
+                if (patch.type !== undefined && streamMode(patch.type) !== streamMode(row.type)) {
+                    next.stream = patch.type === SSC_TYPE ? GENERAL_STREAM : '';
+                }
 
                 // Percentage is derived for MARKS and entered by hand otherwise.
                 if (next.marks_type === 'MARKS') {
@@ -59,7 +70,11 @@ export function QualificationsStep({ data, set, err, options, rules }: StepProps
                         </legend>
                         <div className="grid gap-4 md:grid-cols-2">
                             <SelectField id={id('type')} label="Qualification Type" required value={q.type} onChange={(v) => update(i, { type: v })} options={options.qualificationTypes} error={e('type')} />
-                            <SelectField id={id('stream')} label="Branch/Stream" required value={q.stream} onChange={(v) => update(i, { stream: v })} options={options.streams} error={e('stream')} />
+                            {streamMode(q.type) === 'text' ? (
+                                <TextField id={id('stream')} label="Branch/Stream" required maxLength={100} value={q.stream} onChange={(v) => update(i, { stream: v })} error={e('stream')} />
+                            ) : (
+                                <SelectField id={id('stream')} label="Branch/Stream" required value={q.stream} onChange={(v) => update(i, { stream: v })} options={streamMode(q.type) === 'fixed' ? [GENERAL_STREAM] : options.streams} error={e('stream')} />
+                            )}
                             <SelectField id={id('result_status')} label="Result Status" required value={q.result_status} onChange={(v) => update(i, { result_status: v })} options={options.resultStatuses} error={e('result_status')} />
                             <TextField id={id('year')} label="Year of Passing" required inputMode="numeric" maxLength={4} value={q.year} onChange={(v) => update(i, { year: v.replace(/\D/g, '') })} error={e('year')} />
                             <SelectField id={id('marks_type')} label="Marks Type" required value={q.marks_type} onChange={(v) => update(i, { marks_type: v })} options={options.marksTypes} error={e('marks_type')} />

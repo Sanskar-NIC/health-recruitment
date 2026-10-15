@@ -52,10 +52,17 @@ class ProfileOptions
     ];
 
     public const QUALIFICATION_TYPES = [
-        'SSC/Madhyamik', 'HSC/Higher Secondary', 'Diploma', 'Graduation', 'Post Graduation', 'Other',
+        'SSC/Madhyamik', 'HSC/Higher Secondary', 'Diploma', 'Graduation', 'Post Graduation', 'PhD', 'Other',
     ];
 
     public const STREAMS = ['Science', 'Arts', 'Commerce', 'Other'];
+
+    /** The only stream offered for SSC/Madhyamik, which has no branch split. */
+    public const GENERAL_STREAM = 'General / All Subjects';
+
+    public const SSC_TYPE = 'SSC/Madhyamik';
+
+    public const HSC_TYPE = 'HSC/Higher Secondary';
 
     public const RESULT_STATUSES = ['PASSED', 'APPEARED / RESULT AWAITED'];
 

@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { BriefcaseMedical, ChevronDown, Headset, TriangleAlert, LayoutDashboard, LogOut, UserCog } from 'lucide-react';
+import { ChevronDown, CircleUserRound, House, LifeBuoy, LogOut, Stethoscope, TriangleAlert } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { BrandLogo } from '@/components/brand-logo';
@@ -11,9 +11,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { cn } from '@/lib/utils';
 
 const links = [
-    { href: '/student/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/student/profile', label: 'My Profile', icon: UserCog },
-    { href: '/recruitments', label: 'Recruitments', icon: BriefcaseMedical },
+    { href: '/student/dashboard', label: 'Dashboard', icon: House },
+    { href: '/student/profile', label: 'My Profile', icon: CircleUserRound },
+    { href: '/recruitments', label: 'Recruitments', icon: Stethoscope },
 ];
 
 /** Layout for pages that need a logged-in student (own header + nav). */
@@ -92,7 +92,7 @@ export default function StudentPortalLayout({ children }: { children: ReactNode 
                             onClick={() => setHelpOpen(true)}
                             className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         >
-                            <Headset className="size-4" aria-hidden="true" />
+                            <LifeBuoy className="size-4" aria-hidden="true" />
                             Helpdesk
                         </button>
                     </nav>
@@ -119,7 +119,7 @@ export default function StudentPortalLayout({ children }: { children: ReactNode 
                                 </DropdownMenuItem>
                             ))}
                             <DropdownMenuItem onSelect={() => setHelpOpen(true)} className="lg:hidden">
-                                <Headset className="size-4" /> Helpdesk
+                                <LifeBuoy className="size-4" /> Helpdesk
                             </DropdownMenuItem>
                             <DropdownMenuSeparator className="lg:hidden" />
                             <DropdownMenuItem disabled={leaving} onSelect={logout} className="text-destructive focus:text-destructive">

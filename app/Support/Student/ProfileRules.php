@@ -241,7 +241,6 @@ class ProfileRules
             'qualifications' => ['required', 'array', 'min:1', 'max:10'],
             'qualifications.*' => ['array'],
             'qualifications.*.type' => ['required', Rule::in(ProfileOptions::QUALIFICATION_TYPES)],
-            'qualifications.*.stream' => ['required', Rule::in(ProfileOptions::STREAMS)],
             'qualifications.*.result_status' => ['required', Rule::in(ProfileOptions::RESULT_STATUSES)],
             'qualifications.*.year' => ['required', 'integer', 'between:1950,'.((int) date('Y') + 1)],
             'qualifications.*.marks_type' => ['required', Rule::in(ProfileOptions::MARKS_TYPES)],
@@ -254,6 +253,13 @@ class ProfileRules
             $byMarks = $type === 'MARKS';
             $byPct = $type === 'PERCENTAGE';
 
+            $qType = $d['qualifications'][$i]['type'] ?? null;
+            // SSC has a single fixed stream, HSC picks from a list, everything else is free text.
+            $rules["qualifications.$i.stream"] = match ($qType) {
+                ProfileOptions::SSC_TYPE => ['required', Rule::in([ProfileOptions::GENERAL_STREAM])],
+                ProfileOptions::HSC_TYPE => ['required', Rule::in(ProfileOptions::STREAMS)],
+                default => ['required', 'string', 'max:100'],
+            };
             $rules["qualifications.$i.out_of"] = [Rule::requiredIf(! $byPct), 'numeric', 'gt:0', 'max:100000'];
             $rules["qualifications.$i.obtained"] = [Rule::requiredIf(! $byPct), 'numeric', 'gte:0', "lte:qualifications.$i.out_of"];
             $rules["qualifications.$i.percentage"] = [Rule::requiredIf(! $byMarks), 'numeric', 'between:0,100'];
