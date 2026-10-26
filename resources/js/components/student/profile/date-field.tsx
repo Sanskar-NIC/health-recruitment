@@ -15,20 +15,19 @@ interface DateFieldProps {
     onChange: (value: string) => void;
     required?: boolean;
     error?: string;
-    hint?: string;
     disabled?: boolean;
     /** Allow dates up to today only (default true). */
     pastOnly?: boolean;
 }
 
-export function DateField({ id, label, value, onChange, required, error, hint, disabled, pastOnly = true }: DateFieldProps) {
+export function DateField({ id, label, value, onChange, required, error, disabled, pastOnly = true }: DateFieldProps) {
     const [open, setOpen] = useState(false);
     const parsed = value ? parseISO(value) : undefined;
     const selected = parsed && isValid(parsed) ? parsed : undefined;
     const thisYear = new Date().getFullYear();
 
     return (
-        <FormField id={id} label={label} required={required} error={error} hint={hint}>
+        <FormField id={id} label={label} required={required} error={error}>
             {(aria) => (
                 <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>

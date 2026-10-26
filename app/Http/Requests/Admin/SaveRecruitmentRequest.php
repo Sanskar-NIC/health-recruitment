@@ -46,6 +46,13 @@ class SaveRecruitmentRequest extends FormRequest
         $existing = $this->recruitment();
         $strict = $this->isStrict();
         $req = $strict ? 'required' : 'nullable';
+        // Walk-in notices have no application window; the interview date closes them.
+        $walkIn = $this->input('basic.selection_mode') === 'interview' && $this->input('basic.apply_mode') === 'walk_in';
+        $appDate = $walkIn ? 'nullable' : $req;
+        $posts = (array) $this->input('posts', []);
+        // Contractual engagements have no reservation roster, so the age rules are looser.
+        $contractualOnly = $posts !== [] && collect($posts)->every(fn ($p) => ! empty($p['is_contractual']));
+        $interview = $strict && $this->input('basic.selection_mode') === 'interview' ? 'required' : 'nullable';
 
         $files = [
             'advertisement_pdf' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
@@ -54,8 +61,8 @@ class SaveRecruitmentRequest extends FormRequest
 
         $dates = [
             'dates' => ['nullable', 'array'],
-            'dates.app_start' => [$req, 'nullable', 'date'],
-            'dates.app_end' => [$req, 'nullable', 'date', 'after_or_equal:dates.app_start'],
+            'dates.app_start' => [$appDate, 'nullable', 'date'],
+            'dates.app_end' => [$appDate, 'nullable', 'date', 'after_or_equal:dates.app_start'],
             'dates.fee_last_date' => ['nullable', 'date'],
             'dates.correction_end' => ['nullable', 'date'],
             'dates.admit_card_date' => ['nullable', 'date'],
@@ -63,11 +70,22 @@ class SaveRecruitmentRequest extends FormRequest
             'dates.result_date' => ['nullable', 'date'],
         ];
 
-        // Once visible to candidates only the description, dates and attachments may change.
+        $interviewRules = [
+            'interview' => ['nullable', 'array'],
+            'interview.date' => [$interview, 'nullable', 'date'],
+            'interview.date_to' => ['nullable', 'date', 'after_or_equal:interview.date'],
+            'interview.time' => [$interview, 'nullable', 'date_format:H:i'],
+            'interview.venue' => [$interview, 'nullable', 'string', 'max:500'],
+            'interview.instructions' => ['nullable', 'string', 'max:3000'],
+            'interview.documents_to_carry' => ['nullable', 'string', 'max:3000'],
+        ];
+
+        // Once visible to candidates only the description, dates, interview details and attachments may change.
         if ($existing?->isLocked()) {
             return [
                 'basic.description' => ['nullable', 'string', 'max:5000'],
                 ...$dates,
+                ...$interviewRules,
                 ...$files,
             ];
         }
@@ -82,12 +100,21 @@ class SaveRecruitmentRequest extends FormRequest
             'basic.reference_no' => ['nullable', 'string', 'max:100'],
             'basic.notification_date' => [$req, 'nullable', 'date'],
             'basic.description' => ['nullable', 'string', 'max:5000'],
+            'basic.selection_mode' => ['required', Rule::in(['exam', 'interview'])],
+            'basic.apply_mode' => ['required', Rule::in(['online', 'walk_in'])],
 
             'posts' => [$strict ? 'required' : 'nullable', 'array', $strict ? 'min:1' : 'min:0'],
             'posts.*.name' => ['required', 'string', 'max:255'],
             'posts.*.code' => ['nullable', 'string', 'max:50'],
-            'posts.*.pay_level' => [$req, 'nullable', 'string', 'max:100'],
-            'posts.*.group' => [$req, 'nullable', Rule::in(RecruitmentOptions::GROUPS)],
+            'posts.*.monthly_salary' => [$req, 'nullable', 'integer', 'min:0', 'max:10000000'],
+            'posts.*.is_contractual' => ['nullable', 'boolean'],
+            'posts.*.minimum_qualification' => [$req, 'nullable', 'string', 'max:255'],
+            'posts.*.preferable_qualification' => ['nullable', 'string', 'max:500'],
+            'posts.*.age_max' => ['nullable', 'integer', 'min:14', 'max:80'],
+            'posts.*.experience_years' => ['nullable', 'numeric', 'min:0', 'max:50'],
+            'posts.*.reserved_for' => ['nullable', Rule::in(RecruitmentOptions::CATEGORIES)],
+            'posts.*.contract_duration' => ['nullable', 'integer', 'min:1'],
+            'posts.*.contract_unit' => ['nullable', Rule::in(['day', 'month', 'year'])],
             'posts.*.total_vacancies' => [$strict ? 'required' : 'nullable', 'integer', $strict ? 'min:1' : 'min:0', 'max:100000'],
             'posts.*.category_breakup' => ['nullable', 'array'],
             'posts.*.category_breakup.*' => ['nullable', 'integer', 'min:0'],
@@ -103,8 +130,8 @@ class SaveRecruitmentRequest extends FormRequest
 
             'eligibility' => ['nullable', 'array'],
             'eligibility.age_min' => [$req, 'nullable', 'integer', 'min:14', 'max:80'],
-            'eligibility.age_max' => [$req, 'nullable', 'integer', 'min:14', 'max:80', 'gte:eligibility.age_min'],
-            'eligibility.age_cutoff' => [$req, 'nullable', 'date'],
+            'eligibility.age_max' => [$contractualOnly ? 'nullable' : $req, 'nullable', 'integer', 'min:14', 'max:80', 'gte:eligibility.age_min'],
+            'eligibility.age_cutoff' => [$contractualOnly ? ($strict ? 'required_with:eligibility.age_max' : 'nullable') : $req, 'nullable', 'date'],
             'eligibility.relaxations' => ['nullable', 'array'],
             'eligibility.relaxations.*' => ['nullable', 'integer', 'min:0', 'max:30'],
             'eligibility.qualifications' => [$strict ? 'required' : 'nullable', 'array', $strict ? 'min:1' : 'min:0'],
@@ -128,6 +155,7 @@ class SaveRecruitmentRequest extends FormRequest
             'documents.signature.max_kb' => ['nullable', 'integer', 'min:1', 'gte:documents.signature.min_kb'],
 
             ...$dates,
+            ...$interviewRules,
             ...$files,
         ];
     }
@@ -156,6 +184,11 @@ class SaveRecruitmentRequest extends FormRequest
 
             if ($this->isStrict()) {
                 foreach ((array) $this->input('posts', []) as $i => $post) {
+                    // Contractual engagements have no reservation roster.
+                    if (! empty($post['is_contractual'])) {
+                        continue;
+                    }
+
                     $total = (int) ($post['total_vacancies'] ?? 0);
                     $sum = array_sum(array_map('intval', (array) ($post['category_breakup'] ?? [])));
 

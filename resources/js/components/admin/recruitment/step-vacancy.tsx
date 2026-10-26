@@ -17,6 +17,20 @@ export function VacancyStep({ form, update, errors, options }: StepProps) {
                 const districtSum = sum(post.district_breakup.map((d) => d.vacancies));
                 const usedDistricts = post.district_breakup.map((d) => d.district);
 
+                if (post.is_contractual) {
+                    return (
+                        <div key={i} className="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-muted/30 p-5">
+                            <h3 className="text-sm font-semibold text-primary-deep">{post.name || `Post ${i + 1}`} · {total} vacancies</h3>
+                            <Field label="Reserved for (optional)" className="w-48">
+                                <NativeSelect value={post.reserved_for} onChange={(e) => update((d) => { d.posts[i].reserved_for = e.target.value; })}>
+                                    <option value="">Unreserved / as notified</option>
+                                    {options.categories.map((c) => <option key={c} value={c}>{c}</option>)}
+                                </NativeSelect>
+                            </Field>
+                        </div>
+                    );
+                }
+
                 return (
                     <div key={i} className="grid gap-5 rounded-lg border bg-muted/30 p-5">
                         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -61,7 +75,7 @@ export function VacancyStep({ form, update, errors, options }: StepProps) {
                             {errors[`posts.${i}.horizontal`] && <p role="alert" className="mt-2 text-xs font-medium text-destructive">{errors[`posts.${i}.horizontal`]}</p>}
                         </div>
 
-                        <Field label="Posts reserved for persons with disabilities (PwBD)" hint="Overall number within the total, optional" className="max-w-sm">
+                        <Field label="Posts reserved for persons with disabilities (PwBD)" className="max-w-sm">
                             <Input type="number" min={0} value={post.horizontal.pwbd} onChange={(e) => update((d) => { d.posts[i].horizontal.pwbd = e.target.value; })} />
                         </Field>
 

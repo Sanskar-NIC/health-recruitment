@@ -18,7 +18,7 @@ export function eligibilitySummary(form: RecruitmentForm): string {
             .map(([k, v]) => `${k} +${v}`)
             .join(', ');
 
-        parts.push(`Age ${e.age_min || '?'}–${e.age_max || '?'}${e.age_cutoff ? ` as on ${fmt(e.age_cutoff)}` : ''}${relax ? ` (${relax})` : ''}.`);
+        parts.push(`Age ${e.age_max ? `${e.age_min || '?'}–${e.age_max}` : `${e.age_min || '?'} and above`}${e.age_cutoff ? ` as on ${fmt(e.age_cutoff)}` : ''}${relax ? ` (${relax})` : ''}.`);
     }
 
     const quals = e.qualifications.filter((q) => q.name);

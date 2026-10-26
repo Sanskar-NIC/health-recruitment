@@ -59,8 +59,7 @@ export function RecruitmentReview({ form, options, advertisementUrl, syllabusUrl
                         <thead>
                             <tr className="border-b text-left text-muted-foreground">
                                 <th className="py-2 pr-3 font-medium">Post</th>
-                                <th className="py-2 pr-3 font-medium">Pay level</th>
-                                <th className="py-2 pr-3 font-medium">Group</th>
+                                <th className="py-2 pr-3 font-medium">Monthly salary</th>
                                 {options.categories.map((c) => <th key={c} className="py-2 pr-3 text-right font-medium">{c}</th>)}
                                 <th className="py-2 text-right font-medium">Total</th>
                             </tr>
@@ -69,9 +68,10 @@ export function RecruitmentReview({ form, options, advertisementUrl, syllabusUrl
                             {form.posts.map((p, i) => (
                                 <tr key={i} className="border-b last:border-0">
                                     <td className="py-2 pr-3 font-medium">{p.name}{p.code && <span className="ml-1 text-muted-foreground">({p.code})</span>}</td>
-                                    <td className="py-2 pr-3">{p.pay_level || '—'}</td>
-                                    <td className="py-2 pr-3">{p.group || '—'}</td>
-                                    {options.categories.map((c) => {
+                                    <td className="py-2 pr-3">{p.monthly_salary ? `₹${Number(p.monthly_salary).toLocaleString('en-IN')}` : '—'}</td>
+                                    {p.is_contractual ? (
+                                        <td colSpan={options.categories.length} className="py-2 pr-3 text-center text-muted-foreground">Contractual{p.contract_duration ? ` · ${p.contract_duration} ${p.contract_unit}${Number(p.contract_duration) > 1 ? 's' : ''}` : ''}{p.reserved_for ? ` · ${p.reserved_for}` : ''}</td>
+                                    ) : options.categories.map((c) => {
                                         const w = p.horizontal.women[c];
                                         const x = p.horizontal.ex_serviceman[c];
 
@@ -109,13 +109,25 @@ export function RecruitmentReview({ form, options, advertisementUrl, syllabusUrl
 
             <Block title="Important dates">
                 <dl className="divide-y">
-                    <Row label="Application start" value={fmtDate(form.dates.app_start)} />
-                    <Row label="Application end" value={fmtDate(form.dates.app_end)} />
-                    <Row label="Fee last date" value={fmtDate(form.dates.fee_last_date)} />
-                    <Row label="Correction window ends" value={fmtDate(form.dates.correction_end)} />
-                    <Row label="Admit card release" value={fmtDate(form.dates.admit_card_date)} />
-                    <Row label="Exam date" value={fmtDate(form.dates.exam_date)} />
-                    <Row label="Tentative result" value={fmtDate(form.dates.result_date)} />
+                    {form.basic.selection_mode === 'interview' ? (
+                        <>
+                            <Row label="Process" value={form.basic.apply_mode === 'walk_in' ? 'Interview only · walk-in' : 'Interview only · apply online'} />
+                            {form.basic.apply_mode === 'online' && <Row label="Application start" value={fmtDate(form.dates.app_start)} />}
+                            {form.basic.apply_mode === 'online' && <Row label="Application end" value={fmtDate(form.dates.app_end)} />}
+                            <Row label="Interview" value={`${fmtDate(form.interview.date)}${form.interview.date_to && form.interview.date_to !== form.interview.date ? ` to ${fmtDate(form.interview.date_to)}` : ''}${form.interview.time ? `, ${form.interview.time}` : ''}`} />
+                            <Row label="Venue" value={form.interview.venue || '—'} />
+                        </>
+                    ) : (
+                        <>
+                            <Row label="Application start" value={fmtDate(form.dates.app_start)} />
+                            <Row label="Application end" value={fmtDate(form.dates.app_end)} />
+                            <Row label="Fee last date" value={fmtDate(form.dates.fee_last_date)} />
+                            <Row label="Correction window ends" value={fmtDate(form.dates.correction_end)} />
+                            <Row label="Admit card release" value={fmtDate(form.dates.admit_card_date)} />
+                            <Row label="Exam date" value={fmtDate(form.dates.exam_date)} />
+                            <Row label="Tentative result" value={fmtDate(form.dates.result_date)} />
+                        </>
+                    )}
                 </dl>
             </Block>
 

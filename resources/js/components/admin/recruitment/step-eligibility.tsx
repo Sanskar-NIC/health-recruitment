@@ -4,6 +4,7 @@ import { eligibilitySummary, testEligibility } from '@/components/admin/recruitm
 import type { EligibilityCase } from '@/components/admin/recruitment/eligibility';
 import { Field, NativeSelect, StepCard } from '@/components/admin/recruitment/ui';
 import type { StepProps } from '@/components/admin/recruitment/ui';
+import { isContractualOnly } from '@/components/admin/recruitment/types';
 import type { RecruitmentForm } from '@/components/admin/recruitment/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -75,6 +76,7 @@ function TestEligibility({ form, options }: Pick<StepProps, 'form' | 'options'>)
 /** Step 4 */
 export function EligibilityStep({ form, update, errors, options }: StepProps) {
     const e = form.eligibility;
+    const contractual = isContractualOnly(form);
     const err = (k: string) => errors[`eligibility.${k}`];
     const set = (k: 'age_min' | 'age_max' | 'age_cutoff' | 'council' | 'min_experience_years') => (ev: { target: { value: string } }) => update((d) => { d.eligibility[k] = ev.target.value; });
 
@@ -84,8 +86,8 @@ export function EligibilityStep({ form, update, errors, options }: StepProps) {
 
             <div className="grid gap-6 sm:grid-cols-3">
                 <Field label="Minimum age" required error={err('age_min')}><Input type="number" min={14} value={e.age_min} onChange={set('age_min')} /></Field>
-                <Field label="Maximum age" required error={err('age_max')}><Input type="number" min={14} value={e.age_max} onChange={set('age_max')} aria-invalid={Boolean(err('age_max'))} /></Field>
-                <Field label="Age cut-off date" required error={err('age_cutoff')}><Input type="date" value={e.age_cutoff} onChange={set('age_cutoff')} /></Field>
+                <Field label="Maximum age" required={!contractual} error={err('age_max')}><Input type="number" min={14} value={e.age_max} onChange={set('age_max')} aria-invalid={Boolean(err('age_max'))} /></Field>
+                <Field label="Age cut-off date" required={!contractual || Boolean(e.age_max)} error={err('age_cutoff')}><Input type="date" value={e.age_cutoff} onChange={set('age_cutoff')} /></Field>
             </div>
 
             <div>
@@ -111,7 +113,7 @@ export function EligibilityStep({ form, update, errors, options }: StepProps) {
                             <option value="">Select qualification</option>
                             {options.qualifications.map((x) => <option key={x}>{x}</option>)}
                         </NativeSelect>
-                        <Input className="max-w-36" type="number" min={0} max={100} placeholder="Min %" value={q.min_percent} onChange={(ev) => update((d) => { d.eligibility.qualifications[i].min_percent = ev.target.value; })} />
+                        <Input className="max-w-36" type="number" min={0} max={100} value={q.min_percent} onChange={(ev) => update((d) => { d.eligibility.qualifications[i].min_percent = ev.target.value; })} />
                         <Button type="button" variant="ghost" size="icon" aria-label="Remove qualification" onClick={() => update((d) => { d.eligibility.qualifications.splice(i, 1); })}><Trash2 className="text-destructive" /></Button>
                     </div>
                 ))}
@@ -138,7 +140,7 @@ export function EligibilityStep({ form, update, errors, options }: StepProps) {
                 <Label htmlFor="prtc" className="font-normal">Domicile: only PRTC (Permanent Resident Certificate) holders can apply</Label>
             </div>
 
-            <TestEligibility form={form} options={options} />
+            {!contractual && <TestEligibility form={form} options={options} />}
         </StepCard>
     );
 }

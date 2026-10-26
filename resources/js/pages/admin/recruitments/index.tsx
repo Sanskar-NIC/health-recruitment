@@ -84,7 +84,7 @@ export default function RecruitmentsIndex({ recruitments, meta, filters, years }
                         <TableRow>
                             <TableHead>Advt. No.</TableHead>
                             <TableHead>Title</TableHead>
-                            <TableHead className="text-right">Posts</TableHead>
+                            <TableHead className="text-right">Post types</TableHead>
                             <TableHead className="text-right">Vacancies</TableHead>
                             <TableHead>Application period</TableHead>
                             <TableHead>Status</TableHead>

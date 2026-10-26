@@ -2,6 +2,7 @@
 
 namespace App\Support\Admin;
 
+use App\Models\Admin\Post;
 use App\Support\Student\ProfileOptions;
 
 /**
@@ -13,8 +14,6 @@ class RecruitmentOptions
     public const CATEGORIES = ['UR', 'SC', 'ST', 'OBC', 'EWS'];
 
     public const HORIZONTAL = ['pwbd' => 'PwBD', 'ex_serviceman' => 'Ex-Serviceman', 'women' => 'Women'];
-
-    public const GROUPS = ['A', 'B', 'C', 'D'];
 
     public const RELAXATIONS = ['SC', 'ST', 'OBC', 'EWS', 'PwBD', 'ExServiceman'];
 
@@ -48,13 +47,14 @@ class RecruitmentOptions
         return [
             'categories' => self::CATEGORIES,
             'horizontal' => self::HORIZONTAL,
-            'groups' => self::GROUPS,
             'relaxations' => self::RELAXATIONS,
             'feeCategories' => self::FEE_CATEGORIES,
             'qualifications' => self::QUALIFICATIONS,
             'councils' => self::COUNCILS,
             'documents' => self::DOCUMENTS,
             'districts' => ProfileOptions::DISTRICTS,
+            'posts' => Post::query()->where('is_active', true)->orderBy('name')
+                ->get(['name', 'code', 'is_contractual', 'minimum_qualification', 'preferable_qualification', 'experience_required', 'experience_years'])->values(),
         ];
     }
 }

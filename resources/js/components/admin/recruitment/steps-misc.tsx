@@ -1,5 +1,5 @@
 import { FileText } from 'lucide-react';
-import { Field, StepCard } from '@/components/admin/recruitment/ui';
+import { Field, StepCard, Textarea } from '@/components/admin/recruitment/ui';
 import type { StepProps } from '@/components/admin/recruitment/ui';
 import { Input } from '@/components/ui/input';
 
@@ -57,15 +57,26 @@ export function DocumentsStep({ form, update, errors, options }: StepProps) {
 
 /** Step 7 */
 export function DatesStep({ form, update, errors }: StepProps) {
-    const rows: { key: keyof typeof form.dates; label: string; required?: boolean }[] = [
-        { key: 'app_start', label: 'Application start', required: true },
-        { key: 'app_end', label: 'Application end (last date)', required: true },
-        { key: 'fee_last_date', label: 'Fee last date' },
-        { key: 'correction_end', label: 'Correction window ends' },
-        { key: 'admit_card_date', label: 'Admit card release' },
-        { key: 'exam_date', label: 'Exam date' },
-        { key: 'result_date', label: 'Tentative result date' },
-    ];
+    const interview = form.basic.selection_mode === 'interview';
+    const walkIn = interview && form.basic.apply_mode === 'walk_in';
+    const rows: { key: keyof typeof form.dates; label: string; required?: boolean }[] = interview
+        ? walkIn
+            ? []
+            : [
+                  { key: 'app_start', label: 'Application start', required: true },
+                  { key: 'app_end', label: 'Application end (last date)', required: true },
+                  { key: 'result_date', label: 'Tentative result date' },
+              ]
+        : [
+              { key: 'app_start', label: 'Application start', required: true },
+              { key: 'app_end', label: 'Application end (last date)', required: true },
+              { key: 'fee_last_date', label: 'Fee last date' },
+              { key: 'correction_end', label: 'Correction window ends' },
+              { key: 'admit_card_date', label: 'Admit card release' },
+              { key: 'exam_date', label: 'Exam date' },
+              { key: 'result_date', label: 'Tentative result date' },
+          ];
+    const setIv = (key: keyof typeof form.interview) => (e: { target: { value: string } }) => update((d) => { d.interview[key] = e.target.value; });
 
     return (
         <StepCard title="Important Dates" description="Shown on the public website as the recruitment timeline.">
@@ -76,6 +87,29 @@ export function DatesStep({ form, update, errors }: StepProps) {
                     </Field>
                 ))}
             </div>
+            {interview && (
+                <div className="grid gap-6 rounded-lg border bg-muted/30 p-5 sm:grid-cols-2">
+                    <h3 className="text-sm font-semibold text-primary-deep sm:col-span-2">Interview details{walkIn && ' (shown to candidates as the notice)'}</h3>
+                    <Field label="Interview start date" required error={errors['interview.date']}>
+                        <Input type="date" value={form.interview.date} onChange={setIv('date')} aria-invalid={Boolean(errors['interview.date'])} />
+                    </Field>
+                    <Field label="Interview end date (if more than one day)" error={errors['interview.date_to']}>
+                        <Input type="date" min={form.interview.date || undefined} value={form.interview.date_to} onChange={setIv('date_to')} aria-invalid={Boolean(errors['interview.date_to'])} />
+                    </Field>
+                    <Field label="Reporting time" required error={errors['interview.time']}>
+                        <Input type="time" value={form.interview.time} onChange={setIv('time')} aria-invalid={Boolean(errors['interview.time'])} />
+                    </Field>
+                    <Field label="Venue" required error={errors['interview.venue']} className="sm:col-span-2">
+                        <Input value={form.interview.venue} onChange={setIv('venue')} aria-invalid={Boolean(errors['interview.venue'])} />
+                    </Field>
+                    <Field label="Documents to carry" error={errors['interview.documents_to_carry']} className="sm:col-span-2">
+                        <Textarea value={form.interview.documents_to_carry} onChange={setIv('documents_to_carry')} />
+                    </Field>
+                    <Field label="Reporting instructions" error={errors['interview.instructions']} className="sm:col-span-2">
+                        <Textarea value={form.interview.instructions} onChange={setIv('instructions')} />
+                    </Field>
+                </div>
+            )}
         </StepCard>
     );
 }
@@ -91,7 +125,7 @@ interface AttachmentProps {
 
 function PdfField({ label, file, onChange, existingUrl, error, required }: { label: string; file: File | null; onChange: (f: File | null) => void; existingUrl: string | null; error?: string; required?: boolean }) {
     return (
-        <Field label={label} required={required} error={error} hint="PDF, up to 10 MB">
+        <Field label={label} required={required} error={error}>
             <input
                 type="file"
                 accept="application/pdf"

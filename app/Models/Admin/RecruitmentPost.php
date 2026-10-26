@@ -17,6 +17,7 @@ class RecruitmentPost extends Model
             'category_breakup' => 'array',
             'horizontal' => 'array',
             'district_breakup' => 'array',
+            'is_contractual' => 'boolean',
         ];
     }
 

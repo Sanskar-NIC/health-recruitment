@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { CalendarClock, CalendarX, Download, GraduationCap, IndianRupee, Users } from 'lucide-react';
+import { CalendarClock, CalendarX, Download, GraduationCap, IndianRupee, MapPin, UserCheck, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/animate-ui/components/radix/tooltip';
 import { NewBadge } from '@/components/student/new-badge';
@@ -19,12 +19,45 @@ function InfoRow({ icon: Icon, label, children, className }: { icon: LucideIcon;
     );
 }
 
+/** Interview-only engagements show when and where to report instead of an application deadline. */
+function InterviewInfo({ item }: { item: Recruitment }) {
+    const iv = item.interview;
+
+    if (!iv) {
+        return null;
+    }
+
+    return (
+        <>
+            <InfoRow icon={UserCheck} label="Interview">
+                Interview: {iv.date ? formatDate(iv.date) : 'To be announced'}{iv.dateTo && iv.dateTo !== iv.date ? ` to ${formatDate(iv.dateTo)}` : ''}{iv.time ? `, ${formatTime(iv.time)}` : ''}
+            </InfoRow>
+            {iv.venue && <InfoRow icon={MapPin} label="Venue">{iv.venue}</InfoRow>}
+        </>
+    );
+}
+
+function formatTime(hhmm: string): string {
+    const [h, m] = hhmm.split(':').map(Number);
+
+    return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
+}
+
+function ModeBadge({ item }: { item: Recruitment }) {
+    if (item.selectionMode !== 'interview') {
+        return null;
+    }
+
+    return <span className="rounded-md bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-800">{item.applyMode === 'walk_in' ? 'Walk-in interview' : 'Interview'}</span>;
+}
+
 export function RecruitmentCard({ item }: { item: Recruitment }) {
     return (
         <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/70 bg-card p-6 shadow-[0_2px_12px_-4px_rgb(15_23_42/0.12)] transition duration-200 motion-safe:hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_12px_28px_-8px_rgb(14_116_144/0.35)]">
             <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">{item.advtNo}</span>
                 <StatusBadge status={item.status} />
+                <ModeBadge item={item} />
                 {item.isNew && <NewBadge />}
             </div>
             <h3 className="mt-3 text-xl font-semibold leading-snug text-foreground">{item.postName}</h3>
@@ -34,14 +67,17 @@ export function RecruitmentCard({ item }: { item: Recruitment }) {
                 <InfoRow icon={Users} label="Vacancies">{item.vacancies} vacancies</InfoRow>
                 <InfoRow icon={GraduationCap} label="Qualification">{item.qualification}</InfoRow>
                 <InfoRow icon={CalendarClock} label="Age limit">{item.ageLimit}</InfoRow>
-                <InfoRow icon={IndianRupee} label="Pay scale">{item.payScale}</InfoRow>
-                <InfoRow
-                    icon={CalendarX}
-                    label="Last date"
-                    className={cn(item.status === 'closing_soon' && 'font-medium text-destructive')}
-                >
-                    Last date: {formatDate(item.endDate)}
-                </InfoRow>
+                <InfoRow icon={IndianRupee} label="Monthly salary">{item.payScale}</InfoRow>
+                {item.interview ? <InterviewInfo item={item} /> : null}
+                {item.applyMode !== 'walk_in' && (
+                    <InfoRow
+                        icon={CalendarX}
+                        label="Last date"
+                        className={cn(item.status === 'closing_soon' && 'font-medium text-destructive')}
+                    >
+                        Last date: {formatDate(item.endDate)}
+                    </InfoRow>
+                )}
             </dl>
 
             <Actions item={item} className="mt-auto pt-5" />
@@ -57,6 +93,7 @@ export function RecruitmentRow({ item }: { item: Recruitment }) {
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">{item.advtNo}</span>
                     <StatusBadge status={item.status} />
+                    <ModeBadge item={item} />
                     {item.isNew && <NewBadge />}
                 </div>
                 <h3 className="mt-2 text-lg font-semibold leading-snug text-foreground">{item.postName}</h3>
@@ -67,10 +104,13 @@ export function RecruitmentRow({ item }: { item: Recruitment }) {
                 <InfoRow icon={Users} label="Vacancies">{item.vacancies} vacancies</InfoRow>
                 <InfoRow icon={CalendarClock} label="Age limit">{item.ageLimit}</InfoRow>
                 <InfoRow icon={GraduationCap} label="Qualification">{item.qualification}</InfoRow>
-                <InfoRow icon={IndianRupee} label="Pay scale">{item.payScale}</InfoRow>
-                <InfoRow icon={CalendarX} label="Last date" className={cn(item.status === 'closing_soon' && 'font-medium text-destructive')}>
-                    Last date: {formatDate(item.endDate)}
-                </InfoRow>
+                <InfoRow icon={IndianRupee} label="Monthly salary">{item.payScale}</InfoRow>
+                {item.interview ? <InterviewInfo item={item} /> : null}
+                {item.applyMode !== 'walk_in' && (
+                    <InfoRow icon={CalendarX} label="Last date" className={cn(item.status === 'closing_soon' && 'font-medium text-destructive')}>
+                        Last date: {formatDate(item.endDate)}
+                    </InfoRow>
+                )}
             </dl>
 
             <Actions item={item} className="lg:w-80 lg:shrink-0" />
@@ -87,7 +127,10 @@ function Actions({ item, className }: { item: Recruitment; className?: string })
                     View Advertisement
                 </a>
             </Button>
-            {item.status === 'upcoming' && (
+            {item.applyMode === 'walk_in' && (item.status === 'open' || item.status === 'closing_soon') && (
+                <p className="flex h-11 flex-1 items-center justify-center rounded-xl bg-violet-50 px-3 text-center text-sm font-medium text-violet-800">No application needed. Report in person.</p>
+            )}
+            {item.applyMode !== 'walk_in' && item.status === 'upcoming' && (
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <span tabIndex={0} className="inline-flex flex-1 rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
@@ -99,7 +142,7 @@ function Actions({ item, className }: { item: Recruitment; className?: string })
                     <TooltipContent>Applications not open yet</TooltipContent>
                 </Tooltip>
             )}
-            {(item.status === 'open' || item.status === 'closing_soon') && (
+            {item.applyMode !== 'walk_in' && (item.status === 'open' || item.status === 'closing_soon') && (
                 <Button asChild className="h-11 flex-1 rounded-xl hover:bg-primary-hover">
                     <Link href="/login">Apply Now</Link>
                 </Button>

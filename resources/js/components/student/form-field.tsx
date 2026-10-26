@@ -16,14 +16,13 @@ interface FormFieldProps {
     label: string;
     required?: boolean;
     error?: string;
-    hint?: ReactNode;
     icon?: LucideIcon;
     className?: string;
     children: (aria: FieldAria) => ReactNode;
 }
 
-export function FormField({ id, label, required, error, hint, icon: Icon, className, children }: FormFieldProps) {
-    const describedBy = [error ? `${id}-error` : null, hint ? `${id}-hint` : null].filter(Boolean).join(' ');
+export function FormField({ id, label, required, error, icon: Icon, className, children }: FormFieldProps) {
+    const describedBy = [error ? `${id}-error` : null].filter(Boolean).join(' ');
 
     return (
         <div className={cn('grid content-start gap-2', className)}>
@@ -37,11 +36,6 @@ export function FormField({ id, label, required, error, hint, icon: Icon, classN
                 'aria-invalid': Boolean(error),
                 'aria-describedby': describedBy || undefined,
             })}
-            {hint && (
-                <p id={`${id}-hint`} className="text-xs text-muted-foreground">
-                    {hint}
-                </p>
-            )}
             {error && <FieldError id={`${id}-error`} message={error} />}
         </div>
     );

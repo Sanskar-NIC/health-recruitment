@@ -39,6 +39,7 @@ class Recruitment extends Model
             'eligibility' => 'array',
             'fees' => 'array',
             'documents' => 'array',
+            'interview' => 'array',
         ];
     }
 
@@ -92,6 +93,16 @@ class Recruitment extends Model
         }
 
         return 'open';
+    }
+
+    public function isInterview(): bool
+    {
+        return $this->selection_mode === 'interview';
+    }
+
+    public function isWalkIn(): bool
+    {
+        return $this->isInterview() && $this->apply_mode === 'walk_in';
     }
 
     public function totalVacancies(): int

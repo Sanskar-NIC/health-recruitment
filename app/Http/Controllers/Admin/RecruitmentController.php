@@ -122,12 +122,12 @@ class RecruitmentController extends Controller
             $copyNo = $recruitment->advt_no.'-COPY'.$n;
         }
 
-        $copy = $recruitment->replicate(['status', 'publish_at', 'published_at', 'closed_at', 'status_reason', 'advertisement_pdf', 'syllabus_pdf', 'app_start', 'app_end', 'fee_last_date', 'correction_end', 'admit_card_date', 'exam_date', 'result_date']);
+        $copy = $recruitment->replicate(['status', 'publish_at', 'published_at', 'closed_at', 'status_reason', 'advertisement_pdf', 'syllabus_pdf', 'app_start', 'app_end', 'fee_last_date', 'correction_end', 'admit_card_date', 'exam_date', 'result_date', 'interview']);
         $copy->fill(['advt_no' => $copyNo, 'status' => Recruitment::DRAFT, 'created_by' => $request->user('admin')->id]);
         $copy->save();
 
         foreach ($recruitment->posts as $post) {
-            $copy->posts()->create($post->only(['name', 'code', 'pay_level', 'group', 'total_vacancies', 'category_breakup', 'horizontal', 'district_breakup', 'sort']));
+            $copy->posts()->create($post->only(['name', 'code', 'monthly_salary', 'is_contractual', 'contract_duration', 'contract_unit', 'minimum_qualification', 'preferable_qualification', 'age_max', 'experience_years', 'reserved_for', 'total_vacancies', 'category_breakup', 'horizontal', 'district_breakup', 'sort']));
         }
 
         $this->log($copy, 'created', $request, null, ['duplicated_from' => $recruitment->advt_no]);

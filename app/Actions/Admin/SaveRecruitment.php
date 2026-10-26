@@ -22,7 +22,7 @@ class SaveRecruitment
             $isNew = $recruitment === null;
             $recruitment ??= new Recruitment(['created_by' => $adminId]);
             $locked = ! $isNew && $recruitment->isLocked();
-            $before = $recruitment->only(['description', ...self::DATE_FIELDS, 'advertisement_pdf', 'syllabus_pdf']);
+            $before = $this->snapshot($recruitment);
 
             $recruitment->updated_by = $adminId;
             $recruitment->description = Arr::get($data, 'basic.description');
@@ -30,6 +30,9 @@ class SaveRecruitment
             foreach (self::DATE_FIELDS as $field) {
                 $recruitment->{$field} = Arr::get($data, "dates.$field") ?: null;
             }
+
+            // Interview details stay editable after publishing (venues and dates get rescheduled).
+            $recruitment->interview = $this->interviewDetails($data);
 
             if ($advertisement) {
                 $this->deleteFile($recruitment->advertisement_pdf);
@@ -48,12 +51,20 @@ class SaveRecruitment
                     'directorate' => Arr::get($data, 'basic.directorate'),
                     'reference_no' => Arr::get($data, 'basic.reference_no'),
                     'notification_date' => Arr::get($data, 'basic.notification_date') ?: null,
+                    'selection_mode' => Arr::get($data, 'basic.selection_mode', 'exam'),
+                    'apply_mode' => Arr::get($data, 'basic.selection_mode') === 'interview' ? Arr::get($data, 'basic.apply_mode', 'online') : 'online',
                     'eligibility' => $data['eligibility'] ?? null,
                     'fees' => $data['fees'] ?? null,
                     'documents' => $data['documents'] ?? null,
                 ]);
 
                 $this->applyStatus($recruitment, $data['action'], $data['publish_at'] ?? null);
+            }
+
+            if ($recruitment->isWalkIn()) {
+                // No application window: the notice stays open until the interview day.
+                $recruitment->app_start = null;
+                $recruitment->app_end = $recruitment->interview['date_to'] ?? $recruitment->interview['date'] ?? null;
             }
 
             $recruitment->save();
@@ -66,6 +77,23 @@ class SaveRecruitment
 
             return $recruitment;
         });
+    }
+
+    /** @return array<string, string> */
+    private function snapshot(Recruitment $recruitment): array
+    {
+        return array_map(
+            fn ($v) => is_array($v) ? json_encode($v) : (string) $v,
+            $recruitment->only(['description', ...self::DATE_FIELDS, 'interview', 'advertisement_pdf', 'syllabus_pdf']),
+        );
+    }
+
+    /** @return array<string, mixed>|null */
+    private function interviewDetails(array $data): ?array
+    {
+        $interview = array_filter((array) ($data['interview'] ?? []), fn ($v) => $v !== null && $v !== '');
+
+        return Arr::get($data, 'basic.selection_mode') === 'interview' && $interview ? $interview : null;
     }
 
     private function applyStatus(Recruitment $recruitment, string $action, ?string $publishAt): void
@@ -86,8 +114,15 @@ class SaveRecruitment
             $recruitment->posts()->create([
                 'name' => $post['name'],
                 'code' => $post['code'] ?? null,
-                'pay_level' => $post['pay_level'] ?? null,
-                'group' => $post['group'] ?? null,
+                'monthly_salary' => $post['monthly_salary'] ?? null,
+                'is_contractual' => (bool) ($post['is_contractual'] ?? false),
+                'contract_duration' => $post['contract_duration'] ?? null,
+                'contract_unit' => $post['contract_unit'] ?? null,
+                'minimum_qualification' => $post['minimum_qualification'] ?? null,
+                'preferable_qualification' => $post['preferable_qualification'] ?? null,
+                'age_max' => $post['age_max'] ?? null,
+                'experience_years' => $post['experience_years'] ?? null,
+                'reserved_for' => $post['reserved_for'] ?? null,
                 'total_vacancies' => (int) ($post['total_vacancies'] ?? 0),
                 'category_breakup' => $post['category_breakup'] ?? null,
                 'horizontal' => $post['horizontal'] ?? null,
@@ -110,7 +145,7 @@ class SaveRecruitment
         if ($isNew) {
             $log('created');
         } elseif ($locked) {
-            $after = $recruitment->only(array_keys($before));
+            $after = $this->snapshot($recruitment);
             $changed = array_keys(array_filter($after, fn ($v, $k) => (string) $v !== (string) $before[$k], ARRAY_FILTER_USE_BOTH));
 
             if ($changed) {

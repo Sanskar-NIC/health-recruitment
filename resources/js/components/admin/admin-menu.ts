@@ -72,10 +72,7 @@ export const adminMenu: AdminMenuGroup[] = [
                 href: '/admin/masters',
                 icon: Layers,
                 children: [
-                    { title: 'Categories', href: '/admin/masters/categories' },
-                    { title: 'Qualifications', href: '/admin/masters/qualifications' },
-                    { title: 'Post Templates', href: '/admin/masters/post-templates' },
-                    { title: 'Document Types', href: '/admin/masters/document-types' },
+                    { title: 'Posts', href: '/admin/masters/posts' },
                     { title: 'Exam Centres', href: '/admin/masters/exam-centres' },
                     { title: 'Councils', href: '/admin/masters/councils' },
                 ],

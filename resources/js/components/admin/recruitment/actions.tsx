@@ -94,13 +94,13 @@ export function RecruitmentActions({ r, showView = true }: { r: ActionTarget; sh
                         </DialogHeader>
                         <div className="grid gap-4">
                             {kind === 'extend' && (
-                                <Field label="New last date" required error={errors.new_end} hint={r.app_end ? `Current last date: ${r.app_end}` : undefined}>
+                                <Field label="New last date" required error={errors.new_end}>
                                     <Input type="date" value={newEnd} onChange={(e) => setNewEnd(e.target.value)} />
                                 </Field>
                             )}
                             {kind !== 'delete' && (
                                 <Field label="Reason" required error={errors.reason}>
-                                    <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Shown in the public notice and the audit log." />
+                                    <Textarea value={reason} onChange={(e) => setReason(e.target.value)} />
                                 </Field>
                             )}
                         </div>

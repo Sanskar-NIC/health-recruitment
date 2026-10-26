@@ -84,7 +84,7 @@ export function QualificationsStep({ data, set, err, options, rules }: StepProps
                                     <TextField id={id('obtained')} label={q.marks_type === 'CGPA' ? 'CGPA Obtained' : 'Marks Obtained'} required inputMode="decimal" value={q.obtained} onChange={(v) => update(i, { obtained: v })} error={e('obtained')} />
                                 </>
                             )}
-                            <TextField id={id('percentage')} label="Percentage" required inputMode="decimal" readOnly={byMarks} value={q.percentage} onChange={(v) => update(i, { percentage: v })} error={e('percentage')} hint={byMarks ? 'Calculated automatically.' : undefined} />
+                            <TextField id={id('percentage')} label="Percentage" required inputMode="decimal" readOnly={byMarks} value={q.percentage} onChange={(v) => update(i, { percentage: v })} error={e('percentage')} />
                             <TextField id={id('state')} label="State" required value={q.state} onChange={(v) => update(i, { state: v })} error={e('state')} />
                             <TextField id={id('board')} label="Board/University" required value={q.board} onChange={(v) => update(i, { board: v })} error={e('board')} />
                             <FileField id={id('document')} label="Qualification Documents" required field="qualification_document" rule={rules.qualification_document} value={q.document} onChange={(v) => update(i, { document: v })} error={e('document') ?? e('document.path')} />

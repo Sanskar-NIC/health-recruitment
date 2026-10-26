@@ -10,7 +10,7 @@ export function PersonalStep({ data: d, set, err, options, rules }: StepProps<Pe
     const reserved = d.category !== '' && d.category !== 'UR';
     const age = ageDetail(d.dob);
 
-    const text = (key: keyof PersonalData, label: string, extra: { required?: boolean; type?: string; readOnly?: boolean; max?: string; hint?: string } = {}) => (
+    const text = (key: keyof PersonalData, label: string, extra: { required?: boolean; type?: string; readOnly?: boolean; max?: string } = {}) => (
         <TextField
             id={`p-${key}`}
             label={label}
@@ -37,7 +37,7 @@ export function PersonalStep({ data: d, set, err, options, rules }: StepProps<Pe
 
             <Section title="Personal Information" icon={User}>
                 <SelectField id="p-title" label="Title" required value={d.title} onChange={(v) => set({ title: v })} options={options.titles} error={err('title')} />
-                {text('name', 'Name', { required: true, readOnly: true, hint: 'As registered — cannot be changed.' })}
+                {text('name', 'Name', { required: true, readOnly: true })}
                 {text('mobile', 'Mobile No', { required: true, readOnly: true })}
                 {text('email', 'Email ID', { required: true, readOnly: true })}
                 {text('father_name', "Father's Name", { required: true })}
@@ -45,7 +45,7 @@ export function PersonalStep({ data: d, set, err, options, rules }: StepProps<Pe
                 {text('nationality', 'Nationality', { required: true })}
                 <SelectField id="p-gender" label="Gender" required value={d.gender} onChange={(v) => set({ gender: v })} options={options.genders} error={err('gender')} />
                 {text('mother_tongue', 'Mother Tongue', { required: true })}
-                <DateField id="p-dob" label="Date of Birth" required disabled value={d.dob} onChange={() => {}} hint="As registered — cannot be changed." />
+                <DateField id="p-dob" label="Date of Birth" required disabled value={d.dob} onChange={() => {}} />
                 <TextField id="p-age" label="Age" value={age ?? ''} onChange={() => {}} readOnly />
                 <SelectField id="p-marital_status" label="Marital Status" required value={d.marital_status} onChange={(v) => set({ marital_status: v })} options={options.maritalStatuses} error={err('marital_status')} />
             </Section>
@@ -56,7 +56,7 @@ export function PersonalStep({ data: d, set, err, options, rules }: StepProps<Pe
                     label="Aadhaar No"
                     required
                     inputMode="numeric"
-                    placeholder="XXXX XXXX XXXX"
+
                     value={formatAadhaar(d.aadhaar_no)}
                     onChange={(v) => set({ aadhaar_no: v.replace(/\D/g, '').slice(0, 12) })}
                     error={err('aadhaar_no')}

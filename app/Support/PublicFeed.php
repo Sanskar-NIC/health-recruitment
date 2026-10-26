@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Admin\Recruitment;
 use App\Models\Admin\RecruitmentEvent;
 use App\Models\Student\Registration;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
@@ -95,6 +96,8 @@ class PublicFeed
             'Correction window' => $r->correction_end,
             'Admit card release' => $r->admit_card_date,
             'Exam date' => $r->exam_date,
+            'Interview date' => isset($r->interview['date']) ? Carbon::parse($r->interview['date']) : null,
+            'Interview ends' => isset($r->interview['date_to']) ? Carbon::parse($r->interview['date_to']) : null,
             'Result (tentative)' => $r->result_date,
         ])
             ->filter()
@@ -151,7 +154,8 @@ class PublicFeed
         }
 
         $age = isset($elig['age_min'], $elig['age_max']) ? "{$elig['age_min']}–{$elig['age_max']} years" : 'As per advertisement';
-        $pay = $r->posts->pluck('pay_level')->filter()->unique()->implode(', ');
+        $pay = $r->posts->pluck('monthly_salary')->filter()->unique()->sort()
+            ->map(fn ($s) => '₹'.number_format((int) $s).' per month')->implode(', ');
         $published = $r->published_at ?? $r->publish_at ?? $r->created_at;
 
         return [
@@ -168,6 +172,16 @@ class PublicFeed
             'status' => $r->displayStatus(),
             'isNew' => $published->gt(now()->subDays(self::NEW_FOR_DAYS)),
             'pdfUrl' => self::pdfUrl($r->advertisement_pdf),
+            'selectionMode' => $r->selection_mode,
+            'applyMode' => $r->apply_mode,
+            'interview' => $r->isInterview() ? [
+                'date' => $r->interview['date'] ?? null,
+                'dateTo' => $r->interview['date_to'] ?? null,
+                'time' => $r->interview['time'] ?? null,
+                'venue' => $r->interview['venue'] ?? null,
+                'instructions' => $r->interview['instructions'] ?? null,
+                'documentsToCarry' => $r->interview['documents_to_carry'] ?? null,
+            ] : null,
         ];
     }
 

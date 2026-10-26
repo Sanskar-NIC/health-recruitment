@@ -11,10 +11,9 @@ export interface StepProps {
     options: Options;
 }
 
-export function Field({ label, error, hint, required, className, children, htmlFor }: {
+export function Field({ label, error, required, className, children, htmlFor }: {
     label: string;
     error?: string;
-    hint?: string;
     required?: boolean;
     className?: string;
     children: ReactNode;
@@ -27,7 +26,6 @@ export function Field({ label, error, hint, required, className, children, htmlF
                 {required && <span className="ml-0.5 text-destructive" aria-hidden="true">*</span>}
             </Label>
             {children}
-            {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
             {error && <p role="alert" className="text-xs font-medium text-destructive">{error}</p>}
         </div>
     );

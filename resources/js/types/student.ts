@@ -14,6 +14,16 @@ export interface Recruitment {
     status: RecruitmentStatus;
     isNew: boolean;
     pdfUrl: string;
+    selectionMode: 'exam' | 'interview';
+    applyMode: 'online' | 'walk_in';
+    interview: {
+        date: string | null;
+        dateTo: string | null;
+        time: string | null;
+        venue: string | null;
+        instructions: string | null;
+        documentsToCarry: string | null;
+    } | null;
 }
 
 export type NotificationType =

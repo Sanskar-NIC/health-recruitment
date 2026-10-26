@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\RecruitmentController;
 use App\Http\Controllers\Admin\SectionController;
 use App\Http\Middleware\PreventBackHistory;
@@ -35,6 +36,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('cancel', 'cancel')->name('cancel');
                 Route::delete('/', 'destroy')->name('destroy');
             });
+        });
+
+        Route::prefix('masters/posts')->name('masters.posts.')->controller(PostController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::put('{post}', 'update')->name('update')->whereNumber('post');
+            Route::patch('{post}/toggle', 'toggle')->name('toggle')->whereNumber('post');
+            Route::delete('{post}', 'destroy')->name('destroy')->whereNumber('post');
         });
 
         Route::get('{section}', SectionController::class)

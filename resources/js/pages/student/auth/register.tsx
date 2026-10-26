@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import StudentLayout from '@/layouts/student-layout';
-import { emptyRegister, ageHint, isValidEmail, isValidMobile, validateRegister } from '@/lib/register-validation';
+import { emptyRegister, isValidEmail, isValidMobile, validateRegister } from '@/lib/register-validation';
 import type { RegisterData, RegisterErrors } from '@/lib/register-validation';
 import { registerApplicant } from '@/api/register.api';
 
@@ -65,7 +65,6 @@ export default function Register() {
     const validateOne = (key: keyof RegisterData) =>
         setErrors((prev) => ({ ...prev, [key]: validateRegister(data, verified)[key] }));
 
-    const { age, message: ageMessage } = ageHint(data.dob);
     const canSubmit = data.declaration && verified.mobile && verified.email && !loading;
 
     const goNext = () => {
@@ -144,8 +143,8 @@ export default function Register() {
         setStep(0);
     };
 
-    const text = (key: keyof RegisterData, label: string, extra?: { hint?: string; autoComplete?: string }) => (
-        <FormField id={`reg-${key}`} label={label} required error={errors[key]} hint={extra?.hint}>
+    const text = (key: keyof RegisterData, label: string, extra?: { autoComplete?: string }) => (
+        <FormField id={`reg-${key}`} label={label} required error={errors[key]}>
             {(aria) => (
                 <Input
                     {...aria}
@@ -194,7 +193,6 @@ export default function Register() {
                                 value={data.dob}
                                 onChange={(v) => { set('dob', v); }}
                                 error={errors.dob}
-                                hint={age !== null ? `Age: ${age} years${ageMessage ? ` — ${ageMessage}` : ''}` : undefined}
                             />
                             <FormField id="reg-gender" label="Gender" required error={errors.gender}>
                                 {(aria) => (
@@ -212,7 +210,7 @@ export default function Register() {
                                 {(aria) => (
                                     <Select value={data.category} onValueChange={(v) => set('category', v)}>
                                         <SelectTrigger {...aria} className="h-11 w-full">
-                                            <SelectValue placeholder="Select category" />
+                                            <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {categories.map((c) => (

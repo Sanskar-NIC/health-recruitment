@@ -18,7 +18,6 @@ interface Common {
     label: string;
     required?: boolean;
     error?: string;
-    hint?: ReactNode;
     className?: string;
     icon?: LucideIcon;
 }
@@ -64,7 +63,7 @@ export function TextField({ value, onChange, type = 'text', readOnly, inputMode,
                         readOnly={readOnly}
                         inputMode={inputMode}
                         maxLength={maxLength}
-                        placeholder={placeholder}
+
                         max={max}
                         onChange={(e) => onChange(e.target.value)}
                         className={cn('h-11', Icon && 'pl-10', readOnly && 'cursor-not-allowed bg-muted/50')}
@@ -91,7 +90,7 @@ export function SelectField({ value, onChange, options, placeholder = '-- Please
                 <Select value={value} onValueChange={onChange}>
                     <SelectTrigger {...aria} className="h-11 w-full">
                         {Icon && <Icon className="size-4 shrink-0 text-primary/70" aria-hidden="true" />}
-                        <SelectValue placeholder={placeholder} />
+                        <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                         {options.map((o) => (
@@ -136,7 +135,6 @@ export function FileField({ field, value, onChange, rule, image, ...common }: Fi
     const input = useRef<HTMLInputElement>(null);
     const [busy, setBusy] = useState(false);
     const [uploadError, setUploadError] = useState<string>();
-    const formats = rule.mimes.split(',').map((m) => m.toUpperCase()).join(', ');
 
     const pick = async (file: File | undefined) => {
         if (!file) {
@@ -164,7 +162,6 @@ export function FileField({ field, value, onChange, rule, image, ...common }: Fi
             {...common}
             icon={iconFor(common.id, common.icon)}
             error={uploadError ?? common.error}
-            hint={common.hint ?? `${formats} · ${rule.min}–${rule.max} KB`}
         >
             {(aria) => (
                 <div className="grid gap-2">

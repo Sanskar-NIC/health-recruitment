@@ -3,20 +3,37 @@ export type RecruitmentStatus = 'draft' | 'scheduled' | 'upcoming' | 'open' | 'c
 export interface Options {
     categories: string[];
     horizontal: Record<string, string>;
-    groups: string[];
     relaxations: string[];
     feeCategories: string[];
     qualifications: string[];
     councils: string[];
     documents: Record<string, string>;
     districts: string[];
+    /** Enabled entries of the Posts master. */
+    posts: {
+        name: string;
+        code: string;
+        is_contractual: boolean;
+        minimum_qualification: string | null;
+        preferable_qualification: string | null;
+        experience_required: boolean;
+        experience_years: number | null;
+    }[];
 }
 
 export interface PostForm {
     name: string;
     code: string;
-    pay_level: string;
-    group: string;
+    monthly_salary: string;
+    is_contractual: boolean;
+    contract_duration: string;
+    contract_unit: string;
+    minimum_qualification: string;
+    preferable_qualification: string;
+    age_max: string;
+    experience_years: string;
+    /** Contractual posts are advertised as e.g. "1 (ST)". */
+    reserved_for: string;
     total_vacancies: string;
     category_breakup: Record<string, string>;
     /** PwBD is one overall number; women / Ex-Servicemen are reserved inside each category (all optional). */
@@ -32,7 +49,10 @@ export interface RecruitmentForm {
         reference_no: string;
         notification_date: string;
         description: string;
+        selection_mode: 'exam' | 'interview';
+        apply_mode: 'online' | 'walk_in';
     };
+    interview: { date: string; date_to: string; time: string; venue: string; instructions: string; documents_to_carry: string };
     posts: PostForm[];
     eligibility: {
         age_min: string;
@@ -85,8 +105,15 @@ export interface RecruitmentEventItem {
 export const newPost = (options: Options): PostForm => ({
     name: '',
     code: '',
-    pay_level: '',
-    group: '',
+    monthly_salary: '',
+    is_contractual: false,
+    contract_duration: '',
+    contract_unit: '',
+    minimum_qualification: '',
+    preferable_qualification: '',
+    age_max: '',
+    experience_years: '',
+    reserved_for: '',
     total_vacancies: '',
     category_breakup: Object.fromEntries(options.categories.map((c) => [c, ''])),
     horizontal: { pwbd: '', women: Object.fromEntries(options.categories.map((c) => [c, ''])), ex_serviceman: Object.fromEntries(options.categories.map((c) => [c, ''])) },
@@ -94,7 +121,8 @@ export const newPost = (options: Options): PostForm => ({
 });
 
 export const emptyForm = (options: Options): RecruitmentForm => ({
-    basic: { advt_no: '', title: '', directorate: 'Directorate of Health Services, Government of Tripura', reference_no: '', notification_date: '', description: '' },
+    basic: { advt_no: '', title: '', directorate: 'Directorate of Health Services, Government of Tripura', reference_no: '', notification_date: '', description: '', selection_mode: 'exam', apply_mode: 'online' },
+    interview: { date: '', date_to: '', time: '', venue: '', instructions: '', documents_to_carry: '' },
     posts: [newPost(options)],
     eligibility: {
         age_min: '18',
@@ -116,19 +144,47 @@ export const emptyForm = (options: Options): RecruitmentForm => ({
     dates: { app_start: '', app_end: '', fee_last_date: '', correction_end: '', admit_card_date: '', exam_date: '', result_date: '' },
 });
 
+/** Eligibility defaults come from the master data of the selected posts; the admin can still adjust them. */
+export const isContractualOnly = (form: RecruitmentForm): boolean => form.posts.length > 0 && form.posts.every((p) => p.is_contractual);
+
+export function deriveEligibility(draft: RecruitmentForm, _options: Options, onlyBlank = false): void {
+    const e = draft.eligibility;
+    const fill = (key: 'age_max' | 'min_experience_years', value: string) => {
+        if (value && (!onlyBlank || !e[key])) e[key] = value;
+    };
+
+    const maxAges = draft.posts.map((p) => Number(p.age_max)).filter(Boolean);
+    const years = draft.posts.map((p) => Number(p.experience_years)).filter(Boolean);
+    const names = [...new Set(draft.posts.map((p) => p.minimum_qualification).filter(Boolean))];
+
+    if (maxAges.length) fill('age_max', String(Math.max(...maxAges)));
+    fill('min_experience_years', years.length ? String(Math.max(...years)) : '');
+
+    if (names.length && (!onlyBlank || e.qualifications.length === 0)) {
+        e.qualifications = names.map((name) => ({ name, min_percent: e.qualifications.find((q) => q.name === name)?.min_percent ?? '' }));
+    }
+}
+
 /** Fill any gaps in a server record so every input stays controlled. */
 export function hydrate(record: RecruitmentForm, options: Options): RecruitmentForm {
     const base = emptyForm(options);
     const str = (v: unknown) => (v === null || v === undefined ? '' : String(v));
     const strMap = (m: Record<string, unknown> | null | undefined, keys: string[]) => Object.fromEntries(keys.map((k) => [k, str(m?.[k])]));
 
-    return {
+    const hydrated: RecruitmentForm = {
         basic: { ...base.basic, ...Object.fromEntries(Object.entries(record.basic).map(([k, v]) => [k, str(v)])) } as RecruitmentForm['basic'],
         posts: (record.posts.length ? record.posts : [newPost(options)]).map((p) => ({
             name: str(p.name),
             code: str(p.code),
-            pay_level: str(p.pay_level),
-            group: str(p.group),
+            monthly_salary: str(p.monthly_salary),
+            is_contractual: Boolean(p.is_contractual),
+            contract_duration: str(p.contract_duration),
+            contract_unit: str(p.contract_unit),
+            minimum_qualification: str(p.minimum_qualification),
+            preferable_qualification: str(p.preferable_qualification),
+            age_max: str(p.age_max),
+            experience_years: str(p.experience_years),
+            reserved_for: str(p.reserved_for),
             total_vacancies: str(p.total_vacancies),
             category_breakup: strMap(p.category_breakup, options.categories),
             horizontal: {
@@ -159,8 +215,16 @@ export function hydrate(record: RecruitmentForm, options: Options): RecruitmentF
                   signature: { min_kb: str(record.documents.signature?.min_kb), max_kb: str(record.documents.signature?.max_kb) },
               }
             : base.documents,
+        interview: Object.fromEntries(Object.keys(base.interview).map((k) => [k, str((record.interview as Record<string, unknown> | null)?.[k])])) as RecruitmentForm['interview'],
         dates: { ...base.dates, ...Object.fromEntries(Object.entries(record.dates).map(([k, v]) => [k, str(v)])) } as RecruitmentForm['dates'],
     };
+
+    // Drafts saved before post-level fields existed: fill empty eligibility fields from the posts.
+    if (!(record as { locked?: boolean }).locked) {
+        deriveEligibility(hydrated, options, true);
+    }
+
+    return hydrated;
 }
 
 export const STEPS = [
@@ -183,7 +247,7 @@ export function stepForError(key: string): number {
     if (key.startsWith('eligibility')) return 3;
     if (key.startsWith('fees') || key === 'dates.fee_last_date') return 4;
     if (key.startsWith('documents')) return 5;
-    if (key.startsWith('dates')) return 6;
+    if (key.startsWith('dates') || key.startsWith('interview')) return 6;
     if (key.endsWith('_pdf')) return 7;
 
     return 8;
