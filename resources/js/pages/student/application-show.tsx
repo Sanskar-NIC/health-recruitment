@@ -1,5 +1,5 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { CalendarDays, CheckCircle2, Printer, UserRound } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { CalendarDays, CheckCircle2, Download, Printer, UserRound } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Panel } from '@/components/student/panel';
 import { Button } from '@/components/ui/button';
@@ -19,12 +19,6 @@ const feeLabel = { not_required: 'No fee', pending: 'Pending', paid: 'Paid' };
 export default function ApplicationShow({ application: a }: Props) {
     const s = a.snapshot;
 
-    const withdraw = () => {
-        if (window.confirm(`Withdraw your application for ${a.postName}?`)) {
-            router.post(`/student/applications/${a.id}/withdraw`);
-        }
-    };
-
     return (
         <div className="grid gap-6 px-4 py-8 sm:px-8 lg:px-16 xl:px-24">
             <Head title={`Application ${a.applicationNo}`} />
@@ -39,8 +33,8 @@ export default function ApplicationShow({ application: a }: Props) {
                     </div>
                 </div>
                 <div className="flex flex-wrap gap-2 print:hidden">
+                    <Button asChild><a href={`/student/applications/${a.id}/download`}><Download className="size-4" aria-hidden="true" /> Download form</a></Button>
                     <Button variant="outline" onClick={() => window.print()}><Printer className="size-4" aria-hidden="true" /> Print</Button>
-                    {a.canWithdraw && <Button variant="ghost" className="text-destructive" onClick={withdraw}>Withdraw</Button>}
                 </div>
             </div>
 

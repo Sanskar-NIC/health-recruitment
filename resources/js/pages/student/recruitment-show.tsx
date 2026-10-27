@@ -23,7 +23,7 @@ const GENERAL_INSTRUCTIONS = [
     'Keep scanned copies of the required documents ready. Originals are verified at the time of selection.',
     'The application fee, once paid, is not refundable.',
     'Use a valid mobile number and email. All communication is sent there and on this portal.',
-    'Only one application can be made per post. You can withdraw and re-apply while applications are open.',
+    'Only one application can be made per post.',
 ];
 
 function Fact({ label, children }: { label: string; children: ReactNode }) {

@@ -117,6 +117,14 @@ class ApplicationEligibility
             'mobile' => $student->mobile,
             'email' => $student->email,
             'checks' => $evaluation['checks'],
+            // The full profile as submitted, so the downloadable form never changes afterwards.
+            'profile' => [
+                'personal' => $personal,
+                'address' => (array) ($student->profile?->address ?? []),
+                'other_details' => (array) ($student->profile?->other_details ?? []),
+                'experience' => (array) ($student->profile?->experience ?? []),
+                'qualifications' => (array) ($student->profile?->qualifications ?? []),
+            ],
         ];
     }
 

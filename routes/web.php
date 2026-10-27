@@ -45,6 +45,7 @@ Route::middleware(['auth:student', PreventBackHistory::class])->group(function (
     Route::controller(ApplicationController::class)->group(function () {
         Route::get('student/applications', 'index')->name('student.applications.index');
         Route::get('student/applications/{application}', 'show')->whereNumber('application')->name('student.applications.show');
+        Route::get('student/applications/{application}/download', 'download')->whereNumber('application')->name('student.applications.download');
         Route::post('student/applications/{application}/withdraw', 'withdraw')->whereNumber('application')->name('student.applications.withdraw');
         Route::get('recruitments/{recruitment}/apply/{post}', 'create')->whereNumber(['recruitment', 'post'])->name('student.apply');
         Route::post('recruitments/{recruitment}/apply/{post}', 'store')->whereNumber(['recruitment', 'post'])->name('student.apply.store');

@@ -1,5 +1,5 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { ClipboardList, Inbox } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { ClipboardList, Download, Inbox } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,12 +8,6 @@ import { formatDate } from '@/lib/portal';
 import type { ApplicationSummary } from '@/types/student';
 
 export default function Applications({ applications }: { applications: ApplicationSummary[] }) {
-    const withdraw = (a: ApplicationSummary) => {
-        if (window.confirm(`Withdraw your application for ${a.postName}?`)) {
-            router.post(`/student/applications/${a.id}/withdraw`);
-        }
-    };
-
     return (
         <div className="grid gap-6 px-4 py-8 sm:px-8 lg:px-16 xl:px-24">
             <Head title="My Applications" />
@@ -44,8 +38,8 @@ export default function Applications({ applications }: { applications: Applicati
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 {a.status === 'submitted' && <Button asChild variant="outline"><Link href={`/student/applications/${a.id}`}>View</Link></Button>}
+                                {a.status === 'submitted' && <Button asChild><a href={`/student/applications/${a.id}/download`}><Download className="size-4" aria-hidden="true" /> Download form</a></Button>}
                                 {a.status === 'withdrawn' && <Button asChild variant="outline"><Link href={`/recruitments/${a.recruitmentId}`}>View advertisement</Link></Button>}
-                                {a.canWithdraw && <Button variant="ghost" className="text-destructive" onClick={() => withdraw(a)}>Withdraw</Button>}
                             </div>
                         </li>
                     ))}

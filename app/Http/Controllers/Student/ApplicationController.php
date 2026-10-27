@@ -11,6 +11,8 @@ use App\Support\PublicFeed;
 use App\Support\Student\ApplicationEligibility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -85,7 +87,7 @@ class ApplicationController extends Controller
 
         $fee = ApplicationEligibility::fee($student, $recruitment);
         $values = [
-            'application_no' => Application::numberFor($student, $recruitment, $post),
+            'application_no' => $existing?->application_no ?? Application::numberFor($student),
             'status' => Application::SUBMITTED,
             'category' => $student->category,
             'fee_amount' => $fee,
@@ -119,6 +121,45 @@ class ApplicationController extends Controller
                 'dates' => PublicFeed::datesFor($model->recruitment),
             ],
         ]);
+    }
+
+    /** The full application form as a PDF, built from what the candidate submitted. */
+    public function download(Request $request, int $application)
+    {
+        $student = $this->student($request);
+        $model = $student->applications()->with(['recruitment', 'post'])->findOrFail($application);
+        $snapshot = (array) $model->snapshot;
+        // Applications made before the full snapshot existed fall back to the live profile.
+        $profile = $snapshot['profile'] ?? [
+            'personal' => (array) $student->profile?->personal,
+            'address' => (array) $student->profile?->address,
+            'other_details' => (array) $student->profile?->other_details,
+            'experience' => (array) $student->profile?->experience,
+            'qualifications' => (array) $student->profile?->qualifications,
+        ];
+        $uploads = (array) $student->profile?->uploads;
+
+        return Pdf::loadView('pdf.application-form', [
+            'application' => $model,
+            'recruitment' => $model->recruitment,
+            'post' => $model->post,
+            'student' => $student,
+            'profile' => $profile,
+            'dates' => PublicFeed::datesFor($model->recruitment),
+            'photo' => $this->embed($uploads['photo']['path'] ?? null),
+            'signature' => $this->embed($uploads['signature']['path'] ?? null),
+        ])->setPaper('a4')->download("application-{$model->application_no}.pdf");
+    }
+
+    private function embed(?string $path): ?string
+    {
+        $disk = Storage::disk('local');
+
+        if (! $path || str_contains($path, '..') || ! $disk->exists($path)) {
+            return null;
+        }
+
+        return 'data:'.$disk->mimeType($path).';base64,'.base64_encode($disk->get($path));
     }
 
     /** Candidates may withdraw only while applications are still open. */

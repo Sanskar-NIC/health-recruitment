@@ -47,8 +47,22 @@ class Application extends Model
         return $this->status === self::SUBMITTED;
     }
 
-    public static function numberFor(Registration $student, Recruitment $recruitment, RecruitmentPost $post): string
+    /** APP{year}{month}{2 digits}{3 letters}{registration serial}, e.g. APP20261042QXK000001. */
+    public static function numberFor(Registration $student): string
     {
-        return sprintf('APP-%d-%d-%s', $recruitment->id, $post->id, substr($student->student_uuid, 0, 8));
+        // Registration numbers are HRP{year}{serial}; only the serial is repeated here.
+        $serial = preg_replace('/^HRP\d{4}/', '', $student->registration_no);
+
+        do {
+            $number = sprintf(
+                'APP%s%02d%s%s',
+                now()->format('Ym'),
+                random_int(0, 99),
+                collect(range(1, 3))->map(fn () => chr(random_int(65, 90)))->implode(''),
+                $serial,
+            );
+        } while (self::where('application_no', $number)->exists());
+
+        return $number;
     }
 }
