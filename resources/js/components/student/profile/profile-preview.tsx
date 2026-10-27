@@ -29,7 +29,6 @@ function FileViewer({ file, label }: { file: FileRef; label: string }) {
     return (
         <>
             <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded font-medium text-link hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
-                <FileText className="size-4 shrink-0" aria-hidden="true" />
                 <span className="text-left break-all">{file.name}</span>
             </button>
             <Dialog open={open} onOpenChange={setOpen}>
@@ -142,18 +141,20 @@ function Row({ label, value }: { label: string; value: Value }) {
     }
 
     return (
-        <div className="min-w-0">
-            <dt className="flex items-center gap-1.5 text-xs font-bold text-primary-deep">
-                <Icon className="size-3.5 shrink-0 text-primary" aria-hidden="true" />
-                {label}
-            </dt>
-            <dd className="mt-0.5 text-sm font-medium break-words">{content}</dd>
+        <div className="flex min-w-0 items-start gap-2.5 sm:gap-3">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary-tint text-primary sm:size-9" aria-hidden="true">
+                <Icon className="size-4 sm:size-[18px]" />
+            </span>
+            <div className="min-w-0 flex-1">
+                <dt className="text-xs leading-tight font-bold text-primary-deep">{label}</dt>
+                <dd className="mt-1 text-sm leading-snug font-medium break-words">{content}</dd>
+            </div>
         </div>
     );
 }
 
 function Grid({ children }: { children: ReactNode }) {
-    return <dl className="grid grid-cols-2 gap-x-4 gap-y-4 sm:gap-x-6 xl:grid-cols-3">{children}</dl>;
+    return <dl className="grid grid-cols-1 gap-x-6 gap-y-5 min-[420px]:grid-cols-2 xl:grid-cols-3">{children}</dl>;
 }
 
 function Section({ title, icon: Icon, children }: { title: string; icon: LucideIcon; children: ReactNode }) {
@@ -176,7 +177,7 @@ function DocCard({ file, label }: { file: FileRef; label: string }) {
 
     return (
         <>
-            <button type="button" onClick={() => setOpen(true)} className="flex w-full items-center gap-3 rounded-xl border bg-card p-3 text-left shadow-sm transition hover:border-primary hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
+            <button type="button" onClick={() => setOpen(true)} className="flex w-full min-w-0 items-center gap-3 rounded-xl border bg-card p-3 text-left shadow-sm transition hover:border-primary hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
                 <span className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-muted-foreground">
                     {pdf ? <FileText className="size-5" aria-hidden="true" /> : <img src={url} alt="" className="size-full object-cover" loading="lazy" />}
                 </span>
@@ -245,7 +246,7 @@ export function ProfilePreview({ draft }: { draft: ProfileDraft }) {
     ].filter((d): d is { label: string; file: FileRef } => !!d.file);
 
     return (
-        <div className="grid gap-4 sm:gap-5">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:gap-5">
             <div className="flex items-center gap-4 rounded-xl border bg-card p-4 shadow-sm sm:gap-6 sm:p-5">
                 <ImagePreview file={u.photo} label="Photograph" className="h-28 w-24 object-cover sm:h-32 sm:w-28" />
                 <div className="min-w-0 flex-1">
@@ -390,7 +391,7 @@ export function ProfilePreview({ draft }: { draft: ProfileDraft }) {
             {tab === 'documents' && (
                 <Section title={`Submitted documents (${documents.length})`} icon={FolderOpen}>
                     {documents.length === 0 ? <p className="text-sm text-muted-foreground">No documents uploaded.</p> : (
-                        <div className="grid gap-3 md:grid-cols-2">
+                        <div className="grid grid-cols-[minmax(0,1fr)] gap-3 md:grid-cols-2">
                             {documents.map((d) => <DocCard key={d.label} file={d.file} label={d.label} />)}
                         </div>
                     )}

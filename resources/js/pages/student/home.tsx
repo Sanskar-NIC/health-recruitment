@@ -22,12 +22,12 @@ export default function Home({
         <>
             <Head title="Home" />
             <HeroSection />
-            <div className="mx-auto grid max-w-none sm:px-8 lg:px-16 xl:px-24 gap-6 px-4 py-8 lg:grid-cols-3 lg:items-start">
+            <div className="mx-auto grid max-w-none sm:px-8 lg:px-16 xl:px-24 gap-6 px-4 pt-8 pb-2 lg:grid-cols-3">
                 {/* Mobile: login comes right after the hero. */}
-                <div className="lg:order-2">
+                <div className="lg:order-2 [&>*]:h-full">
                     <ApplicantLoginPanel />
                 </div>
-                <div className="lg:order-1 lg:col-span-2">
+                <div className="lg:order-1 lg:col-span-2 [&>*]:h-full">
                     <WhatsNewPanel items={notifications} />
                 </div>
             </div>

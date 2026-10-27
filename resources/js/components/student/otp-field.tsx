@@ -22,7 +22,9 @@ interface OtpFieldProps {
 
 const RESEND_SECONDS = 30;
 
-// UI-only: any 6 digits are accepted as the OTP. Replace with backend verification.
+// UI-only: only the demo OTP is accepted. Replace with backend verification.
+const DEMO_OTP = '123456';
+
 export function OtpField({ id, label, kind, value, onChange, onBlur, canSend, verified, onVerified, onReset, error }: OtpFieldProps) {
     const [sent, setSent] = useState(false);
     const [otp, setOtp] = useState('');
@@ -44,12 +46,18 @@ export function OtpField({ id, label, kind, value, onChange, onBlur, canSend, ve
         setOtp('');
         setOtpError(undefined);
         setSeconds(RESEND_SECONDS);
-        toast.success(`OTP sent to your ${kind} (demo: enter any 6 digits)`);
+        toast.success(`OTP sent to your ${kind} (demo OTP: ${DEMO_OTP})`);
     };
 
     const verify = () => {
         if (!/^\d{6}$/.test(otp)) {
             setOtpError('Enter the 6-digit OTP');
+
+            return;
+        }
+
+        if (otp !== DEMO_OTP) {
+            setOtpError('Incorrect OTP. Please try again.');
 
             return;
         }

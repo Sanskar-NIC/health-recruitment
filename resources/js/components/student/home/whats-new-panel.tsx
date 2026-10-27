@@ -46,7 +46,8 @@ export function WhatsNewPanel({ items }: { items: NotificationItem[] }) {
         <Panel
             title="What's New"
             icon={Bell}
-            bodyClassName="p-0"
+            className="flex flex-col"
+            bodyClassName="flex flex-1 flex-col p-0"
             action={
                 <div className="flex items-center gap-3">
                     {scrolls && (
@@ -68,8 +69,12 @@ export function WhatsNewPanel({ items }: { items: NotificationItem[] }) {
             {items.length === 0 ? (
                 <p className="flex h-40 items-center justify-center px-5 text-sm text-muted-foreground">No notifications yet.</p>
             ) : !scrolls ? (
-                <div className="max-h-[32rem] overflow-y-auto">
-                    <ul className="[&>li:last-child]:border-b-0">{items.map((item) => <Row key={item.id} item={item} />)}</ul>
+                <div className="flex max-h-[32rem] flex-1 flex-col overflow-y-auto">
+                    <ul>{items.map((item) => <Row key={item.id} item={item} />)}</ul>
+                    <div className="flex flex-1 flex-col items-center justify-center gap-2 px-5 py-8 text-center text-sm text-muted-foreground">
+                        <Bell className="size-6 text-primary/40" aria-hidden="true" />
+                        You&apos;re all caught up.
+                    </div>
                 </div>
             ) : (
                 <div className="ticker h-[32rem] overflow-hidden" data-paused={paused}>
