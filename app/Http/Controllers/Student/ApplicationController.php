@@ -42,6 +42,10 @@ class ApplicationController extends Controller
             return redirect()->route('student.applications.show', $existing);
         }
 
+        if ($existing?->status === Application::REJECTED) {
+            return redirect()->route('student.applications.index')->with('error', 'Your application for this post was rejected and cannot be resubmitted.');
+        }
+
         $detail = PublicFeed::detail($recruitment);
 
         return Inertia::render('student/apply', [
@@ -83,6 +87,10 @@ class ApplicationController extends Controller
 
         if ($existing?->isActive()) {
             return redirect()->route('student.applications.show', $existing);
+        }
+
+        if ($existing?->status === Application::REJECTED) {
+            throw ValidationException::withMessages(['eligibility' => 'Your application for this post was rejected and cannot be resubmitted.']);
         }
 
         $fee = ApplicationEligibility::fee($student, $recruitment);
@@ -210,6 +218,7 @@ class ApplicationController extends Controller
             'postName' => $a->post->name,
             'recruitmentStatus' => $a->recruitment->displayStatus(),
             'lastDate' => $a->recruitment->app_end?->format('Y-m-d'),
+            'rejectionReason' => $a->status === Application::REJECTED ? $a->rejection_reason : null,
             'canWithdraw' => $this->canWithdraw($a),
         ];
     }

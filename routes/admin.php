@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ApplicationController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PostController;
@@ -36,6 +37,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::post('cancel', 'cancel')->name('cancel');
                 Route::delete('/', 'destroy')->name('destroy');
             });
+        });
+
+        Route::prefix('applications')->name('applications.')->controller(ApplicationController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('{application}', 'show')->whereNumber('application')->name('show');
+            Route::post('{application}/reject', 'reject')->whereNumber('application')->name('reject');
+            Route::get('{application}/file', 'file')->whereNumber('application')->name('file');
         });
 
         Route::prefix('masters/posts')->name('masters.posts.')->controller(PostController::class)->group(function () {

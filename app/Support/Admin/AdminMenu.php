@@ -9,7 +9,6 @@ namespace App\Support\Admin;
 class AdminMenu
 {
     public const SECTIONS = [
-        'applications' => 'Applications',
         'exams/schedule' => 'Exam Schedule',
         'exams/centres' => 'Centres & Allocation',
         'exams/admit-cards' => 'Admit Cards',

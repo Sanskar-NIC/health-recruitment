@@ -2,6 +2,7 @@
 
 namespace App\Models\Admin;
 
+use App\Models\Student\Application;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -41,6 +42,11 @@ class Recruitment extends Model
             'documents' => 'array',
             'interview' => 'array',
         ];
+    }
+
+    public function applications(): HasMany
+    {
+        return $this->hasMany(Application::class);
     }
 
     public function posts(): HasMany

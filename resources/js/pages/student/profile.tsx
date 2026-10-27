@@ -114,8 +114,8 @@ export default function Profile({ profile, options, uploadRules }: Props) {
                             <p className="text-sm text-muted-foreground">Your profile has been submitted. You can now apply to active recruitments.</p>
                         </div>
                     </div>
-                    <div className="flex flex-wrap gap-3">
-                        <Button onClick={() => { setStep(0); setCompleted(false); window.scrollTo({ top: 0 }); }}>
+                    <div className="flex w-full flex-wrap gap-3 sm:w-auto">
+                        <Button className="w-full sm:w-auto" onClick={() => { setStep(0); setCompleted(false); window.scrollTo({ top: 0 }); }}>
                             <Pencil className="mr-1.5 size-4" aria-hidden="true" /> Edit Profile
                         </Button>
                     </div>

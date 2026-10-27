@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SaveRecruitmentRequest;
 use App\Models\Admin\Recruitment;
 use App\Models\Admin\RecruitmentEvent;
+use App\Models\Student\Application;
 use App\Support\Admin\RecruitmentOptions;
 use App\Support\Admin\RecruitmentPresenter;
 use Illuminate\Http\RedirectResponse;
@@ -27,6 +28,7 @@ class RecruitmentController extends Controller
 
         $all = Recruitment::query()
             ->with('posts')
+            ->withCount(['applications as active_applications_count' => fn ($q) => $q->where('status', Application::SUBMITTED)])
             ->when($search !== '', fn ($q) => $q->where(fn ($w) => $w
                 ->where('advt_no', 'ilike', "%{$search}%")
                 ->orWhere('title', 'ilike', "%{$search}%")))
@@ -80,6 +82,7 @@ class RecruitmentController extends Controller
     {
         return Inertia::render('admin/recruitments/show', [
             'recruitment' => RecruitmentPresenter::form($recruitment),
+            'applicationsCount' => $recruitment->applications()->where('status', Application::SUBMITTED)->count(),
             'events' => $recruitment->events()->with('admin')->get()->map(fn ($e) => RecruitmentPresenter::event($e)),
             'options' => RecruitmentOptions::forClient(),
         ]);

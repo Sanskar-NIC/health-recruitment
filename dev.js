@@ -73,15 +73,20 @@ function run(name, command, args, env = {}) {
     return proc;
 }
 
-// 1. Build the frontend first (blocking).
-console.log('> npm run build');
-const build = spawnSync('npm', ['run', 'build'], {
-    stdio: 'inherit',
-    shell: isWin,
-});
-if (build.status !== 0) {
-    console.error('npm run build failed; aborting.');
-    process.exit(build.status ?? 1);
+// 1. Build the frontend first (blocking). Pass `--skip-build` to reuse the existing public/build
+// (frontend changes will NOT show up until you build again).
+if (process.argv.includes('--skip-build')) {
+    console.log('> skipping npm run build (--skip-build)');
+} else {
+    console.log('> npm run build');
+    const build = spawnSync('npm', ['run', 'build'], {
+        stdio: 'inherit',
+        shell: isWin,
+    });
+    if (build.status !== 0) {
+        console.error('npm run build failed; aborting.');
+        process.exit(build.status ?? 1);
+    }
 }
 
 // A leftover public/hot would make Laravel load from a Vite dev server.

@@ -29,17 +29,18 @@ export default function Applications({ applications }: { applications: Applicati
                             <div>
                                 <div className="flex flex-wrap items-center gap-2">
                                     <Badge variant="outline" className="font-mono">{a.applicationNo}</Badge>
-                                    <Badge className={a.status === 'submitted' ? 'bg-success text-white' : 'bg-gray-200 text-gray-700'}>{a.status === 'submitted' ? 'Submitted' : 'Withdrawn'}</Badge>
+                                    <Badge className={a.status === 'submitted' ? 'bg-success text-white' : a.status === 'rejected' ? 'bg-destructive text-white' : 'bg-gray-200 text-gray-700'}>{a.status === 'submitted' ? 'Submitted' : a.status === 'rejected' ? 'Rejected' : 'Withdrawn'}</Badge>
                                     {a.feeStatus === 'pending' && <Badge variant="secondary">Fee pending · ₹{a.feeAmount}</Badge>}
                                 </div>
                                 <p className="mt-2 text-lg font-semibold">{a.postName}</p>
                                 <p className="text-sm text-muted-foreground">{a.title} · {a.advtNo}</p>
+                                {a.status === 'rejected' && a.rejectionReason && <p className="mt-1 text-sm text-destructive">Reason: {a.rejectionReason}</p>}
                                 {a.submittedAt && <p className="text-xs text-muted-foreground">Applied on {formatDate(a.submittedAt.slice(0, 10))}</p>}
                             </div>
                             <div className="flex flex-wrap gap-2">
                                 {a.status === 'submitted' && <Button asChild variant="outline"><Link href={`/student/applications/${a.id}`}>View</Link></Button>}
                                 {a.status === 'submitted' && <Button asChild><a href={`/student/applications/${a.id}/download`}><Download className="size-4" aria-hidden="true" /> Download form</a></Button>}
-                                {a.status === 'withdrawn' && <Button asChild variant="outline"><Link href={`/recruitments/${a.recruitmentId}`}>View advertisement</Link></Button>}
+                                {a.status !== 'submitted' && <Button asChild variant="outline"><Link href={`/recruitments/${a.recruitmentId}`}>View advertisement</Link></Button>}
                             </div>
                         </li>
                     ))}

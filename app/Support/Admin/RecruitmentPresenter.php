@@ -3,6 +3,7 @@
 namespace App\Support\Admin;
 
 use App\Models\Admin\Recruitment;
+use App\Models\Student\Application;
 use Illuminate\Support\Facades\Storage;
 
 class RecruitmentPresenter
@@ -20,7 +21,7 @@ class RecruitmentPresenter
             'app_end' => $r->app_end?->format('Y-m-d'),
             'publish_at' => $r->publish_at?->toIso8601String(),
             'status' => $r->displayStatus(),
-            'applications' => 0, // wired up when the applications module exists
+            'applications' => $r->active_applications_count ?? $r->applications()->where('status', Application::SUBMITTED)->count(),
             'locked' => $r->isLocked(),
             'is_draft' => $r->status === Recruitment::DRAFT,
             'is_cancelled' => $r->status === Recruitment::CANCELLED,

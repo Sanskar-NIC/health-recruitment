@@ -163,7 +163,8 @@ export interface EligibilityCheck {
 export interface ApplicationSummary {
     id: number;
     applicationNo: string;
-    status: 'submitted' | 'withdrawn';
+    status: 'submitted' | 'withdrawn' | 'rejected';
+    rejectionReason?: string | null;
     category: string;
     feeAmount: number;
     feeStatus: 'not_required' | 'pending' | 'paid';

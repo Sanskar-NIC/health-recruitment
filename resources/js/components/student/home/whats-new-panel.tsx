@@ -5,7 +5,6 @@ import { useReducedMotion } from 'motion/react';
 import { useState } from 'react';
 import { NewBadge } from '@/components/student/new-badge';
 import { Panel } from '@/components/student/panel';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatDate } from '@/lib/portal';
 import type { NotificationItem, NotificationType } from '@/types/student';
 
@@ -67,11 +66,11 @@ export function WhatsNewPanel({ items }: { items: NotificationItem[] }) {
             }
         >
             {items.length === 0 ? (
-                <p className="flex h-[32rem] items-center justify-center px-5 text-sm text-muted-foreground">No notifications yet.</p>
+                <p className="flex h-40 items-center justify-center px-5 text-sm text-muted-foreground">No notifications yet.</p>
             ) : !scrolls ? (
-                <ScrollArea className="h-[32rem]">
-                    <ul>{items.map((item) => <Row key={item.id} item={item} />)}</ul>
-                </ScrollArea>
+                <div className="max-h-[32rem] overflow-y-auto">
+                    <ul className="[&>li:last-child]:border-b-0">{items.map((item) => <Row key={item.id} item={item} />)}</ul>
+                </div>
             ) : (
                 <div className="ticker h-[32rem] overflow-hidden" data-paused={paused}>
                     <ul className="animate-marquee-y">

@@ -13,6 +13,8 @@ class Application extends Model
 
     public const WITHDRAWN = 'withdrawn';
 
+    public const REJECTED = 'rejected';
+
     protected $table = 'student.applications';
 
     protected $guarded = [];
@@ -24,6 +26,7 @@ class Application extends Model
             'fee_amount' => 'decimal:2',
             'submitted_at' => 'datetime',
             'withdrawn_at' => 'datetime',
+            'rejected_at' => 'datetime',
         ];
     }
 
