@@ -127,7 +127,7 @@ class RecruitmentController extends Controller
         $copy->save();
 
         foreach ($recruitment->posts as $post) {
-            $copy->posts()->create($post->only(['name', 'code', 'monthly_salary', 'is_contractual', 'contract_duration', 'contract_unit', 'minimum_qualification', 'preferable_qualification', 'age_max', 'experience_years', 'reserved_for', 'total_vacancies', 'category_breakup', 'horizontal', 'district_breakup', 'sort']));
+            $copy->posts()->create($post->only(['name', 'code', 'monthly_salary', 'is_contractual', 'contract_duration', 'contract_unit', 'minimum_qualification', 'preferable_qualification', 'age_max', 'experience_years', 'experience_criteria', 'reserved_for', 'total_vacancies', 'category_breakup', 'horizontal', 'district_breakup', 'sort']));
         }
 
         $this->log($copy, 'created', $request, null, ['duplicated_from' => $recruitment->advt_no]);

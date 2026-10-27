@@ -1,11 +1,12 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { Inbox, Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { Info, Inbox, Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { Field, NativeSelect } from '@/components/admin/recruitment/ui';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AdminLayout from '@/layouts/admin-layout';
@@ -56,7 +57,7 @@ const fromRow = (p: PostRow): PostForm => ({
     experience_years: str(p.experience_years), experience_criteria: str(p.experience_criteria), is_active: p.is_active,
 });
 
-export default function Posts({ posts, filters, qualifications }: Props) {
+export default function Posts({ posts, filters }: Props) {
     const [search, setSearch] = useState(filters.search);
     const [editing, setEditing] = useState<PostRow | 'new' | null>(null);
     const [deleting, setDeleting] = useState<PostRow | null>(null);
@@ -104,8 +105,6 @@ export default function Posts({ posts, filters, qualifications }: Props) {
                             <TableHead>Post</TableHead>
                             <TableHead>Code</TableHead>
                             <TableHead>Type</TableHead>
-                            <TableHead>Minimum qualification</TableHead>
-                            <TableHead>Preferable qualification</TableHead>
                             <TableHead>Experience</TableHead>
                             <TableHead>Enabled</TableHead>
                             <TableHead className="w-24"><span className="sr-only">Actions</span></TableHead>
@@ -114,18 +113,21 @@ export default function Posts({ posts, filters, qualifications }: Props) {
                     <TableBody>
                         {posts.data.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={8} className="py-14 text-center text-muted-foreground">
+                                <TableCell colSpan={6} className="py-14 text-center text-muted-foreground">
                                     <Inbox className="mx-auto mb-2 size-8" aria-hidden="true" />
                                     {filters.search || filters.status ? 'No posts match these filters.' : 'No posts yet. Add the first one.'}
                                 </TableCell>
                             </TableRow>
                         ) : posts.data.map((p) => (
                             <TableRow key={p.id} className={cn(!p.is_active && 'text-muted-foreground')}>
-                                <TableCell className="font-medium">{p.name}</TableCell>
+                                <TableCell className="font-medium">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="wrap-break-word">{p.name}</span>
+                                        <PostDetails post={p} />
+                                    </div>
+                                </TableCell>
                                 <TableCell className="whitespace-nowrap">{p.code}</TableCell>
                                 <TableCell>{p.is_contractual ? 'Contractual' : 'Regular'}</TableCell>
-                                <TableCell>{p.minimum_qualification || '—'}</TableCell>
-                                <TableCell className="max-w-64 truncate" title={p.preferable_qualification ?? undefined}>{p.preferable_qualification || '—'}</TableCell>
                                 <TableCell className="whitespace-nowrap">{p.experience_required ? `${p.experience_years} yrs` : 'Not required'}</TableCell>
                                 <TableCell>
                                     <Switch
@@ -156,7 +158,7 @@ export default function Posts({ posts, filters, qualifications }: Props) {
                 </div>
             )}
 
-            {editing && <PostDialog key={editing === 'new' ? 'new' : editing.id} post={editing === 'new' ? null : editing} qualifications={qualifications} onClose={() => setEditing(null)} />}
+            {editing && <PostDialog key={editing === 'new' ? 'new' : editing.id} post={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
 
             <Dialog open={deleting !== null} onOpenChange={(o) => !o && setDeleting(null)}>
                 <DialogContent>
@@ -176,9 +178,10 @@ export default function Posts({ posts, filters, qualifications }: Props) {
     );
 }
 
-function PostDialog({ post, qualifications, onClose }: { post: PostRow | null; qualifications: string[]; onClose: () => void }) {
+function PostDialog({ post, onClose }: { post: PostRow | null; onClose: () => void }) {
     const form = useForm<PostForm>(post ? fromRow(post) : emptyForm);
     const { data, setData, errors, processing } = form;
+    const [hasPreference, setHasPreference] = useState(Boolean(data.preferable_qualification));
 
     const text = (key: keyof PostForm) => (e: { target: { value: string } }) => setData(key, e.target.value as never);
 
@@ -199,7 +202,7 @@ function PostDialog({ post, qualifications, onClose }: { post: PostRow | null; q
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>{post ? 'Edit Post' : 'Add Post'}</DialogTitle>
-                    <DialogDescription>Defaults only. Salary, number of posts, age and contract period are entered for each notification.</DialogDescription>
+                    {/* <DialogDescription>Defaults only. Salary, number of posts, age and contract period are entered for each notification.</DialogDescription> */}
                 </DialogHeader>
 
                 <form onSubmit={submit} className="grid gap-5 sm:grid-cols-2">
@@ -210,15 +213,27 @@ function PostDialog({ post, qualifications, onClose }: { post: PostRow | null; q
                         <Input id="post-code" value={data.code} onChange={text('code')} aria-invalid={Boolean(errors.code)} />
                     </Field>
 
-                    <Field label="Minimum qualification" required error={errors.minimum_qualification} htmlFor="post-qual">
-                        <NativeSelect id="post-qual" value={data.minimum_qualification} onChange={text('minimum_qualification')} aria-invalid={Boolean(errors.minimum_qualification)}>
-                            <option value="">Select</option>
-                            {qualifications.map((q) => <option key={q} value={q}>{q}</option>)}
-                        </NativeSelect>
+                    <Field label="Minimum qualification" required error={errors.minimum_qualification} htmlFor="post-qual" className="sm:col-span-2">
+                        <Input id="post-qual" value={data.minimum_qualification} onChange={text('minimum_qualification')} maxLength={255} aria-invalid={Boolean(errors.minimum_qualification)} />
                     </Field>
-                    <Field label="Preferable qualification" error={errors.preferable_qualification} htmlFor="post-pref-qual">
-                        <Input id="post-pref-qual" value={data.preferable_qualification} onChange={text('preferable_qualification')} />
-                    </Field>
+
+                    <ToggleRow
+                        label="Preference to be given"
+                        checked={hasPreference}
+                        onChange={(v) => {
+                            setHasPreference(v);
+
+                            if (!v) {
+                                setData('preferable_qualification', '');
+                            }
+                        }}
+                        className="sm:col-span-2"
+                    />
+                    {hasPreference && (
+                        <Field label="Preferable qualification" required error={errors.preferable_qualification} htmlFor="post-pref-qual" className="sm:col-span-2">
+                            <Input id="post-pref-qual" required value={data.preferable_qualification} onChange={text('preferable_qualification')} maxLength={500} />
+                        </Field>
+                    )}
 
                     <ToggleRow label="Contractual" checked={data.is_contractual} onChange={(v) => setData('is_contractual', v)} className="sm:col-span-2" />
                     <ToggleRow label="Experience required" checked={data.experience_required} onChange={(v) => setData('experience_required', v)} className="sm:col-span-2" />
@@ -243,6 +258,38 @@ function PostDialog({ post, qualifications, onClose }: { post: PostRow | null; q
                 </form>
             </DialogContent>
         </Dialog>
+    );
+}
+
+function PostDetails({ post }: { post: PostRow }) {
+    const rows: [string, string | null][] = [
+        ['Minimum qualification', post.minimum_qualification],
+        ['Preference to be given', post.preferable_qualification],
+        ['Experience', post.experience_required ? `${post.experience_years} yrs${post.experience_criteria ? `. ${post.experience_criteria}` : ''}` : null],
+    ];
+
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="size-6 shrink-0 text-primary" aria-label={`Qualification details for ${post.name}`}>
+                    <Info className="size-4" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-96 max-w-[90vw] overflow-hidden rounded-xl shadow-lg">
+                <div className="border-b bg-muted/50 px-4 py-3">
+                    <p className="text-sm font-semibold leading-snug">{post.name}</p>
+                    <p className="text-xs text-muted-foreground">{post.code}</p>
+                </div>
+                <dl className="grid max-h-80 divide-y overflow-y-auto text-sm">
+                    {rows.map(([label, value]) => (
+                        <div key={label} className="px-4 py-3">
+                            <dt className="text-xs font-semibold tracking-wide text-primary uppercase">{label}</dt>
+                            <dd className={cn('mt-1 leading-relaxed wrap-break-word whitespace-pre-line', !value && 'text-muted-foreground italic')}>{value || 'Not specified'}</dd>
+                        </div>
+                    ))}
+                </dl>
+            </PopoverContent>
+        </Popover>
     );
 }
 

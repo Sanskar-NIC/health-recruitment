@@ -32,7 +32,9 @@ class SaveRecruitment
             }
 
             // Interview details stay editable after publishing (venues and dates get rescheduled).
-            $recruitment->interview = $this->interviewDetails($data);
+            // A locked notice's mode cannot change, and its validated data no longer carries it.
+            $mode = $locked ? $recruitment->selection_mode : Arr::get($data, 'basic.selection_mode');
+            $recruitment->interview = $this->interviewDetails($data, $mode);
 
             if ($advertisement) {
                 $this->deleteFile($recruitment->advertisement_pdf);
@@ -89,11 +91,11 @@ class SaveRecruitment
     }
 
     /** @return array<string, mixed>|null */
-    private function interviewDetails(array $data): ?array
+    private function interviewDetails(array $data, ?string $mode): ?array
     {
         $interview = array_filter((array) ($data['interview'] ?? []), fn ($v) => $v !== null && $v !== '');
 
-        return Arr::get($data, 'basic.selection_mode') === 'interview' && $interview ? $interview : null;
+        return $mode === 'interview' && $interview ? $interview : null;
     }
 
     private function applyStatus(Recruitment $recruitment, string $action, ?string $publishAt): void
@@ -122,6 +124,7 @@ class SaveRecruitment
                 'preferable_qualification' => $post['preferable_qualification'] ?? null,
                 'age_max' => $post['age_max'] ?? null,
                 'experience_years' => $post['experience_years'] ?? null,
+                'experience_criteria' => $post['experience_criteria'] ?? null,
                 'reserved_for' => $post['reserved_for'] ?? null,
                 'total_vacancies' => (int) ($post['total_vacancies'] ?? 0),
                 'category_breakup' => $post['category_breakup'] ?? null,

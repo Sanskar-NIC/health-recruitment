@@ -69,7 +69,7 @@ export function RecruitmentReview({ form, options, advertisementUrl, syllabusUrl
                                 <tr key={i} className="border-b last:border-0">
                                     <td className="py-2 pr-3 font-medium">{p.name}{p.code && <span className="ml-1 text-muted-foreground">({p.code})</span>}</td>
                                     <td className="py-2 pr-3">{p.monthly_salary ? `₹${Number(p.monthly_salary).toLocaleString('en-IN')}` : '—'}</td>
-                                    {p.is_contractual ? (
+                                    {p.is_contractual && !Object.values(p.category_breakup).some(Boolean) ? (
                                         <td colSpan={options.categories.length} className="py-2 pr-3 text-center text-muted-foreground">Contractual{p.contract_duration ? ` · ${p.contract_duration} ${p.contract_unit}${Number(p.contract_duration) > 1 ? 's' : ''}` : ''}{p.reserved_for ? ` · ${p.reserved_for}` : ''}</td>
                                     ) : options.categories.map((c) => {
                                         const w = p.horizontal.women[c];

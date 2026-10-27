@@ -1,27 +1,22 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { Fragment } from 'react';
-import { Bell, ChevronDown, KeyRound, LayoutDashboard, LogOut, Menu, Search, UserRound } from 'lucide-react';
+import { Bell, ChevronDown, KeyRound, LayoutDashboard, LogOut, Search, UserRound } from 'lucide-react';
 import { findAdminTrail } from '@/components/admin/admin-menu';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { useSidebar } from '@/components/ui/sidebar';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 
 export function AdminTopbar() {
     const admin = usePage().props.auth.admin;
     const { currentUrl } = useCurrentUrl();
     const trail = findAdminTrail(currentUrl);
-    const { isMobile, toggleSidebar } = useSidebar();
-
+    
     return (
         <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b bg-card px-4">
-            {isMobile && (
-                <Button variant="outline" size="icon" onClick={toggleSidebar} aria-label="Open menu" className="size-9 shrink-0">
-                    <Menu className="size-5" aria-hidden="true" />
-                </Button>
-            )}
+            <SidebarTrigger className="-ml-1 shrink-0" />
             <Breadcrumb className="min-w-0">
                 <BreadcrumbList className="flex-nowrap">
                     <BreadcrumbItem className="shrink-0">

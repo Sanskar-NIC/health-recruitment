@@ -55,7 +55,7 @@ export default function Dashboard({ student, stats, recruitments }: Omit<Props, 
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <StatCard title="Current Recruitments" value={stats.current} hint="View open advertisements" icon={BriefcaseMedical} href="/recruitments" tone="bg-primary-tint text-primary" />
-                <StatCard title="Applied Recruitments" value={stats.applied} hint="Track your applications" icon={ClipboardCheck} href="/recruitments" tone="bg-emerald-100 text-emerald-700" />
+                <StatCard title="Applied Recruitments" value={stats.applied} hint="Track your applications" icon={ClipboardCheck} href="/student/applications" tone="bg-emerald-100 text-emerald-700" />
                 <StatCard title="Admit Cards" value={stats.admitCards} hint="Download when released" icon={TicketCheck} href="/admit-card" tone="bg-amber-100 text-amber-700" />
                 <StatCard title="Application Status" value={stats.applied > 0 ? 'In progress' : 'No applications'} hint="Updates appear here after you apply" icon={CheckCircle2} href="/recruitments" tone="bg-sky-100 text-sky-700" />
             </div>
@@ -76,7 +76,10 @@ export default function Dashboard({ student, stats, recruitments }: Omit<Props, 
                                         </p>
                                     </div>
                                 </div>
-                                <StatusBadge status={r.status} />
+                                <div className="flex items-center gap-2">
+                                    <StatusBadge status={r.status} />
+                                    <Button asChild size="sm" variant="outline"><Link href={`/recruitments/${r.id}`}>View</Link></Button>
+                                </div>
                             </li>
                         ))}
                     </ul>

@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { ChevronDown, CircleUserRound, House, LifeBuoy, LogOut, Stethoscope, TriangleAlert } from 'lucide-react';
+import { ChevronDown, CircleUserRound, ClipboardList, House, LifeBuoy, LogOut, Stethoscope, TriangleAlert } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { BrandLogo } from '@/components/brand-logo';
@@ -15,6 +15,7 @@ const links = [
     { href: '/student/dashboard', label: 'Dashboard', icon: House },
     { href: '/student/profile', label: 'My Profile', icon: CircleUserRound },
     { href: '/recruitments', label: 'Recruitments', icon: Stethoscope },
+    { href: '/student/applications', label: 'My Applications', icon: ClipboardList },
 ];
 
 /** Layout for pages that need a logged-in student (own header + nav). */

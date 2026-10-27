@@ -52,7 +52,9 @@ class SaveRecruitmentRequest extends FormRequest
         $posts = (array) $this->input('posts', []);
         // Contractual engagements have no reservation roster, so the age rules are looser.
         $contractualOnly = $posts !== [] && collect($posts)->every(fn ($p) => ! empty($p['is_contractual']));
-        $interview = $strict && $this->input('basic.selection_mode') === 'interview' ? 'required' : 'nullable';
+        // A published notice keeps its mode, and its interview details must stay filled in.
+        $interviewMode = $existing?->isLocked() ? $existing->selection_mode : $this->input('basic.selection_mode');
+        $interview = ($strict || $existing?->isLocked()) && $interviewMode === 'interview' ? 'required' : 'nullable';
 
         $files = [
             'advertisement_pdf' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
@@ -112,6 +114,7 @@ class SaveRecruitmentRequest extends FormRequest
             'posts.*.preferable_qualification' => ['nullable', 'string', 'max:500'],
             'posts.*.age_max' => ['nullable', 'integer', 'min:14', 'max:80'],
             'posts.*.experience_years' => ['nullable', 'numeric', 'min:0', 'max:50'],
+            'posts.*.experience_criteria' => ['nullable', 'string', 'max:500'],
             'posts.*.reserved_for' => ['nullable', Rule::in(RecruitmentOptions::CATEGORIES)],
             'posts.*.contract_duration' => ['nullable', 'integer', 'min:1'],
             'posts.*.contract_unit' => ['nullable', Rule::in(['day', 'month', 'year'])],
@@ -184,13 +187,13 @@ class SaveRecruitmentRequest extends FormRequest
 
             if ($this->isStrict()) {
                 foreach ((array) $this->input('posts', []) as $i => $post) {
-                    // Contractual engagements have no reservation roster.
-                    if (! empty($post['is_contractual'])) {
-                        continue;
-                    }
-
                     $total = (int) ($post['total_vacancies'] ?? 0);
                     $sum = array_sum(array_map('intval', (array) ($post['category_breakup'] ?? [])));
+
+                    // Contractual engagements have no roster unless the advertisement lists one.
+                    if (! empty($post['is_contractual']) && $sum === 0) {
+                        continue;
+                    }
 
                     if ($sum !== $total) {
                         $validator->errors()->add("posts.$i.category_breakup", "Category-wise vacancies ($sum) must add up to the total ($total).");

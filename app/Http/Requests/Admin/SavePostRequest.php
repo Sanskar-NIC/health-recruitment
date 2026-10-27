@@ -32,7 +32,7 @@ class SavePostRequest extends FormRequest
                 }
             }],
             'is_contractual' => ['required', 'boolean'],
-            'minimum_qualification' => ['required', 'string', Rule::in(RecruitmentOptions::QUALIFICATIONS)],
+            'minimum_qualification' => ['required', 'string', 'max:255'],
             'preferable_qualification' => ['nullable', 'string', 'max:500'],
             'experience_required' => ['required', 'boolean'],
             'experience_years' => [Rule::requiredIf(fn () => $this->boolean('experience_required')), 'nullable', 'numeric', 'min:0.5', 'max:50'],

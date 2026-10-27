@@ -18,6 +18,7 @@ export interface Options {
         preferable_qualification: string | null;
         experience_required: boolean;
         experience_years: number | null;
+        experience_criteria: string | null;
     }[];
 }
 
@@ -32,6 +33,7 @@ export interface PostForm {
     preferable_qualification: string;
     age_max: string;
     experience_years: string;
+    experience_criteria: string;
     /** Contractual posts are advertised as e.g. "1 (ST)". */
     reserved_for: string;
     total_vacancies: string;
@@ -113,6 +115,7 @@ export const newPost = (options: Options): PostForm => ({
     preferable_qualification: '',
     age_max: '',
     experience_years: '',
+    experience_criteria: '',
     reserved_for: '',
     total_vacancies: '',
     category_breakup: Object.fromEntries(options.categories.map((c) => [c, ''])),
@@ -184,6 +187,7 @@ export function hydrate(record: RecruitmentForm, options: Options): RecruitmentF
             preferable_qualification: str(p.preferable_qualification),
             age_max: str(p.age_max),
             experience_years: str(p.experience_years),
+            experience_criteria: str(p.experience_criteria),
             reserved_for: str(p.reserved_for),
             total_vacancies: str(p.total_vacancies),
             category_breakup: strMap(p.category_breakup, options.categories),

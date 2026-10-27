@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Admin\Recruitment;
 use App\Models\Admin\RecruitmentEvent;
 use App\Models\Student\Registration;
+use App\Support\Admin\RecruitmentOptions;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -83,15 +84,16 @@ class PublicFeed
     {
         $featured ??= self::featured();
 
-        if (! $featured) {
-            return [];
-        }
+        return $featured ? self::datesFor(Recruitment::find($featured['id'])) : [];
+    }
 
-        $r = Recruitment::find($featured['id']);
-
+    /** @return list<array{label: string, date: string}> */
+    public static function datesFor(Recruitment $r): array
+    {
         return collect([
-            'Application start' => $r->app_start,
-            'Application end' => $r->app_end,
+            // A walk-in notice has no application window; its closing date is just the interview day.
+            'Application start' => $r->isWalkIn() ? null : $r->app_start,
+            'Application end' => $r->isWalkIn() ? null : $r->app_end,
             'Last date for fee payment' => $r->fee_last_date,
             'Correction window' => $r->correction_end,
             'Admit card release' => $r->admit_card_date,
@@ -104,6 +106,57 @@ class PublicFeed
             ->map(fn ($date, $label) => ['label' => $label, 'date' => $date->format('Y-m-d')])
             ->values()
             ->all();
+    }
+
+    /** Everything on one advertisement's page: posts, eligibility, fees, documents and dates. */
+    public static function detail(Recruitment $r): array
+    {
+        $r->loadMissing('posts');
+        $elig = (array) ($r->eligibility ?? []);
+        $docs = (array) ($r->documents ?? []);
+        $labels = RecruitmentOptions::DOCUMENTS;
+
+        return self::card($r) + [
+            'referenceNo' => $r->reference_no,
+            'notificationDate' => $r->notification_date?->format('Y-m-d'),
+            'description' => $r->description,
+            'syllabusUrl' => $r->syllabus_pdf ? self::pdfUrl($r->syllabus_pdf) : null,
+            'dates' => self::datesFor($r),
+            'posts' => $r->posts->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'code' => $p->code,
+                'monthlySalary' => $p->monthly_salary,
+                'isContractual' => (bool) $p->is_contractual,
+                'contract' => $p->contract_duration ? "{$p->contract_duration} {$p->contract_unit}(s)" : null,
+                'minimumQualification' => $p->minimum_qualification,
+                'preferableQualification' => $p->preferable_qualification,
+                'ageMax' => $p->age_max ?? ($elig['age_max'] ?? null),
+                'experienceYears' => $p->experience_years,
+                'experienceCriteria' => $p->experience_criteria,
+                'reservedFor' => $p->reserved_for,
+                'vacancies' => $p->total_vacancies,
+                'categoryBreakup' => $p->category_breakup ?? [],
+                'womenBreakup' => $p->horizontal['women'] ?? [],
+            ])->values()->all(),
+            'eligibility' => [
+                'ageMin' => $elig['age_min'] ?? null,
+                'ageMax' => $elig['age_max'] ?? null,
+                'ageCutoff' => $elig['age_cutoff'] ?? null,
+                'relaxations' => array_filter((array) ($elig['relaxations'] ?? [])),
+                'qualifications' => array_values((array) ($elig['qualifications'] ?? [])),
+                'council' => $elig['council'] ?? null,
+                'minExperienceYears' => $elig['min_experience_years'] ?? null,
+                'prtcRequired' => (bool) ($elig['prtc_required'] ?? false),
+                'gender' => $elig['gender'] ?? 'any',
+            ],
+            'fees' => array_filter((array) (($r->fees ?? [])['amounts'] ?? []), fn ($v) => $v !== null && $v !== ''),
+            'documents' => [
+                'required' => collect($docs['required'] ?? [])->map(fn ($k) => $labels[$k] ?? $k)->values()->all(),
+                'photo' => $docs['photo'] ?? null,
+                'signature' => $docs['signature'] ?? null,
+            ],
+        ];
     }
 
     /** The advertisement highlighted on the landing page: first open one, else the latest. */
@@ -172,6 +225,7 @@ class PublicFeed
             'status' => $r->displayStatus(),
             'isNew' => $published->gt(now()->subDays(self::NEW_FOR_DAYS)),
             'pdfUrl' => self::pdfUrl($r->advertisement_pdf),
+            'summary' => $r->description,
             'selectionMode' => $r->selection_mode,
             'applyMode' => $r->apply_mode,
             'interview' => $r->isInterview() ? [

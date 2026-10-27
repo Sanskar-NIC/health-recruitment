@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Student\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Student\ApplicationController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Student\HomeController;
 use App\Http\Controllers\Student\NotificationController;
@@ -19,6 +20,7 @@ require __DIR__.'/admin.php';
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('recruitments', [RecruitmentController::class, 'index'])->name('recruitments.index');
+Route::get('recruitments/{recruitment}', [RecruitmentController::class, 'show'])->whereNumber('recruitment')->name('recruitments.show');
 Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::inertia('register', 'student/auth/register')->middleware('guest:student')->name('register');
 
@@ -39,6 +41,14 @@ Route::middleware('guest:student')->group(function () {
 Route::middleware(['auth:student', PreventBackHistory::class])->group(function () {
     Route::get('student/dashboard', StudentDashboardController::class)->name('student.dashboard');
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('student.logout');
+
+    Route::controller(ApplicationController::class)->group(function () {
+        Route::get('student/applications', 'index')->name('student.applications.index');
+        Route::get('student/applications/{application}', 'show')->whereNumber('application')->name('student.applications.show');
+        Route::post('student/applications/{application}/withdraw', 'withdraw')->whereNumber('application')->name('student.applications.withdraw');
+        Route::get('recruitments/{recruitment}/apply/{post}', 'create')->whereNumber(['recruitment', 'post'])->name('student.apply');
+        Route::post('recruitments/{recruitment}/apply/{post}', 'store')->whereNumber(['recruitment', 'post'])->name('student.apply.store');
+    });
 
     Route::prefix('student/profile')->name('student.profile.')->controller(ProfileController::class)->group(function () {
         Route::get('/', 'show')->name('show');

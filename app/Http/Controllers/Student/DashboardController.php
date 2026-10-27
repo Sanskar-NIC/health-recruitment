@@ -22,7 +22,7 @@ class DashboardController extends Controller
             // Applications/admit cards are not built yet, so they are reported as zero.
             'stats' => [
                 'current' => count(array_filter(MockData::recruitments(), fn ($r) => in_array($r['status'], ['open', 'closing_soon'], true))),
-                'applied' => 0,
+                'applied' => $student->applications()->where('status', 'submitted')->count(),
                 'admitCards' => 0,
             ],
             'recruitments' => array_values(array_filter(

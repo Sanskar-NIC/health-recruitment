@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Bell, BriefcaseMedical, CircleHelp, CircleUserRound, FileQuestion, Headset, House, KeyRound, LayoutDashboard, LogIn, Mail, Trophy, UserPlus } from 'lucide-react';
+import { Bell, BriefcaseMedical, ClipboardList, CircleHelp, CircleUserRound, FileQuestion, Headset, House, KeyRound, LayoutDashboard, LogIn, Mail, Trophy, UserPlus } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Fragment } from 'react';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
@@ -26,6 +26,7 @@ const pages: Record<string, Crumb[]> = {
     '/contact': [{ label: 'Contact', href: '/contact', icon: Mail }],
     '/student/dashboard': [],
     '/student/profile': [{ label: 'My Profile', href: '/student/profile', icon: CircleUserRound }],
+    '/student/applications': [{ label: 'My Applications', href: '/student/applications', icon: ClipboardList }],
     '/student/helpdesk': [{ label: 'Helpdesk', href: '/student/helpdesk', icon: Headset }],
 };
 

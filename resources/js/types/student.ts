@@ -14,6 +14,7 @@ export interface Recruitment {
     status: RecruitmentStatus;
     isNew: boolean;
     pdfUrl: string;
+    summary: string | null;
     selectionMode: 'exam' | 'interview';
     applyMode: 'online' | 'walk_in';
     interview: {
@@ -106,4 +107,72 @@ export interface HomeProps {
     featuredRecruitment: Recruitment | null;
     stats: PortalStats;
     faqs: Faq[];
+}
+
+export interface RecruitmentPostDetail {
+    id: number;
+    name: string;
+    code: string | null;
+    monthlySalary: number | null;
+    isContractual: boolean;
+    contract: string | null;
+    minimumQualification: string | null;
+    preferableQualification: string | null;
+    ageMax: number | null;
+    experienceYears: number | null;
+    experienceCriteria: string | null;
+    reservedFor: string | null;
+    vacancies: number;
+    categoryBreakup: Record<string, number>;
+    womenBreakup: Record<string, number | string | null>;
+}
+
+export interface RecruitmentDetail extends Recruitment {
+    referenceNo: string | null;
+    notificationDate: string | null;
+    description: string | null;
+    syllabusUrl: string | null;
+    dates: ImportantDate[];
+    posts: RecruitmentPostDetail[];
+    eligibility: {
+        ageMin: number | null;
+        ageMax: number | null;
+        ageCutoff: string | null;
+        relaxations: Record<string, number>;
+        qualifications: { name: string; min_percent?: number | null }[];
+        council: string | null;
+        minExperienceYears: number | null;
+        prtcRequired: boolean;
+        gender: 'any' | 'male' | 'female';
+    };
+    fees: Record<string, number | string>;
+    documents: {
+        required: string[];
+        photo: { min_kb?: number; max_kb?: number } | null;
+        signature: { min_kb?: number; max_kb?: number } | null;
+    };
+}
+
+export interface EligibilityCheck {
+    key: string;
+    label: string;
+    status: 'pass' | 'fail' | 'info';
+    message: string;
+}
+
+export interface ApplicationSummary {
+    id: number;
+    applicationNo: string;
+    status: 'submitted' | 'withdrawn';
+    category: string;
+    feeAmount: number;
+    feeStatus: 'not_required' | 'pending' | 'paid';
+    submittedAt: string | null;
+    recruitmentId: number;
+    advtNo: string;
+    title: string;
+    postName: string;
+    recruitmentStatus: string;
+    lastDate: string | null;
+    canWithdraw: boolean;
 }

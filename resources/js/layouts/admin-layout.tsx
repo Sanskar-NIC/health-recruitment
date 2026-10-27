@@ -2,11 +2,9 @@ import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { AdminTopbar } from '@/components/admin/admin-topbar';
-import { useFlashToast } from '@/hooks/use-flash-toast';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-    useFlashToast();
 
     // The admin portal is light-mode only, like the public site.
     useEffect(() => {

@@ -1,7 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { CalendarClock, CalendarX, Download, GraduationCap, IndianRupee, MapPin, UserCheck, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/animate-ui/components/radix/tooltip';
 import { NewBadge } from '@/components/student/new-badge';
 import { StatusBadge } from '@/components/student/status-badge';
 import { Button } from '@/components/ui/button';
@@ -27,12 +26,21 @@ function InterviewInfo({ item }: { item: Recruitment }) {
         return null;
     }
 
+    // The schedule may only exist in the advertisement text, so show that instead of "to be announced".
+    if (!iv.date && !iv.venue && item.summary) {
+        return (
+            <InfoRow icon={UserCheck} label="Interview details">
+                <span className="line-clamp-4 whitespace-pre-line">{item.summary}</span>
+            </InfoRow>
+        );
+    }
+
     return (
         <>
             <InfoRow icon={UserCheck} label="Interview">
                 Interview: {iv.date ? formatDate(iv.date) : 'To be announced'}{iv.dateTo && iv.dateTo !== iv.date ? ` to ${formatDate(iv.dateTo)}` : ''}{iv.time ? `, ${formatTime(iv.time)}` : ''}
             </InfoRow>
-            {iv.venue && <InfoRow icon={MapPin} label="Venue">{iv.venue}</InfoRow>}
+            {iv.venue && <InfoRow icon={MapPin} label="Venue">Venue: {iv.venue}</InfoRow>}
         </>
     );
 }
@@ -119,32 +127,27 @@ export function RecruitmentRow({ item }: { item: Recruitment }) {
 }
 
 function Actions({ item, className }: { item: Recruitment; className?: string }) {
+    const open = item.status === 'open' || item.status === 'closing_soon';
+
     return (
         <div className={cn('flex flex-wrap gap-2', className)}>
+            {item.applyMode === 'walk_in' && open && (
+                <p className="basis-full rounded-xl bg-violet-50 px-3 py-2.5 text-center text-sm font-medium text-violet-800">No application needed. Report in person.</p>
+            )}
             <Button asChild variant="outline" className="h-11 flex-1 rounded-xl border-primary/40 text-primary hover:bg-primary-tint hover:text-primary-hover">
                 <a href={item.pdfUrl}>
                     <Download className="size-4" aria-hidden="true" />
-                    View Advertisement
+                    Advertisement
                 </a>
             </Button>
-            {item.applyMode === 'walk_in' && (item.status === 'open' || item.status === 'closing_soon') && (
-                <p className="flex h-11 flex-1 items-center justify-center rounded-xl bg-violet-50 px-3 text-center text-sm font-medium text-violet-800">No application needed. Report in person.</p>
-            )}
-            {item.applyMode !== 'walk_in' && item.status === 'upcoming' && (
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <span tabIndex={0} className="inline-flex flex-1 rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
-                            <Button disabled aria-label={`Apply Now for ${item.postName} (not open yet)`} className="h-11 w-full rounded-xl">
-                                Apply Now
-                            </Button>
-                        </span>
-                    </TooltipTrigger>
-                    <TooltipContent>Applications not open yet</TooltipContent>
-                </Tooltip>
-            )}
-            {item.applyMode !== 'walk_in' && (item.status === 'open' || item.status === 'closing_soon') && (
+            {item.applyMode !== 'walk_in' && (
                 <Button asChild className="h-11 flex-1 rounded-xl hover:bg-primary-hover">
-                    <Link href="/login">Apply Now</Link>
+                    <Link href={`/recruitments/${item.id}`}>{open ? 'View & Apply' : 'View Details'}</Link>
+                </Button>
+            )}
+            {item.applyMode === 'walk_in' && (
+                <Button asChild variant="secondary" className="h-11 flex-1 rounded-xl">
+                    <Link href={`/recruitments/${item.id}`}>View Details</Link>
                 </Button>
             )}
         </div>

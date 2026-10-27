@@ -61,6 +61,7 @@ class RecruitmentPresenter
                 'preferable_qualification' => $p->preferable_qualification,
                 'age_max' => $p->age_max,
                 'experience_years' => $p->experience_years,
+                'experience_criteria' => $p->experience_criteria,
                 'reserved_for' => $p->reserved_for,
                 'total_vacancies' => $p->total_vacancies,
                 'category_breakup' => $p->category_breakup ?? [],

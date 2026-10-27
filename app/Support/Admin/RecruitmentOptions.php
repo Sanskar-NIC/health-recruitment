@@ -54,7 +54,7 @@ class RecruitmentOptions
             'documents' => self::DOCUMENTS,
             'districts' => ProfileOptions::DISTRICTS,
             'posts' => Post::query()->where('is_active', true)->orderBy('name')
-                ->get(['name', 'code', 'is_contractual', 'minimum_qualification', 'preferable_qualification', 'experience_required', 'experience_years'])->values(),
+                ->get(['name', 'code', 'is_contractual', 'minimum_qualification', 'preferable_qualification', 'experience_required', 'experience_years', 'experience_criteria'])->values(),
         ];
     }
 }

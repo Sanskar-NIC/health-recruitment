@@ -83,10 +83,11 @@ export function PostsStep({ form, update, errors, options }: StepProps) {
                         p.minimum_qualification = m?.minimum_qualification ?? '';
                         p.preferable_qualification = m?.preferable_qualification ?? '';
                         p.experience_years = m?.experience_required && m.experience_years ? String(m.experience_years) : '';
+                        p.experience_criteria = m?.experience_required ? (m.experience_criteria ?? '') : '';
                         deriveEligibility(d, options);
                     });
                 };
-                const set = (key: 'monthly_salary' | 'total_vacancies' | 'preferable_qualification' | 'age_max' | 'experience_years' | 'contract_duration') => (e: { target: { value: string } }) => update((d) => { d.posts[i][key] = e.target.value; deriveEligibility(d, options); });
+                const set = (key: 'monthly_salary' | 'total_vacancies' | 'preferable_qualification' | 'age_max' | 'experience_years' | 'experience_criteria' | 'contract_duration') => (e: { target: { value: string } }) => update((d) => { d.posts[i][key] = e.target.value; deriveEligibility(d, options); });
 
                 return (
                     <div key={i} className="grid gap-5 rounded-lg border bg-muted/30 p-5 sm:grid-cols-6">
@@ -119,10 +120,7 @@ export function PostsStep({ form, update, errors, options }: StepProps) {
                             <Input type="number" min={14} value={post.age_max} onChange={set('age_max')} />
                         </Field>
                         <Field label="Minimum qualification" required error={err('minimum_qualification')} className="sm:col-span-3">
-                            <NativeSelect value={post.minimum_qualification} onChange={(e) => update((d) => { d.posts[i].minimum_qualification = e.target.value; deriveEligibility(d, options); })}>
-                                <option value="">Select</option>
-                                {options.qualifications.map((q) => <option key={q} value={q}>{q}</option>)}
-                            </NativeSelect>
+                            <Input value={post.minimum_qualification} maxLength={255} onChange={(e) => update((d) => { d.posts[i].minimum_qualification = e.target.value; deriveEligibility(d, options); })} />
                         </Field>
                         <Field label="Preferable qualification" error={err('preferable_qualification')} className="sm:col-span-3">
                             <Input value={post.preferable_qualification} onChange={set('preferable_qualification')} />
@@ -130,6 +128,11 @@ export function PostsStep({ form, update, errors, options }: StepProps) {
                         <Field label="Experience required (years)" error={err('experience_years')} className="sm:col-span-2">
                             <Input type="number" min={0} step="0.5" value={post.experience_years} onChange={set('experience_years')} />
                         </Field>
+                        {Number(post.experience_years) > 0 && (
+                            <Field label="Experience details" error={err('experience_criteria')} className="sm:col-span-6">
+                                <Input value={post.experience_criteria} maxLength={500} placeholder="e.g. in Mental Health Work, preferable counselling" onChange={set('experience_criteria')} />
+                            </Field>
+                        )}
                         {post.is_contractual && (
                             <>
                                 <Field label="Contract duration" error={err('contract_duration')} className="sm:col-span-2">

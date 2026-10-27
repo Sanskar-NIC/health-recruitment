@@ -18,7 +18,6 @@ import {
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 /** Same 20px icon whether the sidebar is open or collapsed. */
 const iconButton = '[&>svg]:size-5';
@@ -70,11 +69,9 @@ function NavEntry({ item }: { item: AdminMenuItem }) {
 }
 
 export function AdminSidebar() {
-    // Fixed on desktop; phones keep a slide-in drawer opened from the topbar.
-    const isMobile = useIsMobile();
-
+    // Collapses to icons on desktop; phones get a slide-in drawer opened from the topbar.
     return (
-        <Sidebar collapsible={isMobile ? 'offcanvas' : 'none'} className="sticky top-0 h-svh overflow-y-auto border-r">
+        <Sidebar collapsible="icon">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
