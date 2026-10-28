@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Student\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Student\Auth\PasswordResetController;
 use App\Http\Controllers\Student\ApplicationController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Student\HomeController;
@@ -32,6 +33,8 @@ Route::controller(PlaceholderController::class)->group(function () {
 // Student Guest Routes
 Route::middleware('guest:student')->group(function () {
     Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('student.login');
+    Route::post('password/otp', [PasswordResetController::class, 'sendOtp'])->middleware('throttle:5,1')->name('student.password.otp');
+    Route::post('password/reset', [PasswordResetController::class, 'reset'])->middleware('throttle:5,1')->name('student.password.reset');
 });
 
 // Student Protected Routes (Login Only)

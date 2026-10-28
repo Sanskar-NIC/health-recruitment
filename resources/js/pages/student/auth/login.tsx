@@ -2,7 +2,9 @@ import { Head, usePage } from '@inertiajs/react';
 import { CircleCheck, Clock, LogIn, Mail, Phone, ShieldCheck, TriangleAlert } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import type { Variants } from 'motion/react';
+import { useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { toast } from 'sonner';
 import { LoginForm } from '@/components/student/login-form';
 import StudentLayout from '@/layouts/student-layout';
 
@@ -28,8 +30,14 @@ const slideRight: Variants = {
     show: { opacity: 1, x: 0, transition: { duration: 0.4, ease: 'easeOut' } },
 };
 
-export default function Login() {
+export default function Login({ status }: { status?: string }) {
     const { helpdesk } = usePage().props.portal;
+
+    useEffect(() => {
+        if (status) {
+            toast.success(status);
+        }
+    }, [status]);
     const reduce = useReducedMotion();
 
     return (

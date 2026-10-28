@@ -12,7 +12,7 @@ import StudentLayout from '@/layouts/student-layout';
 
 type Errors = Partial<Record<'identifier' | 'otp' | 'password' | 'confirm', string>>;
 
-// UI-only: no request is sent; replace the toasts with backend calls later.
+// Demo flow: the OTP is always 123456 until a real SMS/email provider is wired in.
 export default function ForgotPassword() {
     const form = useForm({ identifier: '', otp: '', password: '', confirm: '' });
     const [step, setStep] = useState<'request' | 'reset'>('request');
@@ -36,8 +36,15 @@ export default function ForgotPassword() {
         setErrors(next);
 
         if (Object.keys(next).length === 0) {
-            setStep('reset');
-            toast.success('OTP sent (demo: enter any 6 digits)');
+            form.transform((d) => ({ identifier: d.identifier }));
+            form.post('/password/otp', {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setStep('reset');
+                    toast.success('OTP sent (demo OTP: 123456)');
+                },
+                onError: (errs) => setErrors((p) => ({ ...p, ...errs })),
+            });
         }
     };
 
@@ -61,7 +68,10 @@ export default function ForgotPassword() {
         setErrors(next);
 
         if (Object.keys(next).length === 0) {
-            toast.success('Password reset (demo only). Please log in.');
+            form.transform((d) => ({ otp: d.otp, password: d.password, confirm: d.confirm }));
+            form.post('/password/reset', {
+                onError: (errs) => setErrors((p) => ({ ...p, ...errs })),
+            });
         }
     };
 
@@ -74,7 +84,7 @@ export default function ForgotPassword() {
                         <FormField id="fp-identifier" label="Registration No. or Mobile / Email" required error={errors.identifier}>
                             {(aria) => <Input {...aria} value={data.identifier} onChange={(e) => set('identifier', e.target.value)} className="h-11" />}
                         </FormField>
-                        <Button type="submit" className="h-11 w-full font-medium hover:bg-primary-hover">Send OTP</Button>
+                        <Button type="submit" disabled={form.processing} className="h-11 w-full font-medium hover:bg-primary-hover">Send OTP</Button>
                     </form>
                 ) : (
                     <form onSubmit={resetPassword} noValidate className="grid gap-4">
@@ -88,7 +98,7 @@ export default function ForgotPassword() {
                         <FormField id="fp-confirm" label="Confirm Password" required error={errors.confirm}>
                             {(aria) => <Input {...aria} type="password" autoComplete="new-password" value={data.confirm} onChange={(e) => set('confirm', e.target.value)} className="h-11" />}
                         </FormField>
-                        <Button type="submit" className="h-11 w-full font-medium hover:bg-primary-hover">Reset Password</Button>
+                        <Button type="submit" disabled={form.processing} className="h-11 w-full font-medium hover:bg-primary-hover">Reset Password</Button>
                     </form>
                 )}
                 <p className="mt-4 text-center text-sm">
