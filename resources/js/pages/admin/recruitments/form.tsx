@@ -9,7 +9,7 @@ import { BasicInfoStep, PostsStep } from '@/components/admin/recruitment/steps-b
 import { RecruitmentStepSidebar } from '@/components/admin/recruitment/step-sidebar';
 import { AttachmentsStep, DatesStep, DocumentsStep, FeeStep } from '@/components/admin/recruitment/steps-misc';
 import { RecruitmentReview } from '@/components/admin/recruitment/review';
-import { STATUS_LABEL, STATUS_TONE, STEPS, emptyForm, hydrate, stepForError } from '@/components/admin/recruitment/types';
+import { STATUS_LABEL, STATUS_TONE, STEPS, emptyForm, furthestStep, hydrate, stepForError } from '@/components/admin/recruitment/types';
 import type { Options, RecruitmentForm, RecruitmentRecord } from '@/components/admin/recruitment/types';
 import { Field } from '@/components/admin/recruitment/ui';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,6 @@ export default function RecruitmentFormPage({ recruitment, options }: Props) {
     const [form, setForm] = useState<RecruitmentForm>(() => (recruitment ? hydrate(recruitment, options) : emptyForm(options)));
     const [step, setStep] = useState(0);
     const [advertisement, setAdvertisement] = useState<File | null>(null);
-    const [syllabus, setSyllabus] = useState<File | null>(null);
     const [publishAt, setPublishAt] = useState(recruitment?.publish_at ?? '');
     const [processing, setProcessing] = useState(false);
     const [visited, setVisited] = useState<Set<number>>(() => new Set([0]));
@@ -45,6 +44,9 @@ export default function RecruitmentFormPage({ recruitment, options }: Props) {
 
     const stepsWithErrors = useMemo(() => new Set(Object.keys(errors).map(stepForError)), [errors]);
 
+    // Locked recruitments are already complete, so every step stays open; otherwise later steps unlock as the form is filled in.
+    const furthest = locked ? STEPS.length - 1 : furthestStep(form, Boolean(advertisement || recruitment?.advertisement_url));
+
     const submit = (action: 'draft' | 'schedule' | 'publish' | 'save') => {
         setProcessing(true);
 
@@ -54,7 +56,6 @@ export default function RecruitmentFormPage({ recruitment, options }: Props) {
                 // Structured data travels as one JSON string; blanks become null.
                 payload: JSON.stringify({ ...form, action: action === 'save' ? 'draft' : action, publish_at: publishAt || null }, (_k, v) => (v === '' ? null : v)),
                 advertisement_pdf: advertisement,
-                syllabus_pdf: syllabus,
             },
             {
                 forceFormData: true,
@@ -63,6 +64,7 @@ export default function RecruitmentFormPage({ recruitment, options }: Props) {
                     const first = Math.min(...Object.keys(errs).map(stepForError));
 
                     setStep(first);
+                    setVisited((v) => new Set(v).add(first));
                     toast.error(`Please fix the highlighted fields (${STEPS[first]}).`);
                 },
                 onFinish: () => setProcessing(false),
@@ -74,7 +76,7 @@ export default function RecruitmentFormPage({ recruitment, options }: Props) {
     const last = step === STEPS.length - 1;
     const goTo = (n: number | ((s: number) => number)) =>
         setStep((s) => {
-            const next = typeof n === 'function' ? n(s) : n;
+            const next = Math.min(typeof n === 'function' ? n(s) : n, furthest);
 
             setVisited((v) => new Set(v).add(s).add(next));
 
@@ -88,9 +90,9 @@ export default function RecruitmentFormPage({ recruitment, options }: Props) {
         <FeeStep key="s4" {...stepProps} />,
         <DocumentsStep key="s5" {...stepProps} />,
         <DatesStep key="s6" {...stepProps} />,
-        <AttachmentsStep key="s7" advertisement={advertisement} syllabus={syllabus} onAdvertisement={setAdvertisement} onSyllabus={setSyllabus} existing={{ advertisement: recruitment?.advertisement_url ?? null, syllabus: recruitment?.syllabus_url ?? null }} errors={errors} />,
+        <AttachmentsStep key="s7" advertisement={advertisement} onAdvertisement={setAdvertisement} existing={{ advertisement: recruitment?.advertisement_url ?? null }} errors={errors} />,
         <div key="s8" className="grid gap-5">
-            <RecruitmentReview form={form} options={options} advertisementUrl={recruitment?.advertisement_url} syllabusUrl={recruitment?.syllabus_url} pendingFiles={{ advertisement: advertisement?.name, syllabus: syllabus?.name }} />
+            <RecruitmentReview form={form} options={options} advertisementUrl={recruitment?.advertisement_url} pendingFiles={{ advertisement: advertisement?.name }} />
             {!locked && (
                 <section className="rounded-lg border bg-card p-5 shadow-sm">
                     <h3 className="mb-3 font-semibold text-primary-deep">Publish</h3>
@@ -142,12 +144,12 @@ export default function RecruitmentFormPage({ recruitment, options }: Props) {
                                 {processing ? <Loader2 className="animate-spin" /> : <Save />} Save as draft
                             </Button>
                         )}
-                        {!last && <Button type="button" onClick={() => goTo((s) => s + 1)} className="hover:bg-primary-hover">Next <ArrowRight /></Button>}
+                        {!last && <Button type="button" disabled={step >= furthest} title={step >= furthest ? 'Fill in the required fields on this step to continue' : undefined} onClick={() => goTo((s) => s + 1)} className="hover:bg-primary-hover">Next <ArrowRight /></Button>}
                     </div>
                 </div>
                 </div>
                 <div className="order-1 lg:order-2">
-                    <RecruitmentStepSidebar current={step} visited={visited} errorSteps={stepsWithErrors} onSelect={goTo} />
+                    <RecruitmentStepSidebar current={step} visited={visited} errorSteps={stepsWithErrors} furthest={furthest} onSelect={goTo} />
                 </div>
             </div>
         </div>

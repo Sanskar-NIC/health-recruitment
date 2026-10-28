@@ -120,7 +120,7 @@ export default function RecruitmentShow({ recruitment, events, options, applicat
                     <BasicSection form={form} />
                     <div className="grid gap-5">
                         <DatesSection form={form} />
-                        <AttachmentsSection advertisementUrl={recruitment.advertisement_url} syllabusUrl={recruitment.syllabus_url} />
+                        <AttachmentsSection advertisementUrl={recruitment.advertisement_url} />
                     </div>
                 </div>
             )}

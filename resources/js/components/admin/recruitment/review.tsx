@@ -32,8 +32,7 @@ interface Props {
     form: RecruitmentForm;
     options: Options;
     advertisementUrl?: string | null;
-    syllabusUrl?: string | null;
-    pendingFiles?: { advertisement?: string; syllabus?: string };
+    pendingFiles?: { advertisement?: string };
 }
 
 export const totalVacancies = (form: RecruitmentForm) => form.posts.reduce((t, p) => t + (Number(p.total_vacancies) || 0), 0);
@@ -151,13 +150,12 @@ export function DatesSection({ form }: { form: RecruitmentForm }) {
     );
 }
 
-export function AttachmentsSection({ advertisementUrl, syllabusUrl, pendingFiles }: Pick<Props, 'advertisementUrl' | 'syllabusUrl' | 'pendingFiles'>) {
+export function AttachmentsSection({ advertisementUrl, pendingFiles }: Pick<Props, 'advertisementUrl' | 'pendingFiles'>) {
     return (
             <Block title="Attachments">
                 <ul className="grid gap-1.5 text-sm">
                     {[
                         ['Advertisement PDF', advertisementUrl, pendingFiles?.advertisement],
-                        ['Syllabus PDF', syllabusUrl, pendingFiles?.syllabus],
                     ].map(([label, url, pending]) => (
                         <li key={label} className="flex items-center gap-2">
                             <FileText className="size-4 text-primary" aria-hidden="true" />
@@ -171,7 +169,7 @@ export function AttachmentsSection({ advertisementUrl, syllabusUrl, pendingFiles
 }
 
 /** Everything the admin has entered, laid out like the candidate-facing notice. */
-export function RecruitmentReview({ form, options, advertisementUrl, syllabusUrl, pendingFiles }: Props) {
+export function RecruitmentReview({ form, options, advertisementUrl, pendingFiles }: Props) {
     return (
         <div className="grid gap-5">
             <BasicSection form={form} />
@@ -180,7 +178,7 @@ export function RecruitmentReview({ form, options, advertisementUrl, syllabusUrl
             <FeeSection form={form} options={options} />
             <DocumentsSection form={form} options={options} />
             <DatesSection form={form} />
-            <AttachmentsSection advertisementUrl={advertisementUrl} syllabusUrl={syllabusUrl} pendingFiles={pendingFiles} />
+            <AttachmentsSection advertisementUrl={advertisementUrl} pendingFiles={pendingFiles} />
         </div>
     );
 }

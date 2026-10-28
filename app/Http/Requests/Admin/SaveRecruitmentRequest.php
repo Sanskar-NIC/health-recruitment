@@ -136,7 +136,7 @@ class SaveRecruitmentRequest extends FormRequest
             'eligibility.age_cutoff' => [$contractualOnly ? ($strict ? 'required_with:eligibility.age_max' : 'nullable') : $req, 'nullable', 'date'],
             'eligibility.relaxations' => ['nullable', 'array'],
             'eligibility.relaxations.*' => ['nullable', 'integer', 'min:0', 'max:30'],
-            'eligibility.qualifications' => [$strict ? 'required' : 'nullable', 'array', $strict ? 'min:1' : 'min:0'],
+            'eligibility.qualifications' => ['nullable', 'array'],
             'eligibility.qualifications.*.name' => ['required', 'string'],
             'eligibility.qualifications.*.min_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'eligibility.council' => ['nullable', 'string', 'max:255'],
@@ -189,8 +189,8 @@ class SaveRecruitmentRequest extends FormRequest
                     $total = (int) ($post['total_vacancies'] ?? 0);
                     $sum = array_sum(array_map('intval', (array) ($post['category_breakup'] ?? [])));
 
-                    // Contractual engagements have no roster unless the advertisement lists one.
-                    if (! empty($post['is_contractual']) && $sum === 0) {
+                    // A category roster is optional: some advertisements only state the total.
+                    if ($sum === 0) {
                         continue;
                     }
 

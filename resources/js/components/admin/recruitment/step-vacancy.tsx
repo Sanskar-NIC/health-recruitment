@@ -24,50 +24,7 @@ export function VacancyStep({ form, update, errors, options }: StepProps) {
                     return <ContractualVacancy key={i} index={i} post={post} total={total} catSum={catSum} ok={ok} update={update} errors={errors} options={options} />;
                 }
 
-                return (
-                    <div key={i} className="grid gap-5 rounded-lg border bg-muted/30 p-5">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                            <h3 className="text-sm font-semibold text-primary-deep">{post.name || `Post ${i + 1}`} · {total} vacancies</h3>
-                            <span className={`flex items-center gap-1.5 text-sm font-medium ${ok ? 'text-emerald-700' : 'text-amber-700'}`}>
-                                {ok ? <CircleCheck className="size-4" aria-hidden="true" /> : <CircleAlert className="size-4" aria-hidden="true" />}
-                                Category total {catSum} / {total}
-                            </span>
-                        </div>
-
-                        <div>
-                            <p className="mb-1 text-sm font-medium">Category-wise vacancies</p>
-                            <p className="mb-3 text-xs text-muted-foreground">Women and Ex-Servicemen seats are optional and are counted <em>inside</em> the category (e.g. UR 116 including 39 for women).</p>
-                            <CategoryTable index={i} post={post} update={update} options={options} withExServiceman />
-                            {errors[`posts.${i}.category_breakup`] && <p role="alert" className="mt-2 text-xs font-medium text-destructive">{errors[`posts.${i}.category_breakup`]}</p>}
-                            {errors[`posts.${i}.horizontal`] && <p role="alert" className="mt-2 text-xs font-medium text-destructive">{errors[`posts.${i}.horizontal`]}</p>}
-                        </div>
-
-                        <Field label="Posts reserved for persons with disabilities (PwBD)" className="max-w-sm">
-                            <Input type="number" min={0} value={post.horizontal.pwbd} onChange={(e) => update((d) => { d.posts[i].horizontal.pwbd = e.target.value; })} />
-                        </Field>
-
-                        <div>
-                            <div className="mb-2 flex items-center justify-between">
-                                <p className="text-sm font-medium">District-wise <span className="font-normal text-muted-foreground">(optional{districtSum > 0 ? ` · ${districtSum} / ${total}` : ''})</span></p>
-                                <Button type="button" variant="outline" size="sm" onClick={() => update((d) => { d.posts[i].district_breakup.push({ district: options.districts.find((x) => !usedDistricts.includes(x)) ?? '', vacancies: '' }); })}>
-                                    <Plus /> Add district
-                                </Button>
-                            </div>
-                            {post.district_breakup.map((row, k) => (
-                                <div key={k} className="mb-2 flex items-center gap-2">
-                                    <NativeSelect className="max-w-56" value={row.district} onChange={(e) => update((d) => { d.posts[i].district_breakup[k].district = e.target.value; })}>
-                                        {options.districts.map((x) => <option key={x} value={x} disabled={usedDistricts.includes(x) && x !== row.district}>{x}</option>)}
-                                    </NativeSelect>
-                                    <Input className="max-w-32" type="number" min={0} value={row.vacancies} onChange={(e) => update((d) => { d.posts[i].district_breakup[k].vacancies = e.target.value; })} />
-                                    <Button type="button" variant="ghost" size="icon" aria-label="Remove district" onClick={() => update((d) => { d.posts[i].district_breakup.splice(k, 1); })}>
-                                        <Trash2 className="text-destructive" />
-                                    </Button>
-                                </div>
-                            ))}
-                            {errors[`posts.${i}.district_breakup`] && <p role="alert" className="text-xs font-medium text-destructive">{errors[`posts.${i}.district_breakup`]}</p>}
-                        </div>
-                    </div>
-                );
+                return <RegularVacancy key={i} index={i} post={post} total={total} catSum={catSum} ok={ok} districtSum={districtSum} usedDistricts={usedDistricts} update={update} errors={errors} options={options} />;
             })}
         </StepCard>
     );
@@ -149,6 +106,83 @@ function CategoryTable({ index: i, post, update, options, withExServiceman = fal
                 </tbody>
             </table>
         </div>
+    );
+}
+
+/** Regular posts: the category roster is optional, since some advertisements only state the total. */
+function RegularVacancy({ index: i, post, total, catSum, ok, districtSum, usedDistricts, update, errors, options }: Shared & Pick<StepProps, 'errors'> & { total: number; catSum: number; ok: boolean; districtSum: number; usedDistricts: string[] }) {
+    const [withBreakup, setWithBreakup] = useState(catSum > 0 || total === 0);
+
+    const toggle = (on: boolean) => {
+        setWithBreakup(on);
+
+        if (!on) {
+            update((d) => {
+                for (const c of options.categories) {
+                    d.posts[i].category_breakup[c] = '';
+                    d.posts[i].horizontal.women[c] = '';
+                    d.posts[i].horizontal.ex_serviceman[c] = '';
+                }
+            });
+        }
+    };
+
+    return (
+        <div key={i} className="grid gap-5 rounded-lg border bg-muted/30 p-5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-sm font-semibold text-primary-deep">{post.name || `Post ${i + 1}`} · {total} vacancies</h3>
+                {withBreakup && (
+                    <span className={`flex items-center gap-1.5 text-sm font-medium ${ok ? 'text-emerald-700' : 'text-amber-700'}`}>
+                        {ok ? <CircleCheck className="size-4" aria-hidden="true" /> : <CircleAlert className="size-4" aria-hidden="true" />}
+                        Category total {catSum} / {total}
+                    </span>
+                )}
+            </div>
+
+            <div className="flex items-center justify-between gap-4 rounded-lg border bg-card p-3">
+                <div>
+                    <p className="text-sm font-medium">Category-wise vacancy breakup</p>
+                    <p className="text-xs text-muted-foreground">Turn off if the advertisement does not list UR / SC / ST / OBC / EWS seats for this post.</p>
+                </div>
+                <Switch checked={withBreakup} onCheckedChange={toggle} aria-label="Category-wise vacancy breakup" />
+            </div>
+
+            {withBreakup && (
+                <div>
+                    <p className="mb-1 text-sm font-medium">Category-wise vacancies</p>
+                    <p className="mb-3 text-xs text-muted-foreground">Women and Ex-Servicemen seats are optional and are counted <em>inside</em> the category (e.g. UR 116 including 39 for women).</p>
+                    <CategoryTable index={i} post={post} update={update} options={options} withExServiceman />
+                    {errors[`posts.${i}.category_breakup`] && <p role="alert" className="mt-2 text-xs font-medium text-destructive">{errors[`posts.${i}.category_breakup`]}</p>}
+                    {errors[`posts.${i}.horizontal`] && <p role="alert" className="mt-2 text-xs font-medium text-destructive">{errors[`posts.${i}.horizontal`]}</p>}
+                </div>
+            )}
+
+            <Field label="Posts reserved for persons with disabilities (PwBD)" className="max-w-sm">
+                <Input type="number" min={0} value={post.horizontal.pwbd} onChange={(e) => update((d) => { d.posts[i].horizontal.pwbd = e.target.value; })} />
+            </Field>
+
+            <div>
+                <div className="mb-2 flex items-center justify-between">
+                    <p className="text-sm font-medium">District-wise <span className="font-normal text-muted-foreground">(optional{districtSum > 0 ? ` · ${districtSum} / ${total}` : ''})</span></p>
+                    <Button type="button" variant="outline" size="sm" onClick={() => update((d) => { d.posts[i].district_breakup.push({ district: options.districts.find((x) => !usedDistricts.includes(x)) ?? '', vacancies: '' }); })}>
+                        <Plus /> Add district
+                    </Button>
+                </div>
+                {post.district_breakup.map((row, k) => (
+                    <div key={k} className="mb-2 flex items-center gap-2">
+                        <NativeSelect className="max-w-56" value={row.district} onChange={(e) => update((d) => { d.posts[i].district_breakup[k].district = e.target.value; })}>
+                            {options.districts.map((x) => <option key={x} value={x} disabled={usedDistricts.includes(x) && x !== row.district}>{x}</option>)}
+                        </NativeSelect>
+                        <Input className="max-w-32" type="number" min={0} value={row.vacancies} onChange={(e) => update((d) => { d.posts[i].district_breakup[k].vacancies = e.target.value; })} />
+                        <Button type="button" variant="ghost" size="icon" aria-label="Remove district" onClick={() => update((d) => { d.posts[i].district_breakup.splice(k, 1); })}>
+                            <Trash2 className="text-destructive" />
+                        </Button>
+                    </div>
+                ))}
+                {errors[`posts.${i}.district_breakup`] && <p role="alert" className="text-xs font-medium text-destructive">{errors[`posts.${i}.district_breakup`]}</p>}
+            </div>
+        </div>
+
     );
 }
 

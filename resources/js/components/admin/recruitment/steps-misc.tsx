@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 /** Step 5 */
 export function FeeStep({ form, update, errors, options }: StepProps) {
     return (
-        <StepCard title="Application Fee" description="Enter ₹0 for exempted categories (e.g. SC / ST / PwBD).">
+        <StepCard title="Application Fee">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
                 {options.feeCategories.map((c) => (
                     <Field key={c} label={c} error={errors[`fees.amounts.${c}`]}>
@@ -116,10 +116,8 @@ export function DatesStep({ form, update, errors }: StepProps) {
 
 interface AttachmentProps {
     advertisement: File | null;
-    syllabus: File | null;
     onAdvertisement: (f: File | null) => void;
-    onSyllabus: (f: File | null) => void;
-    existing: { advertisement: string | null; syllabus: string | null };
+    existing: { advertisement: string | null };
     errors: Record<string, string>;
 }
 
@@ -140,12 +138,11 @@ function PdfField({ label, file, onChange, existingUrl, error, required }: { lab
 }
 
 /** Step 8 */
-export function AttachmentsStep({ advertisement, syllabus, onAdvertisement, onSyllabus, existing, errors }: AttachmentProps) {
+export function AttachmentsStep({ advertisement, onAdvertisement, existing, errors }: AttachmentProps) {
     return (
         <StepCard title="Attachments" description="The advertisement PDF is required before publishing.">
             <div className="grid gap-6 sm:grid-cols-2">
                 <PdfField label="Official advertisement PDF" required file={advertisement} onChange={onAdvertisement} existingUrl={existing.advertisement} error={errors.advertisement_pdf} />
-                <PdfField label="Syllabus PDF" file={syllabus} onChange={onSyllabus} existingUrl={existing.syllabus} error={errors.syllabus_pdf} />
             </div>
         </StepCard>
     );

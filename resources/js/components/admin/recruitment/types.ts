@@ -129,7 +129,7 @@ export const emptyForm = (options: Options): RecruitmentForm => ({
         age_min: '18',
         age_max: '',
         age_cutoff: '',
-        relaxations: { SC: '5', ST: '5', OBC: '3', EWS: '0', PwBD: '10', ExServiceman: '' },
+        relaxations: {},
         qualifications: [],
         council: '',
         min_experience_years: '',
@@ -155,13 +155,8 @@ export function deriveEligibility(draft: RecruitmentForm, _options: Options, onl
     };
 
     const years = draft.posts.map((p) => Number(p.experience_years)).filter(Boolean);
-    const names = [...new Set(draft.posts.map((p) => p.minimum_qualification).filter(Boolean))];
 
     fill('min_experience_years', years.length ? String(Math.max(...years)) : '');
-
-    if (names.length && (!onlyBlank || e.qualifications.length === 0)) {
-        e.qualifications = names.map((name) => ({ name, min_percent: e.qualifications.find((q) => q.name === name)?.min_percent ?? '' }));
-    }
 }
 
 /** Fill any gaps in a server record so every input stays controlled. */
@@ -198,11 +193,11 @@ export function hydrate(record: RecruitmentForm, options: Options): RecruitmentF
                   age_min: str(record.eligibility.age_min),
                   age_max: str(record.eligibility.age_max),
                   age_cutoff: str(record.eligibility.age_cutoff),
-                  relaxations: strMap(record.eligibility.relaxations, options.relaxations),
-                  qualifications: (record.eligibility.qualifications ?? []).map((q) => ({ name: q.name, min_percent: str(q.min_percent) })),
-                  council: str(record.eligibility.council),
+                  relaxations: {},
+                  qualifications: [],
+                  council: '',
                   min_experience_years: str(record.eligibility.min_experience_years),
-                  prtc_required: Boolean(record.eligibility.prtc_required),
+                  prtc_required: false,
                   gender: record.eligibility.gender ?? 'any',
               }
             : base.eligibility,
@@ -237,6 +232,53 @@ export const STEPS = [
     'Attachments',
     'Review & Publish',
 ] as const;
+
+const filled = (v: string) => v.trim() !== '';
+const sumOf = (values: string[]) => values.reduce((t, v) => t + (Number(v) || 0), 0);
+
+/** Whether a step has everything the server needs to publish; later steps stay locked until this holds. */
+export function stepComplete(form: RecruitmentForm, step: number, hasAdvertisementPdf: boolean): boolean {
+    const { basic, posts, eligibility: e, dates, interview } = form;
+
+    switch (step) {
+        case 0:
+            return [basic.advt_no, basic.title, basic.directorate, basic.notification_date].every(filled);
+        case 1:
+            return posts.length > 0 && posts.every((p) => filled(p.name) && filled(p.monthly_salary) && filled(p.minimum_qualification) && Number(p.total_vacancies) > 0);
+        case 2:
+            return posts.every((p) => {
+                const total = Number(p.total_vacancies) || 0;
+                const cats = sumOf(Object.values(p.category_breakup));
+                const districts = sumOf(p.district_breakup.map((d) => d.vacancies));
+
+                return (cats === 0 || cats === total) && (districts === 0 || districts === total);
+            });
+        case 3: {
+            const contractual = isContractualOnly(form);
+
+            return filled(e.age_min) && (contractual ? !filled(e.age_max) || filled(e.age_cutoff) : filled(e.age_max) && filled(e.age_cutoff));
+        }
+        case 6: {
+            const walkIn = basic.selection_mode === 'interview' && basic.apply_mode === 'walk_in';
+            const interviewOk = basic.selection_mode !== 'interview' || [interview.date, interview.time, interview.venue].every(filled);
+
+            return interviewOk && (walkIn || (filled(dates.app_start) && filled(dates.app_end)));
+        }
+        case 7:
+            return hasAdvertisementPdf;
+        default:
+            return true; // Fee and Documents have no mandatory fields.
+    }
+}
+
+/** Index of the furthest step the admin may open: every step before it is complete. */
+export function furthestStep(form: RecruitmentForm, hasAdvertisementPdf: boolean): number {
+    for (let i = 0; i < STEPS.length - 1; i++) {
+        if (!stepComplete(form, i, hasAdvertisementPdf)) return i;
+    }
+
+    return STEPS.length - 1;
+}
 
 /** Which wizard step (0-based) a validation-error key belongs to. */
 export function stepForError(key: string): number {
