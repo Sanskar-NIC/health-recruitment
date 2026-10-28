@@ -25,9 +25,6 @@ Route::get('notifications', [NotificationController::class, 'index'])->name('not
 Route::inertia('register', 'student/auth/register')->middleware('guest:student')->name('register');
 
 Route::controller(PlaceholderController::class)->group(function () {
-    Route::get('results', '__invoke')->defaults('title', 'Results')->name('results.index');
-    Route::get('admit-card', '__invoke')->defaults('title', 'Admit Card')->name('admit-card');
-    Route::get('answer-keys', '__invoke')->defaults('title', 'Answer Keys')->name('answer-keys');
     Route::get('faq', '__invoke')->defaults('title', 'FAQ')->name('faq');
     Route::get('contact', '__invoke')->defaults('title', 'Contact')->name('contact');
 });

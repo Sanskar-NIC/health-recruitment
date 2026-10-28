@@ -1,5 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { ArrowRight, BriefcaseMedical, CalendarClock, Check, ClipboardCheck, Download, TicketCheck, UserCog } from 'lucide-react';
+import { ArrowRight, BriefcaseMedical, CalendarClock, Check, ClipboardCheck, Download, UserCog } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { ProfileRing } from '@/components/student/shell/profile-ring';
@@ -24,7 +24,7 @@ interface DashboardApplication {
 
 interface Props {
     student: { registration_no: string; full_name: string; created_at: string };
-    stats: { current: number; applied: number; admitCards: number };
+    stats: { current: number; applied: number };
     applications: DashboardApplication[];
     recruitments: Recruitment[];
 }
@@ -46,7 +46,7 @@ function StatTile({ label, value, icon: Icon, href, tone }: { label: string; val
 
 type StepState = 'done' | 'current' | 'upcoming' | 'stopped';
 
-/** Stages an application moves through. Admit card and result are placeholders until those modules go live. */
+/** Stages an application moves through. */
 function stagesFor(a: DashboardApplication): { key: TranslationKey; state: StepState; date?: string | null }[] {
     const stopped = a.status !== 'submitted';
 
@@ -55,8 +55,6 @@ function stagesFor(a: DashboardApplication): { key: TranslationKey; state: StepS
         stopped
             ? { key: a.status === 'rejected' ? 'step.rejected' : 'step.withdrawn', state: 'stopped', date: a.closedAt }
             : { key: 'step.review', state: 'current' },
-        { key: 'step.admit', state: 'upcoming' },
-        { key: 'step.result', state: 'upcoming' },
     ];
 }
 
@@ -80,7 +78,7 @@ function Tracker({ application }: { application: DashboardApplication }) {
                 )}
             </div>
 
-            <ol className="mt-5 grid grid-cols-4 gap-2">
+            <ol className="mt-5 grid grid-cols-2 gap-2">
                 {stages.map((stage, i) => (
                     <li key={stage.key} className="relative flex flex-col items-center text-center">
                         {i > 0 && (
@@ -144,10 +142,9 @@ export default function Dashboard({ student, stats, applications, recruitments }
                 </div>
             </section>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                 <StatTile label={t('dash.stat.open')} value={stats.current} icon={BriefcaseMedical} href="/recruitments" tone="bg-primary-tint text-primary" />
                 <StatTile label={t('dash.stat.applied')} value={stats.applied} icon={ClipboardCheck} href="/student/applications" tone="bg-success/15 text-success" />
-                <StatTile label={t('dash.stat.admit')} value={stats.admitCards} icon={TicketCheck} href="/admit-card" tone="bg-warning/15 text-warning" />
             </div>
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">

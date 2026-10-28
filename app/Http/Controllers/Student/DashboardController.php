@@ -19,12 +19,9 @@ class DashboardController extends Controller
 
         return Inertia::render('student/dashboard', [
             'student' => $student,
-            // Applications/admit cards are not built yet, so they are reported as zero.
             'stats' => [
                 'current' => count(array_filter(MockData::recruitments(), fn ($r) => in_array($r['status'], ['open', 'closing_soon'], true))),
-                'applied' => $student->applications()->where('status', 'submitted')->count(),
-                'admitCards' => 0,
-            ],
+                'applied' => $student->applications()->where('status', 'submitted')->count(),            ],
             // Latest applications drive the status tracker on the dashboard.
             'applications' => $student->applications()
                 ->with(['recruitment:id,advt_no', 'post:id,name'])

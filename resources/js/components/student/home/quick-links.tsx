@@ -1,12 +1,9 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, CreditCard, FileCheck, IdCard, LifeBuoy, Trophy } from 'lucide-react';
+import { BookOpen, CreditCard, LifeBuoy } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { SectionHeading } from '@/components/student/section-heading';
 
 const links: { label: string; hint: string; href: string; icon: LucideIcon }[] = [
-    { label: 'Download Admit Card', hint: 'Get your hall ticket', href: '/admit-card', icon: IdCard },
-    { label: 'Check Results', hint: 'View declared results', href: '/results', icon: Trophy },
-    { label: 'Answer Keys', hint: 'Provisional and final keys', href: '/answer-keys', icon: FileCheck },
     { label: 'Syllabus & Exam Pattern', hint: 'Plan your preparation', href: '/recruitments', icon: BookOpen },
     { label: 'Fee Payment Status', hint: 'Track your payment', href: '/login', icon: CreditCard },
     { label: 'Helpdesk / Grievance', hint: 'Get support', href: '/contact', icon: LifeBuoy },

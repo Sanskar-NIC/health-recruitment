@@ -1,11 +1,8 @@
 import {
-    Award,
     BellRing,
     Building2,
     Headset,
-    KeyRound,
     MessageCircleQuestion,
-    Ticket,
     UserSearch,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -20,9 +17,6 @@ export const portalNav: PortalNavItem[] = [
     { label: 'Home', href: '/', icon: Building2 },
     { label: 'Recruitments', href: '/recruitments', icon: UserSearch },
     { label: 'Notifications', href: '/notifications', icon: BellRing },
-    { label: 'Admit Card', href: '/admit-card', icon: Ticket },
-    { label: 'Results', href: '/results', icon: Award },
-    { label: 'Answer Keys', href: '/answer-keys', icon: KeyRound },
     { label: 'FAQ', href: '/faq', icon: MessageCircleQuestion },
     { label: 'Contact', href: '/contact', icon: Headset },
 ];

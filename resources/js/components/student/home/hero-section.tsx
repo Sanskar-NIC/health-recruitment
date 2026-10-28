@@ -26,10 +26,10 @@ export function HeroSection({ openCount, updatesCount }: Props) {
 
             <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1.25fr_1fr] lg:px-8 lg:py-20">
                 <div>
-                    <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-medium backdrop-blur">
+                    {/* <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-medium backdrop-blur">
                         <span className="size-1.5 rounded-full bg-emerald-300" aria-hidden="true" />
                         {t('hero.badge')}
-                    </span>
+                    </span> */}
                     <h1 className="mt-5 text-3xl leading-[1.1] font-extrabold tracking-tight sm:text-5xl">{t('hero.title')}</h1>
                     <p className="mt-4 max-w-xl text-base opacity-90 sm:text-lg">{t('hero.subtitle')}</p>
 

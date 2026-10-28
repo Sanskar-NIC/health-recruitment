@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Award, BellRing, CircleUserRound, ClipboardList, House, KeyRound, LifeBuoy, MessageCircleQuestion, Stethoscope, Ticket } from 'lucide-react';
+import { BellRing, CircleUserRound, ClipboardList, House, LifeBuoy, MessageCircleQuestion, Stethoscope } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
 import { ProfileRing } from '@/components/student/shell/profile-ring';
@@ -23,9 +23,6 @@ const groups: { label: TranslationKey; items: NavItem[] }[] = [
         items: [
             { href: '/recruitments', label: 'nav.recruitments', icon: Stethoscope },
             { href: '/student/applications', label: 'nav.applications', icon: ClipboardList },
-            { href: '/admit-card', label: 'nav.admitCard', icon: Ticket },
-            { href: '/results', label: 'nav.results', icon: Award },
-            { href: '/answer-keys', label: 'nav.answerKeys', icon: KeyRound },
         ],
     },
     {
