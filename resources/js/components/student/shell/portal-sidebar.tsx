@@ -1,8 +1,8 @@
-import { Link } from '@inertiajs/react';
-import { BellRing, CircleUserRound, ClipboardList, House, LifeBuoy, MessageCircleQuestion, Stethoscope } from 'lucide-react';
+import { Link, router } from '@inertiajs/react';
+import { BellRing, CircleUserRound, ClipboardList, House, LogOut, Stethoscope } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { useState } from 'react';
 import { BrandLogo } from '@/components/brand-logo';
-import { ProfileRing } from '@/components/student/shell/profile-ring';
 import { usePortalPrefs } from '@/lib/portal-prefs';
 import type { TranslationKey } from '@/lib/portal-prefs';
 import { cn } from '@/lib/utils';
@@ -32,10 +32,6 @@ const groups: { label: TranslationKey; items: NavItem[] }[] = [
             { href: '/notifications', label: 'nav.notifications', icon: BellRing },
         ],
     },
-    {
-        label: 'nav.group.support',
-        items: [{ href: '/faq', label: 'nav.faq', icon: MessageCircleQuestion }],
-    },
 ];
 
 export interface ProfileSummary {
@@ -47,17 +43,20 @@ export interface ProfileSummary {
 
 interface Props {
     path: string;
-    profile: ProfileSummary | null | undefined;
-    onHelpdesk: () => void;
     /** Called after a link is chosen (closes the mobile drawer). */
     onNavigate?: () => void;
 }
 
 /** Sidebar body, shared by the desktop rail and the mobile drawer. */
-export function PortalSidebarContent({ path, profile, onHelpdesk, onNavigate }: Props) {
+export function PortalSidebarContent({ path, onNavigate }: Props) {
     const { t } = usePortalPrefs();
     const isActive = (href: string) => path === href || (href !== '/student/dashboard' && path.startsWith(`${href}/`));
-    const complete = profile?.status === 'completed';
+    const [leaving, setLeaving] = useState(false);
+
+    const logout = () => {
+        setLeaving(true);
+        router.post('/logout', {}, { onFinish: () => setLeaving(false) });
+    };
 
     return (
         <div className="flex h-full flex-col">
@@ -98,32 +97,19 @@ export function PortalSidebarContent({ path, profile, onHelpdesk, onNavigate }: 
                         </ul>
                     </div>
                 ))}
-                <button
-                    type="button"
-                    onClick={() => {
-                        onNavigate?.();
-                        onHelpdesk();
-                    }}
-                    className="mt-0.5 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
-                >
-                    <LifeBuoy className="size-[18px]" aria-hidden="true" />
-                    {t('nav.helpdesk')}
-                </button>
             </nav>
 
-            {profile && (
-                <Link
-                    href="/student/profile"
-                    onClick={onNavigate}
-                    className="m-3 flex items-center gap-3 rounded-2xl border bg-primary-tint/60 p-3 transition-colors hover:bg-primary-tint focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+            <div className="border-t p-3">
+                <button
+                    type="button"
+                    onClick={logout}
+                    disabled={leaving}
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none disabled:opacity-60"
                 >
-                    <ProfileRing completed={profile.completed} total={profile.total} size={52} />
-                    <span className="min-w-0 text-left">
-                        <span className="block text-sm font-semibold text-primary-deep">{complete ? t('profile.complete') : t('profile.completion')}</span>
-                        <span className="block text-xs text-muted-foreground">{t('profile.stepsDone', { done: profile.completed, total: profile.total })}</span>
-                    </span>
-                </Link>
-            )}
+                    <LogOut className="size-[18px]" aria-hidden="true" />
+                    {t('auth.logout')}
+                </button>
+            </div>
         </div>
     );
 }

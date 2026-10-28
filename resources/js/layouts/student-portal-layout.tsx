@@ -3,7 +3,6 @@ import { TriangleAlert } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/animate-ui/components/radix/sheet';
-import { HelpdeskDialog } from '@/components/student/helpdesk-dialog';
 import { ProfileIncompleteDialog } from '@/components/student/profile-incomplete-dialog';
 import { PortalSidebar, PortalSidebarContent } from '@/components/student/shell/portal-sidebar';
 import type { ProfileSummary } from '@/components/student/shell/portal-sidebar';
@@ -23,7 +22,6 @@ function Shell({ children }: { children: ReactNode }) {
     const { auth, studentProfile: profile, profileNotice } = page.props as unknown as PortalProps;
     const [noticeOpen, setNoticeOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
-    const [helpOpen, setHelpOpen] = useState(false);
     const [path, setPath] = useState('');
 
     useEffect(() => setPath(window.location.pathname), [page.url]);
@@ -35,7 +33,7 @@ function Shell({ children }: { children: ReactNode }) {
         }
     }, [profileNotice, profile]);
 
-    const sidebarProps = { path, profile, onHelpdesk: () => setHelpOpen(true) };
+    const sidebarProps = { path };
 
     return (
         <div className="min-h-screen bg-background text-foreground">
@@ -73,7 +71,6 @@ function Shell({ children }: { children: ReactNode }) {
                 </footer>
             </div>
 
-            <HelpdeskDialog open={helpOpen} onOpenChange={setHelpOpen} />
             {profile && (
                 <ProfileIncompleteDialog
                     open={noticeOpen}
