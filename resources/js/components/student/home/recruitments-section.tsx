@@ -12,7 +12,7 @@ export function RecruitmentsSection({ recruitments }: { recruitments: Recruitmen
     const shown = active.slice(0, HOME_LIMIT);
 
     return (
-        <section id="recruitments" aria-labelledby="recruitments-heading" className="mx-auto max-w-none scroll-mt-16 px-4 pt-6 pb-10 sm:px-8 lg:px-16 xl:px-24">
+        <section id="recruitments" aria-labelledby="recruitments-heading" className="mx-auto max-w-7xl scroll-mt-20 px-4 pt-10 pb-10 sm:px-6 lg:px-8">
             <SectionHeading
                 id="recruitments-heading"
                 title="Recruitments"

@@ -26,7 +26,7 @@ export function Panel({
                 className,
             )}
         >
-            <header className="flex min-h-14 items-center gap-3 bg-primary px-5 py-3 text-primary-foreground">
+            <header className="flex min-h-14 items-center gap-3 bg-brand-start px-5 py-3 text-white">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/15"><Icon className="size-4.5" aria-hidden="true" /></span>
                 <h2 className="flex-1 text-base font-semibold">{title}</h2>
                 {action}

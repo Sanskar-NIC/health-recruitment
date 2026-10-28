@@ -48,6 +48,8 @@
     --color-primary-hover: var(--primary-hover);
     --color-primary-tint: var(--primary-tint);
     --color-primary-deep: var(--primary-deep);
+    --color-brand-start: var(--brand-start);
+    --color-brand-end: var(--brand-end);
     --color-link: var(--link);
     --color-success: var(--success);
     --color-warning: var(--warning);
@@ -79,6 +81,9 @@
     --primary-foreground: #ffffff;
     --primary-hover: #155e75;
     --primary-deep: #164e63;
+    /* Banner colours that stay dark teal in both themes (white text sits on them). */
+    --brand-start: #0e7490;
+    --brand-end: #164e63;
     --primary-tint: #e0f2f5;
     --secondary: #e0f2f5;
     --secondary-foreground: #155e75;
@@ -143,6 +148,45 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(0.269 0 0);
     --sidebar-ring: oklch(0.439 0 0);
+}
+
+/* Applicant portal dark mode: same teal palette, darker surfaces. Scoped so the admin area is unaffected. */
+.portal-dark {
+    --background: #0b1517;
+    --foreground: #e6eef0;
+    --card: #12212a;
+    --card-foreground: #e6eef0;
+    --popover: #12212a;
+    --popover-foreground: #e6eef0;
+    --primary: #22a6c4;
+    --primary-foreground: #04161b;
+    --primary-hover: #4cc0da;
+    --primary-deep: #8fdcec;
+    --brand-start: #0f5f75;
+    --brand-end: #0a2c37;
+    --primary-tint: #16343e;
+    --secondary: #16343e;
+    --secondary-foreground: #8fdcec;
+    --muted: #17262d;
+    --muted-foreground: #9db2b9;
+    --accent: #16343e;
+    --accent-foreground: #8fdcec;
+    --destructive: #f87171;
+    --destructive-foreground: #1a0606;
+    --link: #7db4ff;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --border: #23363f;
+    --input: #2d444e;
+    --ring: #22a6c4;
+    --sidebar: #0f1d24;
+    --sidebar-foreground: #e6eef0;
+    --sidebar-primary: #22a6c4;
+    --sidebar-primary-foreground: #04161b;
+    --sidebar-accent: #16343e;
+    --sidebar-accent-foreground: #8fdcec;
+    --sidebar-border: #23363f;
+    --sidebar-ring: #22a6c4;
 }
 
 @layer base {

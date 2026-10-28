@@ -1,5 +1,4 @@
 import { Head } from '@inertiajs/react';
-import { ApplicantLoginPanel } from '@/components/student/home/applicant-login-panel';
 import { FaqSection } from '@/components/student/home/faq-section';
 import { HelpdeskStrip } from '@/components/student/home/helpdesk-strip';
 import { HeroSection } from '@/components/student/home/hero-section';
@@ -21,15 +20,9 @@ export default function Home({
     return (
         <>
             <Head title="Home" />
-            <HeroSection />
-            <div className="mx-auto grid max-w-none sm:px-8 lg:px-16 xl:px-24 gap-6 px-4 pt-8 pb-2 lg:grid-cols-3">
-                {/* Mobile: login comes right after the hero. */}
-                <div className="lg:order-2 [&>*]:h-full">
-                    <ApplicantLoginPanel />
-                </div>
-                <div className="lg:order-1 lg:col-span-2 [&>*]:h-full">
-                    <WhatsNewPanel items={notifications} />
-                </div>
+            <HeroSection openCount={recruitments.length} updatesCount={notifications.length} />
+            <div className="mx-auto max-w-7xl px-4 pt-12 pb-2 sm:px-6 lg:px-8">
+                <WhatsNewPanel items={notifications} />
             </div>
             <RecruitmentsSection recruitments={recruitments} />
             <ImportantDates dates={importantDates} recruitment={featuredRecruitment} />

@@ -86,6 +86,7 @@ export function SiteFooter() {
                         {legal.map((label) => (
                             <li key={label}><a href="#" className={linkClass}>{label}</a></li>
                         ))}
+                        <li><Link href="/admin/login" className={linkClass}>Admin Login</Link></li>
                     </ul>
                     <div className="flex flex-wrap justify-between gap-2">
                         <p>Last updated: {siteMeta.lastUpdated} | Visitors: {siteMeta.visitors}</p>

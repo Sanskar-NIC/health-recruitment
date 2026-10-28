@@ -1,36 +1,32 @@
-import { Link, router, usePage } from '@inertiajs/react';
-import { ChevronDown, CircleUserRound, ClipboardList, House, LifeBuoy, LogOut, Stethoscope, TriangleAlert } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { TriangleAlert } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { BrandLogo } from '@/components/brand-logo';
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/animate-ui/components/radix/sheet';
 import { HelpdeskDialog } from '@/components/student/helpdesk-dialog';
 import { ProfileIncompleteDialog } from '@/components/student/profile-incomplete-dialog';
-import { PageBreadcrumbs } from '@/components/student/page-breadcrumbs';
-import { SiteFooter } from '@/components/student/site-footer';
+import { PortalSidebar, PortalSidebarContent } from '@/components/student/shell/portal-sidebar';
+import type { ProfileSummary } from '@/components/student/shell/portal-sidebar';
+import { PortalTopbar } from '@/components/student/shell/portal-topbar';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
+import { PortalPrefsProvider, usePortalPrefs } from '@/lib/portal-prefs';
 
-const links = [
-    { href: '/student/dashboard', label: 'Dashboard', icon: House },
-    { href: '/student/profile', label: 'My Profile', icon: CircleUserRound },
-    { href: '/recruitments', label: 'Recruitments', icon: Stethoscope },
-    { href: '/student/applications', label: 'My Applications', icon: ClipboardList },
-];
+type PortalProps = {
+    auth?: { student?: { full_name: string; registration_no: string } | null };
+    studentProfile?: ProfileSummary | null;
+    profileNotice?: boolean;
+};
 
-/** Layout for pages that need a logged-in student (own header + nav). */
-export default function StudentPortalLayout({ children }: { children: ReactNode }) {
+function Shell({ children }: { children: ReactNode }) {
     const page = usePage();
-    const url = page.url;
-    const student = (page.props as unknown as { auth: { student?: { full_name: string; registration_no: string } | null } }).auth?.student;
-    const profile = (page.props as unknown as { studentProfile?: { status: string; completed: number; total: number; pending: string[] } | null }).studentProfile;
-    const profileNotice = Boolean((page.props as unknown as { profileNotice?: boolean }).profileNotice);
+    const { t } = usePortalPrefs();
+    const { auth, studentProfile: profile, profileNotice } = page.props as unknown as PortalProps;
     const [noticeOpen, setNoticeOpen] = useState(false);
-    const [path, setPath] = useState('');
-    const [leaving, setLeaving] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
     const [helpOpen, setHelpOpen] = useState(false);
+    const [path, setPath] = useState('');
 
-    useEffect(() => setPath(window.location.pathname), [url]);
+    useEffect(() => setPath(window.location.pathname), [page.url]);
 
     // The flag is flashed once at login, so it is true for a single response only.
     useEffect(() => {
@@ -39,119 +35,44 @@ export default function StudentPortalLayout({ children }: { children: ReactNode 
         }
     }, [profileNotice, profile]);
 
-    // Portal pages are light-mode only.
-    useEffect(() => {
-        const root = document.documentElement;
-        const wasDark = root.classList.contains('dark');
-
-        root.classList.remove('dark');
-
-        return () => {
-            if (wasDark) {
-                root.classList.add('dark');
-            }
-        };
-    }, []);
-
-    const logout = () => {
-        setLeaving(true);
-        router.post('/logout', {}, { onFinish: () => setLeaving(false) });
-    };
+    const sidebarProps = { path, profile, onHelpdesk: () => setHelpOpen(true) };
 
     return (
-        <div className="flex min-h-screen flex-col bg-muted/30 text-foreground">
-            <header className="sticky top-0 z-40 border-b bg-card shadow-sm">
-                <div className="relative flex items-center justify-between gap-4 px-4 py-2.5 sm:px-8 lg:px-16 xl:px-24">
-                    <Link href="/student/dashboard" className="flex items-center gap-3 rounded-md focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none">
-                        <BrandLogo className="size-12 shrink-0" />
-                        <span className="absolute left-1/2 flex -translate-x-1/2 flex-col items-center text-center whitespace-nowrap sm:static sm:translate-x-0 sm:items-start sm:text-left">
-                            <span className="text-sm leading-tight font-semibold text-primary min-[400px]:text-base sm:text-lg">Health Recruitment Portal</span>
-                            <span className="text-xs text-muted-foreground">Applicant Panel</span>
-                        </span>
-                    </Link>
+        <div className="min-h-screen bg-background text-foreground">
+            <a href="#main-content" className="sr-only rounded bg-card px-3 py-2 font-medium text-primary focus:not-sr-only focus:absolute focus:z-50">{t('shell.skip')}</a>
 
-                    <nav aria-label="Applicant navigation" className="hidden items-center gap-1 lg:flex">
-                        {links.map(({ href, label, icon: Icon }) => {
-                            const active = path === href;
+            <PortalSidebar {...sidebarProps} />
 
-                            return (
-                                <Link
-                                    key={href}
-                                    href={href}
-                                    aria-current={active ? 'page' : undefined}
-                                    className={cn(
-                                        'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                                        active ? 'bg-primary-tint text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                                    )}
-                                >
-                                    <Icon className="size-4" aria-hidden="true" />
-                                    {label}
-                                </Link>
-                            );
-                        })}
-                        <button
-                            type="button"
-                            onClick={() => setHelpOpen(true)}
-                            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                        >
-                            <LifeBuoy className="size-4" aria-hidden="true" />
-                            Helpdesk
-                        </button>
-                    </nav>
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+                <SheetContent side="left" className="w-72 bg-sidebar p-0">
+                    <SheetTitle className="sr-only">Menu</SheetTitle>
+                    <SheetDescription className="sr-only">Applicant navigation</SheetDescription>
+                    <PortalSidebarContent {...sidebarProps} onNavigate={() => setMenuOpen(false)} />
+                </SheetContent>
+            </Sheet>
 
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="h-11 gap-2 rounded-full px-3">
-                                <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
-                                    {student?.full_name?.charAt(0).toUpperCase()}
-                                </span>
-                                <span className="hidden max-w-40 truncate text-sm sm:inline">{student?.full_name}</span>
-                                <ChevronDown className="size-4 opacity-60" aria-hidden="true" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-60">
-                            <DropdownMenuLabel>
-                                <p className="truncate text-sm font-semibold">{student?.full_name}</p>
-                                <p className="font-mono text-xs font-normal text-muted-foreground">{student?.registration_no}</p>
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            {links.map(({ href, label, icon: Icon }) => (
-                                <DropdownMenuItem key={href} asChild className="lg:hidden">
-                                    <Link href={href}><Icon className="size-4" /> {label}</Link>
-                                </DropdownMenuItem>
-                            ))}
-                            <DropdownMenuItem onSelect={() => setHelpOpen(true)} className="lg:hidden">
-                                <LifeBuoy className="size-4" /> Helpdesk
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator className="lg:hidden" />
-                            <DropdownMenuItem disabled={leaving} onSelect={logout} className="text-destructive focus:text-destructive">
-                                <LogOut className="size-4" /> Logout
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            </header>
+            <div className="flex min-h-screen min-w-0 flex-col lg:pl-64">
+                <PortalTopbar student={auth?.student} onOpenMenu={() => setMenuOpen(true)} />
 
-            <PageBreadcrumbs portal />
-            <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
-                {profile && profile.status !== 'completed' && path !== '/student/profile' && (
-                    <div role="status" className="flex flex-wrap items-center gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 sm:px-8 lg:px-16 xl:px-24">
-                        <TriangleAlert className="size-5 shrink-0" aria-hidden="true" />
-                        <div className="min-w-0 flex-1">
-                            <p>
+                <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 outline-none">
+                    {profile && profile.status !== 'completed' && path !== '/student/profile' && (
+                        <div role="status" className="mx-4 mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-foreground sm:mx-6 lg:mx-8">
+                            <TriangleAlert className="size-5 shrink-0 text-warning" aria-hidden="true" />
+                            <p className="min-w-0 flex-1">
                                 <strong>Your profile is incomplete</strong> — {profile.completed} of {profile.total} required steps done.
                                 {profile.pending.length > 0 && <> Pending: {profile.pending.join(', ')}.</>}
                             </p>
-                            <div className="mt-2 h-1.5 max-w-xs overflow-hidden rounded-full bg-amber-200" role="progressbar" aria-valuemin={0} aria-valuemax={profile.total} aria-valuenow={profile.completed}>
-                                <div className="h-full rounded-full bg-amber-600 transition-all" style={{ width: `${(profile.completed / profile.total) * 100}%` }} />
-                            </div>
+                            <Button asChild size="sm"><Link href="/student/profile">{t('profile.continue')}</Link></Button>
                         </div>
-                        <Button asChild size="sm"><Link href="/student/profile">Complete Profile</Link></Button>
-                    </div>
-                )}
-                {children}
-            </main>
-            <SiteFooter />
+                    )}
+                    {children}
+                </main>
+
+                <footer className="border-t px-4 py-4 text-center text-xs text-muted-foreground sm:px-6 lg:px-8">
+                    © {new Date().getFullYear()} Health &amp; Family Welfare Department, Government of Tripura
+                </footer>
+            </div>
+
             <HelpdeskDialog open={helpOpen} onOpenChange={setHelpOpen} />
             {profile && (
                 <ProfileIncompleteDialog
@@ -163,5 +84,14 @@ export default function StudentPortalLayout({ children }: { children: ReactNode 
                 />
             )}
         </div>
+    );
+}
+
+/** Layout for pages that need a logged-in student: sidebar app shell. */
+export default function StudentPortalLayout({ children }: { children: ReactNode }) {
+    return (
+        <PortalPrefsProvider>
+            <Shell>{children}</Shell>
+        </PortalPrefsProvider>
     );
 }
