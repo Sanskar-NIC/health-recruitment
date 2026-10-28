@@ -45,7 +45,7 @@ class ApplicationEligibility
         }
 
         // Age, as on the cut-off date, after the largest relaxation the candidate qualifies for.
-        $ageMax = $post->age_max ?? ($elig['age_max'] ?? null);
+        $ageMax = $elig['age_max'] ?? null;
         $ageMin = $elig['age_min'] ?? null;
 
         if ($ageMax || $ageMin) {

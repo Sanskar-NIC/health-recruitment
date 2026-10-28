@@ -131,7 +131,7 @@ class PublicFeed
                 'contract' => $p->contract_duration ? "{$p->contract_duration} {$p->contract_unit}(s)" : null,
                 'minimumQualification' => $p->minimum_qualification,
                 'preferableQualification' => $p->preferable_qualification,
-                'ageMax' => $p->age_max ?? ($elig['age_max'] ?? null),
+                'ageMax' => $elig['age_max'] ?? null,
                 'experienceYears' => $p->experience_years,
                 'experienceCriteria' => $p->experience_criteria,
                 'reservedFor' => $p->reserved_for,

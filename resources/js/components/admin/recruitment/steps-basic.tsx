@@ -53,7 +53,7 @@ export function BasicInfoStep({ form, update, errors, descriptionOnly }: StepPro
                     </Field>
                 )}
                 <Field label="Short description" error={errors['basic.description']} className="sm:col-span-2" htmlFor="description">
-                    <Textarea id="description" value={b.description} onChange={set('description')} />
+                    <Textarea id="description" unwrapPaste value={b.description} onChange={set('description')} />
                 </Field>
             </div>
         </StepCard>
@@ -87,7 +87,7 @@ export function PostsStep({ form, update, errors, options }: StepProps) {
                         deriveEligibility(d, options);
                     });
                 };
-                const set = (key: 'monthly_salary' | 'total_vacancies' | 'preferable_qualification' | 'age_max' | 'experience_years' | 'experience_criteria' | 'contract_duration') => (e: { target: { value: string } }) => update((d) => { d.posts[i][key] = e.target.value; deriveEligibility(d, options); });
+                const set = (key: 'monthly_salary' | 'total_vacancies' | 'preferable_qualification' | 'experience_years' | 'experience_criteria' | 'contract_duration') => (e: { target: { value: string } }) => update((d) => { d.posts[i][key] = e.target.value; deriveEligibility(d, options); });
 
                 return (
                     <div key={i} className="grid gap-5 rounded-lg border bg-muted/30 p-5 sm:grid-cols-6">
@@ -115,9 +115,6 @@ export function PostsStep({ form, update, errors, options }: StepProps) {
                         </Field>
                         <Field label="Monthly salary (₹)" error={err('monthly_salary')} className="sm:col-span-2">
                             <Input type="number" min={0} value={post.monthly_salary} onChange={set('monthly_salary')} />
-                        </Field>
-                        <Field label="Upper age limit" error={err('age_max')} className="sm:col-span-2">
-                            <Input type="number" min={14} value={post.age_max} onChange={set('age_max')} />
                         </Field>
                         <Field label="Minimum qualification" required error={err('minimum_qualification')} className="sm:col-span-3">
                             <Input value={post.minimum_qualification} maxLength={255} onChange={(e) => update((d) => { d.posts[i].minimum_qualification = e.target.value; deriveEligibility(d, options); })} />

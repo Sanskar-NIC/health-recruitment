@@ -112,7 +112,6 @@ class SaveRecruitmentRequest extends FormRequest
             'posts.*.is_contractual' => ['nullable', 'boolean'],
             'posts.*.minimum_qualification' => [$req, 'nullable', 'string', 'max:255'],
             'posts.*.preferable_qualification' => ['nullable', 'string', 'max:500'],
-            'posts.*.age_max' => ['nullable', 'integer', 'min:14', 'max:80'],
             'posts.*.experience_years' => ['nullable', 'numeric', 'min:0', 'max:50'],
             'posts.*.experience_criteria' => ['nullable', 'string', 'max:500'],
             'posts.*.reserved_for' => ['nullable', Rule::in(RecruitmentOptions::CATEGORIES)],

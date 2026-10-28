@@ -17,7 +17,7 @@ export function HelpdeskDialog({ open, onOpenChange }: { open: boolean; onOpenCh
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>Helpdesk</DialogTitle>
-                    <DialogDescription>Need help with your profile or application? Contact us.</DialogDescription>
+                    {/* <DialogDescription>Need help with your profile or application? Contact us.</DialogDescription> */}
                 </DialogHeader>
                 <ul className="grid gap-4">
                     {rows.map(({ icon: Icon, label, value, href }) => (

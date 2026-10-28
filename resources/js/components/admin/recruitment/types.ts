@@ -31,7 +31,6 @@ export interface PostForm {
     contract_unit: string;
     minimum_qualification: string;
     preferable_qualification: string;
-    age_max: string;
     experience_years: string;
     experience_criteria: string;
     /** Contractual posts are advertised as e.g. "1 (ST)". */
@@ -113,7 +112,6 @@ export const newPost = (options: Options): PostForm => ({
     contract_unit: '',
     minimum_qualification: '',
     preferable_qualification: '',
-    age_max: '',
     experience_years: '',
     experience_criteria: '',
     reserved_for: '',
@@ -152,15 +150,13 @@ export const isContractualOnly = (form: RecruitmentForm): boolean => form.posts.
 
 export function deriveEligibility(draft: RecruitmentForm, _options: Options, onlyBlank = false): void {
     const e = draft.eligibility;
-    const fill = (key: 'age_max' | 'min_experience_years', value: string) => {
+    const fill = (key: 'min_experience_years', value: string) => {
         if (value && (!onlyBlank || !e[key])) e[key] = value;
     };
 
-    const maxAges = draft.posts.map((p) => Number(p.age_max)).filter(Boolean);
     const years = draft.posts.map((p) => Number(p.experience_years)).filter(Boolean);
     const names = [...new Set(draft.posts.map((p) => p.minimum_qualification).filter(Boolean))];
 
-    if (maxAges.length) fill('age_max', String(Math.max(...maxAges)));
     fill('min_experience_years', years.length ? String(Math.max(...years)) : '');
 
     if (names.length && (!onlyBlank || e.qualifications.length === 0)) {
@@ -185,7 +181,6 @@ export function hydrate(record: RecruitmentForm, options: Options): RecruitmentF
             contract_unit: str(p.contract_unit),
             minimum_qualification: str(p.minimum_qualification),
             preferable_qualification: str(p.preferable_qualification),
-            age_max: str(p.age_max),
             experience_years: str(p.experience_years),
             experience_criteria: str(p.experience_criteria),
             reserved_for: str(p.reserved_for),

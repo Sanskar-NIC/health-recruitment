@@ -1,4 +1,4 @@
-import type { ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import type { ClipboardEvent, ReactNode,SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import type { Options, RecruitmentForm } from '@/components/admin/recruitment/types';
@@ -41,8 +41,30 @@ export function NativeSelect({ className, children, ...props }: SelectHTMLAttrib
     );
 }
 
-export function Textarea({ className, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-    return <textarea className={cn(control, 'h-auto min-h-24 py-2', className)} {...props} />;
+/** Joins hard line breaks left by PDF/Word copies; blank lines stay as paragraph breaks. */
+const unwrapLines = (text: string) =>
+    text
+        .replace(/\r\n?/g, '\n')
+        .replace(/([^\n])\n(?!\n)/g, '$1 ')
+        .replace(/[ \t]{2,}/g, ' ');
+
+export function Textarea({ className, unwrapPaste, onPaste, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement> & { unwrapPaste?: boolean }) {
+    const handlePaste = (e: ClipboardEvent<HTMLTextAreaElement>) => {
+        onPaste?.(e);
+        const text = e.clipboardData.getData('text');
+        if (!unwrapPaste || e.defaultPrevented || !text.includes('\n')) return;
+
+        e.preventDefault();
+        const el = e.currentTarget;
+        const next = el.value.slice(0, el.selectionStart) + unwrapLines(text).trim() + el.value.slice(el.selectionEnd);
+        const caret = el.selectionStart + unwrapLines(text).trim().length;
+        // Use the native setter so React's controlled-input tracking fires onChange.
+        Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')?.set?.call(el, next);
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.setSelectionRange(caret, caret);
+    };
+
+    return <textarea className={cn(control, 'h-auto min-h-24 py-2', className)} onPaste={handlePaste} {...props} />;
 }
 
 export function StepCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) {

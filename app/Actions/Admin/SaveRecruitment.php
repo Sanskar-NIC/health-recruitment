@@ -122,7 +122,6 @@ class SaveRecruitment
                 'contract_unit' => $post['contract_unit'] ?? null,
                 'minimum_qualification' => $post['minimum_qualification'] ?? null,
                 'preferable_qualification' => $post['preferable_qualification'] ?? null,
-                'age_max' => $post['age_max'] ?? null,
                 'experience_years' => $post['experience_years'] ?? null,
                 'experience_criteria' => $post['experience_criteria'] ?? null,
                 'reserved_for' => $post['reserved_for'] ?? null,

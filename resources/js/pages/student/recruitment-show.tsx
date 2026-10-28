@@ -1,10 +1,11 @@
 import { Head, Link } from '@inertiajs/react';
-import { BadgeIndianRupee, CalendarDays, CheckCircle2, ClipboardList, Download, FileCheck2, FileText, GraduationCap, Info, MapPin, UserCheck, Users } from 'lucide-react';
+import { BadgeIndianRupee, CalendarDays, CheckCircle2, ChevronDown, ClipboardList, Download, FileCheck2, FileText, GraduationCap, Info, MapPin, UserCheck, Users } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Panel } from '@/components/student/panel';
 import { StatusBadge } from '@/components/student/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import StudentAdaptiveLayout from '@/layouts/student-adaptive-layout';
 import { formatDate } from '@/lib/portal';
 import { formatTime, inr } from '@/lib/recruitment';
@@ -25,6 +26,23 @@ const GENERAL_INSTRUCTIONS = [
     'Use a valid mobile number and email. All communication is sent there and on this portal.',
     'Only one application can be made per post.',
 ];
+
+/** Joins hard-wrapped lines back into paragraphs; a line break only survives after sentence-ending punctuation. */
+function toParagraphs(text: string): string[] {
+    const out: string[] = [];
+
+    text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean).forEach((line) => {
+        const prev = out[out.length - 1];
+
+        if (prev && !/[.:;!?]$/.test(prev)) {
+            out[out.length - 1] = `${prev} ${line}`;
+        } else {
+            out.push(line);
+        }
+    });
+
+    return out;
+}
 
 function Fact({ label, children }: { label: string; children: ReactNode }) {
     return (
@@ -80,7 +98,7 @@ export default function RecruitmentShow({ recruitment: r, applied, profileComple
         <>
             <Head title={`${r.postName} (${r.advtNo})`} />
 
-            <div className="border-b bg-primary-tint/60 px-4 py-8 sm:px-8 lg:px-16 xl:px-24">
+            <div className="border-b bg-primary-tint/60 px-4 py-6 sm:px-8 sm:py-8 lg:px-16 xl:px-24">
                 <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="outline" className="font-mono">{r.advtNo}</Badge>
                     <StatusBadge status={r.status} />
@@ -100,8 +118,8 @@ export default function RecruitmentShow({ recruitment: r, applied, profileComple
                 </div>
             </div>
 
-            <div className="grid items-start gap-6 px-4 py-8 sm:px-8 lg:grid-cols-[1fr_22rem] lg:px-16 xl:px-24">
-                <div className="grid gap-6">
+            <div className="grid items-start gap-6 px-4 py-6 sm:px-8 sm:py-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:px-16 xl:px-24">
+                <div className="grid min-w-0 gap-6">
                     <Panel title="Overview" icon={Info}>
                         <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                             <Fact label="Total vacancies">{r.vacancies}</Fact>
@@ -109,29 +127,101 @@ export default function RecruitmentShow({ recruitment: r, applied, profileComple
                             <Fact label="Notification date">{r.notificationDate ? formatDate(r.notificationDate) : '–'}</Fact>
                             <Fact label="Reference no.">{r.referenceNo || '–'}</Fact>
                         </dl>
-                        {r.description && <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-foreground">{r.description}</p>}
+                        {r.description && (
+                            <div className="mt-4 grid gap-2 text-sm leading-relaxed text-foreground wrap-break-word">
+                                {toParagraphs(r.description).map((line, i) => <p key={i}>{line}</p>)}
+                            </div>
+                        )}
                         {r.applyMode === 'walk_in' && (
-                            <p className="mt-4 rounded-xl bg-violet-50 p-4 text-sm font-medium text-violet-900">
+                            <p className="mt-4 flex items-start gap-2.5 rounded-xl border border-violet-200 bg-violet-50 p-4 text-sm font-medium text-violet-900">
+                                <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                                 This is a walk-in interview. There is no online application. Read the schedule and instructions above and report in person with your original documents.
                             </p>
                         )}
                         {iv && (iv.date || iv.venue || iv.instructions || iv.documentsToCarry) && (
-                            <div className="mt-4 grid gap-2 rounded-xl bg-violet-50 p-4 text-sm text-violet-900">
-                                <p className="flex items-center gap-2 font-semibold"><UserCheck className="size-4" aria-hidden="true" /> Interview details</p>
-                                <p>
-                                    {iv.date ? formatDate(iv.date) : 'Date to be announced'}
-                                    {iv.dateTo && iv.dateTo !== iv.date ? ` to ${formatDate(iv.dateTo)}` : ''}
-                                    {iv.time ? `, ${formatTime(iv.time)}` : ''}
-                                </p>
-                                {iv.venue && <p className="flex items-center gap-2"><MapPin className="size-4" aria-hidden="true" /> {iv.venue}</p>}
-                                {iv.documentsToCarry && <p><strong>Documents to carry:</strong> {iv.documentsToCarry}</p>}
-                                {iv.instructions && <p className="whitespace-pre-line"><strong>Instructions:</strong> {iv.instructions}</p>}
-                            </div>
+                            <Collapsible defaultOpen className="group/iv mt-4 overflow-hidden rounded-xl border border-violet-200 bg-violet-50/60 text-sm text-violet-950">
+                                <CollapsibleTrigger className="flex w-full items-center gap-2 bg-violet-100/70 px-4 py-2.5 text-left font-semibold outline-none focus-visible:ring-2 focus-visible:ring-violet-400 group-data-[state=open]/iv:border-b group-data-[state=open]/iv:border-violet-200">
+                                    <UserCheck className="size-4 shrink-0" aria-hidden="true" />
+                                    <span>Interview details</span>
+                                    {iv.date && (
+                                        <span className="ml-1 hidden min-w-0 truncate text-xs font-normal text-violet-700 group-data-[state=open]/iv:hidden sm:inline">
+                                            {formatDate(iv.date)}{iv.dateTo && iv.dateTo !== iv.date ? ` – ${formatDate(iv.dateTo)}` : ''}
+                                        </span>
+                                    )}
+                                    <ChevronDown className="ml-auto size-4 shrink-0 transition-transform group-data-[state=open]/iv:rotate-180" aria-hidden="true" />
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                <div className="grid gap-4 p-4">
+                                    <div className="grid gap-3 sm:grid-cols-2">
+                                        <div className="flex items-start gap-2.5">
+                                            <CalendarDays className="mt-0.5 size-4 shrink-0 text-violet-700" aria-hidden="true" />
+                                            <div>
+                                                <p className="text-xs font-medium text-violet-700">Date &amp; time</p>
+                                                <p className="font-medium">
+                                                    {iv.date ? formatDate(iv.date) : 'Date to be announced'}
+                                                    {iv.dateTo && iv.dateTo !== iv.date ? ` to ${formatDate(iv.dateTo)}` : ''}
+                                                    {iv.time ? `, ${formatTime(iv.time)}` : ''}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {iv.venue && (
+                                            <div className="flex items-start gap-2.5">
+                                                <MapPin className="mt-0.5 size-4 shrink-0 text-violet-700" aria-hidden="true" />
+                                                <div className="min-w-0">
+                                                    <p className="text-xs font-medium text-violet-700">Venue</p>
+                                                    <p className="font-medium wrap-break-word">{iv.venue}</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {iv.documentsToCarry && (
+                                        <div className="grid gap-1">
+                                            <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">Documents to carry</p>
+                                            <p className="leading-relaxed wrap-break-word">{iv.documentsToCarry}</p>
+                                        </div>
+                                    )}
+                                    {iv.instructions && (
+                                        <div className="grid gap-1.5">
+                                            <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">Instructions</p>
+                                            <div className="grid max-w-3xl gap-2 leading-relaxed wrap-break-word">
+                                                {toParagraphs(iv.instructions).map((line, i) => <p key={i}>{line}</p>)}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                </CollapsibleContent>
+                            </Collapsible>
                         )}
                     </Panel>
 
                     <Panel title="Posts & Vacancies" icon={Users} bodyClassName="p-0">
-                        <div className="overflow-x-auto">
+                        <ul className="divide-y md:hidden">
+                            {r.posts.map((p) => (
+                                <li key={p.id} className="grid gap-3 p-4 text-sm">
+                                    <div>
+                                        <p className="font-semibold">{p.name}</p>
+                                        {p.code && <p className="text-xs text-muted-foreground">{p.code}</p>}
+                                        <div className="flex flex-wrap gap-1">
+                                            {p.isContractual && <Badge variant="secondary" className="mt-1">Contractual{p.contract ? ` · ${p.contract}` : ''}</Badge>}
+                                            {p.reservedFor && <Badge variant="outline" className="mt-1">Reserved: {p.reservedFor}</Badge>}
+                                        </div>
+                                    </div>
+                                    <dl className="grid grid-cols-2 gap-3">
+                                        <Fact label="Vacancies">{p.vacancies}</Fact>
+                                        <Fact label="Monthly salary">{inr(p.monthlySalary)}</Fact>
+                                        <Fact label="Max age">{p.ageMax ? `${p.ageMax} yrs` : '–'}</Fact>
+                                        <Fact label="Experience">{p.experienceYears ? `${p.experienceYears} yrs` : 'Not required'}</Fact>
+                                    </dl>
+                                    <div>
+                                        <p className="text-xs font-medium text-muted-foreground">Minimum qualification</p>
+                                        <p className="mt-0.5 font-medium">{p.minimumQualification || '–'}</p>
+                                        {p.preferableQualification && <p className="text-xs text-muted-foreground">Preferable: {p.preferableQualification}</p>}
+                                    </div>
+                                    {p.experienceYears && p.experienceCriteria ? <p className="text-xs text-muted-foreground">{p.experienceCriteria}</p> : null}
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="hidden overflow-x-auto md:block">
                             <table className="w-full min-w-176 text-left text-sm">
                                 <thead className="bg-muted/60 text-xs uppercase text-muted-foreground">
                                     <tr>
@@ -236,7 +326,7 @@ export default function RecruitmentShow({ recruitment: r, applied, profileComple
                     </Panel>
                 </div>
 
-                <aside className="grid gap-6 lg:sticky lg:top-20">
+                <aside className="order-first grid gap-6 lg:order-none lg:sticky lg:top-20">
                     <Panel title="Apply" icon={UserCheck}>
                         {r.applyMode !== 'walk_in' && (
                             <p className="mb-4 text-xs text-muted-foreground">

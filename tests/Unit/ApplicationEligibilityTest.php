@@ -71,11 +71,6 @@ test('age is measured on the cut-off date and relaxed by category', function () 
     expect(ApplicationEligibility::evaluate($sc, $relaxed, $post)['eligible'])->toBeTrue();
 });
 
-test('a post level age limit overrides the advertisement', function () {
-    $result = ApplicationEligibility::evaluate(candidate(['dob' => '1996-01-01']), advert(), new RecruitmentPost(['age_max' => 28]));
-
-    expect(failedKeys($result))->toContain('age');
-});
 
 test('gender restricted advertisements reject other candidates', function () {
     $result = ApplicationEligibility::evaluate(candidate(['gender' => 'Male']), advert(eligibility: ['gender' => 'female']), new RecruitmentPost);
