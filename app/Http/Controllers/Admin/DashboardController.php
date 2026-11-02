@@ -18,7 +18,6 @@ class DashboardController extends Controller
                 'totalApplications' => 0,
                 'todayApplications' => 0,
                 'pendingScrutiny' => 0,
-                'openGrievances' => 0,
             ],
             'deadlines' => [],
             'pendingTasks' => [],

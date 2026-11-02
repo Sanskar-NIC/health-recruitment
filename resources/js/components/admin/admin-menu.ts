@@ -1,13 +1,7 @@
 import {
-    BarChart3,
-    FileText,
-    Globe,
-    Headset,
-    KeyRound,
     LayoutDashboard,
     Layers,
     Megaphone,
-    Send,
     Trophy,
     UserRound,
     Inbox,
@@ -56,12 +50,7 @@ export const adminMenu: AdminMenuGroup[] = [
                     { title: 'Admit Cards', href: '/admin/exams/admit-cards' },
                 ],
             },
-            { title: 'Answer Keys & Objections', href: '/admin/answer-keys', icon: KeyRound },
             { title: 'Results & Selection', href: '/admin/results', icon: Trophy },
-            { title: 'Website Content', href: '/admin/website-content', icon: Globe },
-            { title: 'Communication', href: '/admin/communication', icon: Send },
-            { title: 'Grievances', href: '/admin/grievances', icon: Headset },
-            { title: 'Reports', href: '/admin/reports', icon: BarChart3 },
         ],
     },
     {
@@ -83,7 +72,6 @@ export const adminMenu: AdminMenuGroup[] = [
         label: 'Account',
         items: [
             { title: 'My Profile', href: '/admin/profile', icon: UserRound },
-            { title: 'Activity Log', href: '/admin/activity-log', icon: FileText },
         ],
     },
 ];

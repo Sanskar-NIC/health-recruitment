@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { Clock, FileCheck2, Headset, Inbox, Megaphone, Plus, Sun } from 'lucide-react';
+import { Clock, FileCheck2, Inbox, Megaphone, Plus, Sun } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { usePage } from '@inertiajs/react';
@@ -12,7 +12,6 @@ interface Props {
         totalApplications: number;
         todayApplications: number;
         pendingScrutiny: number;
-        openGrievances: number;
     };
     deadlines: { title: string; daysLeft: number }[];
     pendingTasks: { label: string; count: number }[];
@@ -25,7 +24,6 @@ const cards: { key: keyof Props['stats']; label: string; icon: LucideIcon }[] = 
     { key: 'totalApplications', label: 'Total Applications', icon: Inbox },
     { key: 'todayApplications', label: "Today's Applications", icon: Sun },
     { key: 'pendingScrutiny', label: 'Pending Scrutiny', icon: FileCheck2 },
-    { key: 'openGrievances', label: 'Open Grievances', icon: Headset },
 ];
 
 function Section({ title, empty, children }: { title: string; empty: string; children?: ReactNode }) {
@@ -59,7 +57,7 @@ export default function AdminDashboard({ stats, deadlines, pendingTasks, activit
                 </Button>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {cards.map(({ key, label, icon: Icon }) => (
                     <div key={key} className="flex items-center gap-4 rounded-lg border bg-card p-4 shadow-sm">
                         <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-tint text-primary">

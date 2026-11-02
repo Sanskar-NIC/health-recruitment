@@ -12,16 +12,10 @@ class AdminMenu
         'exams/schedule' => 'Exam Schedule',
         'exams/centres' => 'Centres & Allocation',
         'exams/admit-cards' => 'Admit Cards',
-        'answer-keys' => 'Answer Keys & Objections',
         'results' => 'Results & Selection',
         'notices' => 'Notices',
-        'website-content' => 'Website Content',
-        'communication' => 'Communication',
-        'grievances' => 'Grievances',
-        'reports' => 'Reports',
         'masters/exam-centres' => 'Exam Centres',
         'masters/councils' => 'Professional Councils',
         'profile' => 'My Profile',
-        'activity-log' => 'Activity Log',
     ];
 }
