@@ -7,6 +7,8 @@ use App\Models\Admin\Recruitment;
 use App\Models\Admin\RecruitmentPost;
 use App\Models\Student\Application;
 use App\Models\Student\Registration;
+use App\Support\AdmitCard;
+use App\Support\ExamProgress;
 use App\Support\PublicFeed;
 use App\Support\Student\ApplicationEligibility;
 use Illuminate\Http\RedirectResponse;
@@ -23,7 +25,7 @@ class ApplicationController extends Controller
     public function index(Request $request): Response
     {
         $applications = $this->student($request)->applications()
-            ->with(['recruitment', 'post'])
+            ->with(['recruitment', 'post', 'examCentre', 'exam'])
             ->latest('id')
             ->get()
             ->map(fn (Application $a) => $this->present($a));
@@ -121,7 +123,7 @@ class ApplicationController extends Controller
 
     public function show(Request $request, int $application): Response
     {
-        $model = $this->student($request)->applications()->with(['recruitment', 'post'])->findOrFail($application);
+        $model = $this->student($request)->applications()->with(['recruitment', 'post', 'examCentre', 'exam'])->findOrFail($application);
 
         return Inertia::render('student/application-show', [
             'application' => $this->present($model) + [
@@ -168,6 +170,16 @@ class ApplicationController extends Controller
         }
 
         return 'data:'.$disk->mimeType($path).';base64,'.base64_encode($disk->get($path));
+    }
+
+    /** The admit card, once the department has released it for this recruitment. */
+    public function admitCard(Request $request, int $application)
+    {
+        $model = $this->student($request)->applications()->with(['recruitment', 'post', 'examCentre', 'exam'])->findOrFail($application);
+
+        abort_unless(ExamProgress::admitCardReady($model), 404);
+
+        return AdmitCard::pdf($model)->download("admit-card-{$model->roll_no}.pdf");
     }
 
     /** Candidates may withdraw only while applications are still open. */
@@ -220,6 +232,6 @@ class ApplicationController extends Controller
             'lastDate' => $a->recruitment->app_end?->format('Y-m-d'),
             'rejectionReason' => $a->status === Application::REJECTED ? $a->rejection_reason : null,
             'canWithdraw' => $this->canWithdraw($a),
-        ];
+        ] + ExamProgress::forStudent($a);
     }
 }

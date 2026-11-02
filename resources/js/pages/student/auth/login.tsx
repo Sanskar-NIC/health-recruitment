@@ -39,7 +39,7 @@ export default function Login({ status }: { status?: string }) {
     const reduce = useReducedMotion();
 
     return (
-        <div className="relative mx-auto max-w-5xl px-4 py-10 sm:py-14">
+        <div className="relative mx-auto max-w-5xl px-3 py-6 sm:px-4 sm:py-14">
             <Head title="Applicant Login" />
 
            
@@ -63,7 +63,7 @@ export default function Login({ status }: { status?: string }) {
                 className="grid overflow-hidden rounded-3xl border border-border/70 bg-card shadow-[0_24px_60px_-20px_rgb(14_116_144/0.35)] md:grid-cols-5"
             >
                
-                <section className="relative overflow-hidden bg-gradient-to-br from-brand-start to-brand-end p-7 text-white sm:p-9 md:col-span-2">
+                <section className="relative overflow-hidden bg-gradient-to-br from-brand-start to-brand-end order-2 p-5 text-white sm:p-9 md:order-1 md:col-span-2">
                     <motion.span
                         aria-hidden="true"
                         className="pointer-events-none absolute -top-16 -right-16 size-56 rounded-full bg-white/10"
@@ -84,7 +84,7 @@ export default function Login({ status }: { status?: string }) {
                                 <ShieldCheck className="size-7" aria-hidden="true" />
                             </motion.span>
                         </motion.span>
-                        <motion.h2 variants={item} className="mt-5 text-2xl font-bold tracking-tight">Before you log in</motion.h2>
+                        <motion.h2 variants={item} className="mt-4 text-xl font-bold tracking-tight sm:mt-5 sm:text-2xl">Before you log in</motion.h2>
 
                         <ul className="mt-4 space-y-3 text-sm">
                             {checklist.map((text) => (
@@ -98,7 +98,7 @@ export default function Login({ status }: { status?: string }) {
                 </section>
 
                
-                <section className="p-7 sm:p-10 md:col-span-3">
+                <section className="order-1 p-5 sm:p-10 md:order-2 md:col-span-3">
                     <motion.div variants={item} className="flex items-center gap-3">
                         <span className="flex size-11 items-center justify-center rounded-xl bg-primary-tint text-primary">
                             <LogIn className="size-5" aria-hidden="true" />

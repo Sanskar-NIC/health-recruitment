@@ -1,7 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
-import { ClipboardList, Download, Eye, FileText, Inbox } from 'lucide-react';
+import { ClipboardList, Download, Eye, FileText, Inbox, Ticket } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
+import { ExamStatus } from '@/components/student/exam-status';
 import { Badge } from '@/components/ui/badge';
 import StudentPortalLayout from '@/layouts/student-portal-layout';
 import { formatDate } from '@/lib/portal';
@@ -36,12 +37,14 @@ export default function Applications({ applications }: { applications: Applicati
                                 <p className="text-sm text-muted-foreground">{a.title} · {a.advtNo}</p>
                                 {a.status === 'rejected' && a.rejectionReason && <p className="mt-1 text-sm text-destructive">Reason: {a.rejectionReason}</p>}
                                 {a.submittedAt && <p className="text-xs text-muted-foreground">Applied on {formatDate(a.submittedAt.slice(0, 10))}</p>}
+                                {a.status === 'submitted' && <ExamStatus application={a} compact />}
                             </div>
                             <div className="flex shrink-0 items-center gap-2">
                                 {a.status === 'submitted' && (
                                     <>
                                         <Button asChild variant="outline" size="icon" title="View application"><Link href={`/student/applications/${a.id}`} aria-label="View application"><Eye className="size-4" aria-hidden="true" /></Link></Button>
-                                        <Button asChild size="icon" title="Download form"><a href={`/student/applications/${a.id}/download`} aria-label="Download form"><Download className="size-4" aria-hidden="true" /></a></Button>
+                                        {a.admitCard && <Button asChild title="Download admit card"><a href={a.admitCard.url}><Ticket className="size-4" aria-hidden="true" /> Admit card</a></Button>}
+                                        <Button asChild variant="outline" size="icon" title="Download form"><a href={`/student/applications/${a.id}/download`} aria-label="Download form"><Download className="size-4" aria-hidden="true" /></a></Button>
                                     </>
                                 )}
                                 {a.status !== 'submitted' && <Button asChild variant="outline" size="icon" title="View advertisement"><Link href={`/recruitments/${a.recruitmentId}`} aria-label="View advertisement"><FileText className="size-4" aria-hidden="true" /></Link></Button>}

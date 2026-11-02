@@ -2,10 +2,13 @@
 
 namespace App\Models\Student;
 
+use App\Models\Admin\ExamCentre;
 use App\Models\Admin\Recruitment;
+use App\Models\Admin\RecruitmentExam;
 use App\Models\Admin\RecruitmentPost;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Application extends Model
 {
@@ -27,6 +30,10 @@ class Application extends Model
             'submitted_at' => 'datetime',
             'withdrawn_at' => 'datetime',
             'rejected_at' => 'datetime',
+            'shortlisted_at' => 'datetime',
+            'marks_obtained' => 'decimal:2',
+            'marks_total' => 'decimal:2',
+            'is_selected' => 'boolean',
         ];
     }
 
@@ -43,6 +50,16 @@ class Application extends Model
     public function post(): BelongsTo
     {
         return $this->belongsTo(RecruitmentPost::class, 'recruitment_post_id');
+    }
+
+    public function examCentre(): BelongsTo
+    {
+        return $this->belongsTo(ExamCentre::class);
+    }
+
+    public function exam(): HasOne
+    {
+        return $this->hasOne(RecruitmentExam::class, 'recruitment_id', 'recruitment_id');
     }
 
     public function isActive(): bool

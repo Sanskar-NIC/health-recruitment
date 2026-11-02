@@ -1,6 +1,7 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { Fragment } from 'react';
 import { Bell, ChevronDown, KeyRound, LayoutDashboard, LogOut, Search, UserRound } from 'lucide-react';
+import { AccessibilityTools } from '@/components/accessibility-tools';
 import { findAdminTrail } from '@/components/admin/admin-menu';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -58,6 +59,7 @@ export function AdminTopbar() {
                         className="h-9 w-72 pl-9"
                     />
                 </div>
+                <AccessibilityTools />
                 <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
                     <Bell className="size-5" aria-hidden="true" />
                 </Button>

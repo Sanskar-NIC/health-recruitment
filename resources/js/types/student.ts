@@ -169,4 +169,25 @@ export interface ApplicationSummary {
     recruitmentStatus: string;
     lastDate: string | null;
     canWithdraw: boolean;
+    stage: 'applied' | 'shortlisted' | 'admit_card' | 'result';
+    shortlisted: boolean;
+    admitCard: AdmitCardInfo | null;
+    result: ResultInfo | null;
+}
+
+export interface AdmitCardInfo {
+    url: string;
+    rollNo: string;
+    examDate: string | null;
+    reportingTime: string | null;
+    startTime: string | null;
+    endTime: string | null;
+    centre: { name: string; address: string; city: string } | null;
+}
+
+export interface ResultInfo {
+    selected: boolean;
+    marksObtained: number | null;
+    marksTotal: number | null;
+    publishedAt: string;
 }

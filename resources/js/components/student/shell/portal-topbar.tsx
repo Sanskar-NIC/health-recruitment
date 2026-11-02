@@ -2,6 +2,7 @@ import { Link, router } from '@inertiajs/react';
 import { BellRing, ChevronDown, LogOut, Menu, Search } from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { AccessibilityTools } from '@/components/accessibility-tools';
 import { ThemeToggle } from '@/components/student/shell/portal-toggles';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { usePortalPrefs } from '@/lib/portal-prefs';
@@ -50,6 +51,7 @@ export function PortalTopbar({ student, onOpenMenu }: Props) {
             </form>
 
             <div className="ml-auto flex items-center gap-2">
+                <AccessibilityTools />
                 <ThemeToggle />
                 <Link
                     href="/notifications"

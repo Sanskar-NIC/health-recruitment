@@ -3,6 +3,13 @@
 use App\Http\Controllers\Admin\ApplicationController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\Exam\AdmitCardController;
+use App\Http\Controllers\Admin\Exam\AllocationController;
+use App\Http\Controllers\Admin\Exam\ExcelController;
+use App\Http\Controllers\Admin\Exam\ResultController;
+use App\Http\Controllers\Admin\Exam\ScheduleController;
+use App\Http\Controllers\Admin\Exam\ShortlistController;
+use App\Http\Controllers\Admin\ExamCentreController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\RecruitmentController;
 use App\Http\Controllers\Admin\SectionController;
@@ -44,6 +51,40 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('{application}', 'show')->whereNumber('application')->name('show');
             Route::post('{application}/reject', 'reject')->whereNumber('application')->name('reject');
             Route::get('{application}/file', 'file')->whereNumber('application')->name('file');
+        });
+
+        Route::post('excel/parse', ExcelController::class)->name('excel.parse');
+
+        Route::prefix('exams')->name('exams.')->group(function () {
+            Route::get('shortlisting', [ShortlistController::class, 'index'])->name('shortlisting');
+            Route::post('shortlisting', [ShortlistController::class, 'save'])->name('shortlisting.save');
+
+            Route::get('schedule', [ScheduleController::class, 'index'])->name('schedule');
+            Route::post('schedule', [ScheduleController::class, 'save'])->name('schedule.save');
+
+            Route::get('centres', [AllocationController::class, 'index'])->name('centres');
+            Route::post('centres/auto', [AllocationController::class, 'auto'])->name('centres.auto');
+            Route::post('centres/assign', [AllocationController::class, 'assign'])->name('centres.assign');
+
+            Route::get('admit-cards', [AdmitCardController::class, 'index'])->name('admit-cards');
+            Route::post('admit-cards/release', [AdmitCardController::class, 'release'])->name('admit-cards.release');
+            Route::post('admit-cards/withdraw', [AdmitCardController::class, 'withdraw'])->name('admit-cards.withdraw');
+            Route::get('admit-cards/{application}', [AdmitCardController::class, 'pdf'])->whereNumber('application')->name('admit-cards.pdf');
+        });
+
+        Route::prefix('results')->name('results.')->controller(ResultController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'save')->name('save');
+            Route::post('publish', 'publish')->name('publish');
+            Route::post('unpublish', 'unpublish')->name('unpublish');
+        });
+
+        Route::prefix('masters/exam-centres')->name('masters.exam-centres.')->controller(ExamCentreController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::put('{centre}', 'update')->name('update')->whereNumber('centre');
+            Route::patch('{centre}/toggle', 'toggle')->name('toggle')->whereNumber('centre');
+            Route::delete('{centre}', 'destroy')->name('destroy')->whereNumber('centre');
         });
 
         Route::prefix('masters/posts')->name('masters.posts.')->controller(PostController::class)->group(function () {

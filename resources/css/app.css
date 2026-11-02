@@ -265,3 +265,30 @@ html.lenis body {
 .lenis.lenis-stopped {
     overflow: clip;
 }
+
+/* Accessibility options (see lib/accessibility.ts) */
+html {
+    filter: var(--a11y-filter, none);
+}
+
+html.a11y-links a {
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+html.a11y-spacing body,
+html.a11y-spacing body * {
+    letter-spacing: 0.05em !important;
+    word-spacing: 0.12em !important;
+    line-height: 1.7 !important;
+}
+
+html.a11y-no-motion *,
+html.a11y-no-motion *::before,
+html.a11y-no-motion *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+}

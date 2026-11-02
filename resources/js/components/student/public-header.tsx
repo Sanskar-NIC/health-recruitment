@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { Menu } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/animate-ui/components/radix/sheet';
+import { AccessibilityTools } from '@/components/accessibility-tools';
 import { BrandLogo } from '@/components/brand-logo';
 import { ThemeToggle } from '@/components/student/shell/portal-toggles';
 import { Button } from '@/components/ui/button';
@@ -100,6 +101,7 @@ export function PublicHeader() {
                 </nav>
 
                 <div className="ml-auto flex items-center gap-2 lg:ml-0">
+                    <AccessibilityTools />
                     <ThemeToggle />
                     {signedIn ? (
                         <Button asChild className="hidden h-10 rounded-full px-5 sm:inline-flex"><Link href="/student/dashboard">{t('nav.dashboard')}</Link></Button>

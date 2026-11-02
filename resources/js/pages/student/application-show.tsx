@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { CalendarDays, CheckCircle2, Download, Printer, UserRound } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { ExamStatus } from '@/components/student/exam-status';
 import { Panel } from '@/components/student/panel';
 import { Button } from '@/components/ui/button';
 import StudentPortalLayout from '@/layouts/student-portal-layout';
@@ -37,6 +38,8 @@ export default function ApplicationShow({ application: a }: Props) {
                     <Button variant="outline" onClick={() => window.print()}><Printer className="size-4" aria-hidden="true" /> Print</Button>
                 </div>
             </div>
+
+            <ExamStatus application={a} />
 
             <div className="grid items-start gap-6 lg:grid-cols-2">
                 <Panel title="Application" icon={UserRound}>

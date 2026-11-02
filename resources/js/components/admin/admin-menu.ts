@@ -45,6 +45,7 @@ export const adminMenu: AdminMenuGroup[] = [
                 href: '/admin/exams',
                 icon: Ticket,
                 children: [
+                    { title: 'Shortlisting', href: '/admin/exams/shortlisting' },
                     { title: 'Exam Schedule', href: '/admin/exams/schedule' },
                     { title: 'Centres & Allocation', href: '/admin/exams/centres' },
                     { title: 'Admit Cards', href: '/admin/exams/admit-cards' },
