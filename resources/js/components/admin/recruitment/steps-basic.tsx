@@ -102,7 +102,7 @@ export function PostsStep({ form, update, errors, options }: StepProps) {
                         <Field label="Post" required error={err('name')} className="sm:col-span-4">
                             <NativeSelect value={post.code || post.name} onChange={(e) => pick(e.target.value)} aria-invalid={Boolean(err('name'))}>
                                 <option value="">Select a post</option>
-                                {/* A post saved earlier that is no longer in the master stays selectable. */}
+                              
                                 {post.name && !options.posts.some((m) => m.code === post.code) && <option value={post.code || post.name}>{post.name}</option>}
                                 {options.posts.map((m) => <option key={m.code} value={m.code}>{m.name} ({m.code})</option>)}
                             </NativeSelect>

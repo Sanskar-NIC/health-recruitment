@@ -44,7 +44,7 @@ export default function Login({ status }: { status?: string }) {
         <div className="relative mx-auto max-w-5xl px-4 py-10 sm:py-14">
             <Head title="Applicant Login" />
 
-            {/* Animation 2: slow drifting background orbs behind the card. */}
+           
             <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
                 <motion.span
                     className="absolute -top-10 -left-10 size-72 rounded-full bg-brand-start/20 blur-3xl"
@@ -64,7 +64,7 @@ export default function Login({ status }: { status?: string }) {
                 animate="show"
                 className="grid overflow-hidden rounded-3xl border border-border/70 bg-card shadow-[0_24px_60px_-20px_rgb(14_116_144/0.35)] md:grid-cols-5"
             >
-                {/* Info panel */}
+               
                 <section className="relative overflow-hidden bg-gradient-to-br from-brand-start to-brand-end p-7 text-white sm:p-9 md:col-span-2">
                     <motion.span
                         aria-hidden="true"
@@ -113,7 +113,7 @@ export default function Login({ status }: { status?: string }) {
                     </div>
                 </section>
 
-                {/* Form panel */}
+               
                 <section className="p-7 sm:p-10 md:col-span-3">
                     <motion.div variants={item} className="flex items-center gap-3">
                         <span className="flex size-11 items-center justify-center rounded-xl bg-primary-tint text-primary">

@@ -202,7 +202,6 @@ function PostDialog({ post, onClose }: { post: PostRow | null; onClose: () => vo
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>{post ? 'Edit Post' : 'Add Post'}</DialogTitle>
-                    {/* <DialogDescription>Defaults only. Salary, number of posts, age and contract period are entered for each notification.</DialogDescription> */}
                 </DialogHeader>
 
                 <form onSubmit={submit} className="grid gap-5 sm:grid-cols-2">

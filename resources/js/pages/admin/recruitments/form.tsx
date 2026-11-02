@@ -126,7 +126,6 @@ export default function RecruitmentFormPage({ recruitment, options }: Props) {
 
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start">
                 <div className="order-2 grid min-w-0 gap-8 lg:order-1">
-                {/* After publishing only the description, dates and attachments stay editable. */}
                 <fieldset disabled={locked && ![0, 6, 7, 8].includes(step)} className="min-w-0 disabled:opacity-60">
                     {stepBody}
                 </fieldset>
