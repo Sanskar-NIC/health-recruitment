@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { Inbox, Plus, Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { RecruitmentActions } from '@/components/admin/recruitment/actions';
 import { fmtDate } from '@/components/admin/recruitment/review';
@@ -34,6 +34,16 @@ interface Props {
     filters: { search: string; status: string; year: string };
     years: string[];
 }
+
+const GROUP: Record<RecruitmentStatus, string> = {
+    open: 'Open for applications',
+    closing_soon: 'Open for applications',
+    upcoming: 'Upcoming',
+    scheduled: 'Scheduled',
+    draft: 'Drafts',
+    closed: 'Closed',
+    cancelled: 'Cancelled',
+};
 
 export default function RecruitmentsIndex({ recruitments, meta, filters, years }: Props) {
     const [search, setSearch] = useState(filters.search);
@@ -100,8 +110,17 @@ export default function RecruitmentsIndex({ recruitments, meta, filters, years }
                                     {meta.total === 0 && !filters.search && !filters.status && !filters.year ? 'No recruitments yet. Create the first one from a department notification.' : 'No recruitments match these filters.'}
                                 </TableCell>
                             </TableRow>
-                        ) : recruitments.map((r) => (
-                            <TableRow key={r.id}>
+                        ) : recruitments.map((r, i) => (
+                            <Fragment key={r.id}>
+                            {(i === 0 || GROUP[recruitments[i - 1].status] !== GROUP[r.status]) && (
+                                <TableRow className="bg-primary-tint hover:bg-primary-tint">
+                                    <TableCell colSpan={8} className="py-2 text-sm font-semibold text-primary-deep">
+                                        {GROUP[r.status]}
+                                        <span className="ml-2 font-normal text-muted-foreground">{recruitments.filter((x) => GROUP[x.status] === GROUP[r.status]).length} on this page</span>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            <TableRow>
                                 <TableCell className="font-medium whitespace-nowrap"><Link href={`/admin/recruitments/${r.id}`} className="text-link hover:underline">{r.advt_no}</Link></TableCell>
                                 <TableCell className="max-w-72 truncate" title={r.title}>{r.title}</TableCell>
                                 <TableCell className="text-right">{r.posts_count}</TableCell>
@@ -113,6 +132,7 @@ export default function RecruitmentsIndex({ recruitments, meta, filters, years }
                                 <TableCell className="text-right">{r.applications}</TableCell>
                                 <TableCell><RecruitmentActions r={r} /></TableCell>
                             </TableRow>
+                            </Fragment>
                         ))}
                     </TableBody>
                 </Table>
