@@ -1,5 +1,4 @@
 import { Head } from '@inertiajs/react';
-import { FaqSection } from '@/components/student/home/faq-section';
 import { HelpdeskStrip } from '@/components/student/home/helpdesk-strip';
 import { HeroSection } from '@/components/student/home/hero-section';
 import { HowToApply } from '@/components/student/home/how-to-apply';
@@ -15,7 +14,6 @@ export default function Home({
     notifications,
     importantDates,
     featuredRecruitment,
-    faqs,
 }: HomeProps) {
     return (
         <>
@@ -28,7 +26,6 @@ export default function Home({
             <ImportantDates dates={importantDates} recruitment={featuredRecruitment} />
             <QuickLinks />
             <HowToApply />
-            <FaqSection faqs={faqs} />
             <HelpdeskStrip />
         </>
     );

@@ -28,7 +28,6 @@ class HomeController extends Controller
             'importantDates' => PublicFeed::importantDates($featured),
             'featuredRecruitment' => $featured,
             'stats' => MockData::stats(),
-            'faqs' => MockData::faqs(),
         ]);
     }
 }

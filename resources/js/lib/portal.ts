@@ -2,7 +2,6 @@ import {
     BellRing,
     Building2,
     Headset,
-    MessageCircleQuestion,
     UserSearch,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -17,7 +16,6 @@ export const portalNav: PortalNavItem[] = [
     { label: 'Home', href: '/', icon: Building2 },
     { label: 'Recruitments', href: '/recruitments', icon: UserSearch },
     { label: 'Notifications', href: '/notifications', icon: BellRing },
-    { label: 'FAQ', href: '/faq', icon: MessageCircleQuestion },
     { label: 'Contact', href: '/contact', icon: Headset },
 ];
 

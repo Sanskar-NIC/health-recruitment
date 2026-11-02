@@ -36,6 +36,10 @@ class RecruitmentController extends Controller
             ->get()
             ->map(fn (Recruitment $r) => RecruitmentPresenter::row($r));
 
+        // Lifecycle order (live first, finished last); newest first within each group.
+        $rank = ['open' => 0, 'closing_soon' => 0, 'upcoming' => 1, 'scheduled' => 2, 'draft' => 3, 'closed' => 4, 'cancelled' => 5];
+        $all = $all->sortBy(fn (array $r) => $rank[$r['status']] ?? 9)->values();
+
         $years = $all->pluck('year')->unique()->sortDesc()->values();
 
         $filtered = $all

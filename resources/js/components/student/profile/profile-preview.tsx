@@ -77,16 +77,14 @@ function ImagePreview({ file, label, className }: { file: FileRef | null; label:
     );
 }
 
-const tones = {
-    teal: 'border-primary bg-primary-tint text-primary',
-    sky: 'border-sky-500 bg-sky-50 text-sky-700',
-    emerald: 'border-emerald-500 bg-emerald-50 text-emerald-700',
-    amber: 'border-amber-500 bg-amber-50 text-amber-700',
-    violet: 'border-violet-500 bg-violet-50 text-violet-700',
-};
-
-function SubHeading({ children, tone = 'teal' }: { children: ReactNode; tone?: keyof typeof tones }) {
-    return <h3 className={`mb-4 rounded-md border-l-4 px-3 py-1.5 text-sm font-semibold ${tones[tone]}`}>{children}</h3>;
+/** Same look as the edit form's section headers, so view and edit modes match. */
+function SubHeading({ children, icon: Icon }: { children: ReactNode; icon?: LucideIcon }) {
+    return (
+        <h3 className="mb-4 flex items-center gap-3 rounded-xl border-l-4 border-primary bg-primary-tint px-4 py-3 text-base font-semibold text-primary-deep">
+            {Icon && <Icon className="size-5 text-primary" aria-hidden="true" />}
+            {children}
+        </h3>
+    );
 }
 
 /** First matching keyword wins, so more specific labels come before generic ones. */
@@ -210,10 +208,10 @@ const TABS = [
 ] as const;
 type TabId = (typeof TABS)[number]['id'];
 
-function Address({ title, block, tone }: { title: string; block: AddressBlock; tone: keyof typeof tones }) {
+function Address({ title, block, icon }: { title: string; block: AddressBlock; icon: LucideIcon }) {
     return (
         <div>
-            <SubHeading tone={tone}>{title}</SubHeading>
+            <SubHeading icon={icon}>{title}</SubHeading>
             <Grid>
                 <Row label="House No./Vill/Town" value={block.house} />
                 <Row label="Street Name" value={block.street} />
@@ -313,8 +311,8 @@ export function ProfilePreview({ draft }: { draft: ProfileDraft }) {
             {tab === 'address' && (
             <Section title="Address Details" icon={Home}>
                 <div className="grid gap-6">
-                    <Address title="Permanent Address" block={a.permanent} tone="sky" />
-                    <Address title={a.same_as_permanent ? 'Correspondence Address (same as permanent)' : 'Correspondence Address'} block={a.same_as_permanent ? a.permanent : a.correspondence} tone="emerald" />
+                    <Address title="Permanent Address" block={a.permanent} icon={Home} />
+                    <Address title={a.same_as_permanent ? 'Correspondence Address (same as permanent)' : 'Correspondence Address'} block={a.same_as_permanent ? a.permanent : a.correspondence} icon={MapPinned} />
                 </div>
             </Section>
             )}
@@ -344,7 +342,7 @@ export function ProfilePreview({ draft }: { draft: ProfileDraft }) {
                 <div className="grid gap-6">
                     {q.map((row, i) => (
                         <div key={i} className={i > 0 ? 'border-t pt-6' : undefined}>
-                            <SubHeading tone="amber">Qualification {i + 1}</SubHeading>
+                            <SubHeading icon={GraduationCap}>Qualification {i + 1}</SubHeading>
                             <Grid>
                                 <Row label="Qualification Type" value={row.type} />
                                 <Row label="Branch/Stream" value={row.stream} />
@@ -372,7 +370,7 @@ export function ProfilePreview({ draft }: { draft: ProfileDraft }) {
                     <div className="grid gap-6">
                         {x.entries.map((e, i) => (
                             <div key={i} className={i > 0 ? 'border-t pt-6' : undefined}>
-                                <SubHeading tone="violet">Experience {i + 1}</SubHeading>
+                                <SubHeading icon={Briefcase}>Experience {i + 1}</SubHeading>
                                 <Grid>
                                     <Row label="Employer" value={e.employer} />
                                     <Row label="Designation" value={e.designation} />

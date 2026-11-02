@@ -26,7 +26,6 @@ Route::get('notifications', [NotificationController::class, 'index'])->name('not
 Route::inertia('register', 'student/auth/register')->middleware('guest:student')->name('register');
 
 Route::controller(PlaceholderController::class)->group(function () {
-    Route::get('faq', '__invoke')->defaults('title', 'FAQ')->name('faq');
     Route::get('contact', '__invoke')->defaults('title', 'Contact')->name('contact');
 });
 

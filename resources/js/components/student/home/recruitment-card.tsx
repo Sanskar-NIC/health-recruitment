@@ -101,7 +101,7 @@ export function RecruitmentCard({ item }: { item: Recruitment }) {
                             <Info className="size-4" aria-hidden="true" />
                         </button>
                     </PopoverTrigger>
-                    <PopoverContent align="end" className="w-[min(24rem,calc(100vw-2rem))] max-h-96 overflow-y-auto rounded-xl p-4">
+                    <PopoverContent align="end" collisionPadding={16} className="w-[min(30rem,calc(100vw-2rem))] max-h-[min(var(--radix-popover-content-available-height),40rem)] overflow-y-auto rounded-xl p-4">
                         <h4 className="mb-1 text-sm font-semibold leading-snug">{item.postName}</h4>
                         <p className="mb-3 text-xs text-muted-foreground">{item.department}</p>
                         <Details item={item} />

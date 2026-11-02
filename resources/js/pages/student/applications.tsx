@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ClipboardList, Download, Inbox } from 'lucide-react';
+import { ClipboardList, Download, Eye, FileText, Inbox } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +26,7 @@ export default function Applications({ applications }: { applications: Applicati
                 <ul className="grid gap-4">
                     {applications.map((a) => (
                         <li key={a.id} className="flex flex-col gap-4 rounded-2xl border bg-card p-5 shadow-sm md:flex-row md:items-center md:justify-between">
-                            <div>
+                            <div className="min-w-0 flex-1">
                                 <div className="flex flex-wrap items-center gap-2">
                                     <Badge variant="outline" className="font-mono">{a.applicationNo}</Badge>
                                     <Badge className={a.status === 'submitted' ? 'bg-success text-white' : a.status === 'rejected' ? 'bg-destructive text-white' : 'bg-gray-200 text-gray-700'}>{a.status === 'submitted' ? 'Submitted' : a.status === 'rejected' ? 'Rejected' : 'Withdrawn'}</Badge>
@@ -37,10 +37,14 @@ export default function Applications({ applications }: { applications: Applicati
                                 {a.status === 'rejected' && a.rejectionReason && <p className="mt-1 text-sm text-destructive">Reason: {a.rejectionReason}</p>}
                                 {a.submittedAt && <p className="text-xs text-muted-foreground">Applied on {formatDate(a.submittedAt.slice(0, 10))}</p>}
                             </div>
-                            <div className="flex flex-wrap gap-2">
-                                {a.status === 'submitted' && <Button asChild variant="outline"><Link href={`/student/applications/${a.id}`}>View</Link></Button>}
-                                {a.status === 'submitted' && <Button asChild><a href={`/student/applications/${a.id}/download`}><Download className="size-4" aria-hidden="true" /> Download form</a></Button>}
-                                {a.status !== 'submitted' && <Button asChild variant="outline"><Link href={`/recruitments/${a.recruitmentId}`}>View advertisement</Link></Button>}
+                            <div className="flex shrink-0 items-center gap-2">
+                                {a.status === 'submitted' && (
+                                    <>
+                                        <Button asChild variant="outline" size="icon" title="View application"><Link href={`/student/applications/${a.id}`} aria-label="View application"><Eye className="size-4" aria-hidden="true" /></Link></Button>
+                                        <Button asChild size="icon" title="Download form"><a href={`/student/applications/${a.id}/download`} aria-label="Download form"><Download className="size-4" aria-hidden="true" /></a></Button>
+                                    </>
+                                )}
+                                {a.status !== 'submitted' && <Button asChild variant="outline" size="icon" title="View advertisement"><Link href={`/recruitments/${a.recruitmentId}`} aria-label="View advertisement"><FileText className="size-4" aria-hidden="true" /></Link></Button>}
                             </div>
                         </li>
                     ))}

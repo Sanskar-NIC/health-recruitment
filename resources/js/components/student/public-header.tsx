@@ -15,7 +15,6 @@ const labelKey: Record<string, TranslationKey> = {
     '/': 'nav.home',
     '/recruitments': 'nav.recruitments',
     '/notifications': 'nav.notifications',
-    '/faq': 'nav.faq',
     '/contact': 'nav.contact',
 };
 

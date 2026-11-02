@@ -56,12 +56,6 @@ export interface PortalStats {
     districtsCovered: number;
 }
 
-export interface Faq {
-    id: string;
-    question: string;
-    answer: string;
-}
-
 export interface Helpdesk {
     phone: string;
     email: string;
@@ -106,7 +100,6 @@ export interface HomeProps {
     importantDates: ImportantDate[];
     featuredRecruitment: Recruitment | null;
     stats: PortalStats;
-    faqs: Faq[];
 }
 
 export interface RecruitmentPostDetail {

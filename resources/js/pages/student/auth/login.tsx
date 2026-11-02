@@ -1,5 +1,5 @@
-import { Head, usePage } from '@inertiajs/react';
-import { CircleCheck, Clock, LogIn, Mail, Phone, ShieldCheck, TriangleAlert } from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { CircleCheck, LogIn, ShieldCheck } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import type { Variants } from 'motion/react';
 import { useEffect } from 'react';
@@ -31,8 +31,6 @@ const slideRight: Variants = {
 };
 
 export default function Login({ status }: { status?: string }) {
-    const { helpdesk } = usePage().props.portal;
-
     useEffect(() => {
         if (status) {
             toast.success(status);
@@ -96,20 +94,6 @@ export default function Login({ status }: { status?: string }) {
                                 </motion.li>
                             ))}
                         </ul>
-
-                        <motion.p variants={item} className="mt-6 flex gap-2 rounded-xl bg-black/20 p-3 text-sm backdrop-blur">
-                            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-300" aria-hidden="true" />
-                            <span>
-                                <strong className="text-amber-300">Important:</strong> Applications can be submitted only after login. Complete your profile before the last date.
-                            </span>
-                        </motion.p>
-
-                        <motion.h3 variants={item} className="mt-6 font-semibold">Need help?</motion.h3>
-                        <motion.ul variants={item} className="mt-2 space-y-1.5 text-sm text-white/85">
-                            <li className="flex items-center gap-2"><Phone className="size-4" aria-hidden="true" />{helpdesk.phone}</li>
-                            <li className="flex items-center gap-2"><Mail className="size-4" aria-hidden="true" /><span className="break-all">{helpdesk.email}</span></li>
-                            <li className="flex items-center gap-2"><Clock className="size-4" aria-hidden="true" />{helpdesk.hours}</li>
-                        </motion.ul>
                     </div>
                 </section>
 

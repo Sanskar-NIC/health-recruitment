@@ -4,7 +4,7 @@ namespace App\Support;
 
 /**
  * Public-portal data. Recruitments, notices, dates and stats come from the admin-managed
- * database via PublicFeed; FAQs and helpdesk details are still static.
+ * database via PublicFeed; helpdesk details are still static.
  */
 class MockData
 {
@@ -44,22 +44,6 @@ class MockData
     public static function stats(): array
     {
         return PublicFeed::stats();
-    }
-
-    /**
-     * @return list<array<string, string>>
-     */
-    public static function faqs(): array
-    {
-        return [
-            ['id' => 'q1', 'question' => 'How do I register on the portal?', 'answer' => 'Click "Register", fill in your details exactly as in your Class 10 certificate, verify your mobile number and email with OTP, and set a password. Your registration number is shown on completion.'],
-            ['id' => 'q2', 'question' => 'What are the photo and signature size rules?', 'answer' => 'Photograph: JPG/JPEG, 20–50 KB, 3.5 cm × 4.5 cm, white background. Signature: JPG/JPEG, 10–20 KB, 3.5 cm × 1.5 cm, signed in black ink on white paper.'],
-            ['id' => 'q3', 'question' => 'I forgot my registration number. What should I do?', 'answer' => 'Use "Forgot Password?" and enter your registered mobile number or email. After OTP verification your registration number is sent to your registered contact.'],
-            ['id' => 'q4', 'question' => 'Fee payment failed but the amount was deducted.', 'answer' => 'Do not pay again. Failed transactions are reconciled automatically within 3–5 working days and refunded to the source account if the application was not confirmed.'],
-            ['id' => 'q5', 'question' => 'Can I edit my application after submission?', 'answer' => 'You may edit only during the correction window announced in the advertisement. Name and date of birth cannot be changed after registration.'],
-            ['id' => 'q6', 'question' => 'How do I download my admit card?', 'answer' => 'Log in, open "Admit Card", select the recruitment and download the PDF. Admit cards are released a few days before the examination.'],
-            ['id' => 'q7', 'question' => 'What are the helpdesk timings?', 'answer' => 'The helpdesk is available from 10:00 AM to 5:00 PM, Monday to Saturday, except public holidays.'],
-        ];
     }
 
     /**

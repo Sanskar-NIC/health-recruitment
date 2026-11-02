@@ -81,8 +81,7 @@ export function LoginForm({ idPrefix, showRemember = false }: LoginFormProps) {
                     <Input
                         id={idId}
                         value={form.data.identifier}
-                        onChange={(e) => form.setData('identifier', e.target.value)}
-                        onBlur={() => validateField('identifier')}
+                        onChange={(e) => { form.setData('identifier', e.target.value); setErrors((p) => ({ ...p, identifier: undefined })); }}
                         autoComplete="username"
                         className="h-11 pl-9"
                         aria-invalid={Boolean(errors.identifier)}
@@ -108,8 +107,7 @@ export function LoginForm({ idPrefix, showRemember = false }: LoginFormProps) {
                         id={pwId}
                         type={showPassword ? 'text' : 'password'}
                         value={form.data.password}
-                        onChange={(e) => form.setData('password', e.target.value)}
-                        onBlur={() => validateField('password')}
+                        onChange={(e) => { form.setData('password', e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
                         autoComplete="current-password"
                         className="h-11 px-9"
                         aria-invalid={Boolean(errors.password)}

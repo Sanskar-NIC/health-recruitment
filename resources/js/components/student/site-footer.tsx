@@ -5,7 +5,6 @@ import { BrandLogo } from '@/components/brand-logo';
 
 const quickLinks = [
     ['Recruitments', '/recruitments'],
-    ['FAQ', '/faq'],
 ] as const;
 
 const importantLinks = [
